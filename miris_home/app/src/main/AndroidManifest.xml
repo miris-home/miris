@@ -53,6 +53,10 @@
         <activity
             android:name=".ui.activity.AddressActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.activity.SettingActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
 
         </activity>

@@ -93,7 +93,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
             switch (menuItem.getItemId()) {
                 case R.id.menu_settings:
-                    Intent intent = new Intent(getApplication(), CalendarActivity.class);
+                    Intent intent = new Intent(getApplication(), SettingActivity.class);
                     startActivity(intent);
                     break;
             }
