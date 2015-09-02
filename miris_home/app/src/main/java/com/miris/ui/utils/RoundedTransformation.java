@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import com.squareup.picasso.Transformation;
 
 /**
- * Created by froger_mcs on 11.08.2014.
+ * Created by Miris on 09.02.15.
  */
 public class RoundedTransformation implements Transformation {
     @Override

@@ -22,7 +22,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.InjectView;
 
 /**
- * Created by Miroslaw Stanek on 14.01.15.
+ * Created by Miris on 09.02.15.
  */
 public class UserProfileActivity extends BaseDrawerActivity implements RevealBackgroundView.OnStateChangeListener {
     public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
@@ -66,6 +66,14 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
 
         this.avatarSize = getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size);
         this.profilePhoto = getString(R.string.user_profile_photo);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         Picasso.with(this)
                 .load(profilePhoto)

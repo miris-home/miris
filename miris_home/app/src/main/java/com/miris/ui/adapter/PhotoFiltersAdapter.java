@@ -11,7 +11,7 @@ import com.miris.R;
 import butterknife.ButterKnife;
 
 /**
- * Created by froger_mcs on 11.11.14.
+ * Created by Miris on 09.02.15.
  */
 public class PhotoFiltersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

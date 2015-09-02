@@ -23,7 +23,7 @@ import android.view.animation.OvershootInterpolator;
 import com.miris.R;
 
 /**
- * Created by Miroslaw Stanek on 28.02.15.
+ * Created by Miris on 09.02.15.
  */
 public class SendingProgressView extends View {
     public static final int STATE_NOT_STARTED = 0;

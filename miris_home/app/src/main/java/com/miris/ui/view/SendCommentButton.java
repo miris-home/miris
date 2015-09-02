@@ -10,7 +10,7 @@ import com.miris.R;
 
 
 /**
- * Created by froger_mcs on 01.12.14.
+ * Created by Miris on 09.02.15.
  */
 public class SendCommentButton extends ViewAnimator implements View.OnClickListener {
     public static final int STATE_SEND = 0;

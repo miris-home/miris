@@ -1,7 +1,5 @@
 package com.miris.ui.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +8,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 
@@ -46,8 +43,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setupFeed();
 
+        setupFeed();
         if (savedInstanceState == null) {
             pendingIntroAnimation = true;
         } else {
@@ -94,14 +91,24 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+    protected void onResume() {
+        super.onResume();
         if (pendingIntroAnimation) {
             pendingIntroAnimation = false;
             startIntroAnimation();
         }
-        return true;
     }
+
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//        if (pendingIntroAnimation) {
+//            pendingIntroAnimation = false;
+//            startIntroAnimation();
+//        }
+//        return true;
+//    }
 
     private void startIntroAnimation() {
         fabCreate.setTranslationY(2 * getResources().getDimensionPixelOffset(R.dimen.btn_fab_size));
@@ -109,7 +116,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         int actionbarSize = Utils.dpToPx(56);
         getToolbar().setTranslationY(-actionbarSize);
         getIvLogo().setTranslationY(-actionbarSize);
-        getInboxMenuItem().getActionView().setTranslationY(-actionbarSize);
+        getivAddress().setTranslationY(-actionbarSize);
+        getivCalendar().setTranslationY(-actionbarSize);
+        //getInboxMenuItem().getActionView().setTranslationY(-actionbarSize);
 
         getToolbar().animate()
                 .translationY(0)
@@ -119,17 +128,26 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 .translationY(0)
                 .setDuration(ANIM_DURATION_TOOLBAR)
                 .setStartDelay(400);
-        getInboxMenuItem().getActionView().animate()
+        getivAddress().animate()
                 .translationY(0)
                 .setDuration(ANIM_DURATION_TOOLBAR)
-                .setStartDelay(500)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        startContentAnimation();
-                    }
-                })
-                .start();
+                .setStartDelay(500);
+        getivCalendar().animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION_TOOLBAR)
+                .setStartDelay(600);
+//        getInboxMenuItem().getActionView().animate()
+//                .translationY(0)
+//                .setDuration(ANIM_DURATION_TOOLBAR)
+//                .setStartDelay(500)
+//                .setListener(new AnimatorListenerAdapter() {
+//                    @Override
+//                    public void onAnimationEnd(Animator animation) {
+//                        startContentAnimation();
+//                    }
+//                })
+//                .start();
+        startContentAnimation();
     }
 
     private void startContentAnimation() {
@@ -197,5 +215,16 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
     public void showLikedSnackbar() {
         Snackbar.make(clContent, "Liked!", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (m_openDrawer){
+            drawerLayout.closeDrawers();
+            m_openDrawer = false;
+            return;
+        } else {
+            super.onBackPressed();
+        }
     }
 }

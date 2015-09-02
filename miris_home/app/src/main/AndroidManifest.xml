@@ -45,7 +45,15 @@
             android:name=".ui.activity.PublishActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.activity.CalendarActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.activity.AddressActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
 
         </activity>
     </application>

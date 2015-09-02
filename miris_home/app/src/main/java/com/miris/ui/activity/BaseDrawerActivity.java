@@ -1,9 +1,12 @@
 package com.miris.ui.activity;
 
+import android.content.Intent;
 import android.os.Handler;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,7 +19,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
- * Created by Miroslaw Stanek on 15.07.15.
+ * Created by Miris on 09.02.15.
  */
 public class BaseDrawerActivity extends BaseActivity {
 
@@ -27,12 +30,15 @@ public class BaseDrawerActivity extends BaseActivity {
 
     private int avatarSize;
     private String profilePhoto;
+    boolean m_openDrawer = false;
 
     @Override
     public void setContentView(int layoutResID) {
         super.setContentViewWithoutInject(R.layout.activity_drawer);
         ViewGroup viewGroup = (ViewGroup) findViewById(R.id.flContentRoot);
         LayoutInflater.from(this).inflate(layoutResID, viewGroup, true);
+        NavigationView navigationView = (NavigationView)findViewById(R.id.vNavigation);
+        navigationView.setNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         injectViews();
 
         setupHeader();
@@ -45,6 +51,7 @@ public class BaseDrawerActivity extends BaseActivity {
             getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    m_openDrawer = true;
                     drawerLayout.openDrawer(Gravity.LEFT);
                 }
             });
@@ -78,4 +85,20 @@ public class BaseDrawerActivity extends BaseActivity {
                 .into(ivMenuUserProfilePhoto);
     }
 
+    private NavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new NavigationView.OnNavigationItemSelectedListener(){
+
+        @Override
+        public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+            switch (menuItem.getItemId()) {
+                case R.id.menu_settings:
+                    Intent intent = new Intent(getApplication(), CalendarActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+
+            return false;
+        }
+    };
 }

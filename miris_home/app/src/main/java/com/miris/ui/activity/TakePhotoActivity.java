@@ -41,7 +41,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
- * Created by Miroslaw Stanek on 08.02.15.
+ * Created by Miris on 09.02.15.
  */
 public class TakePhotoActivity extends BaseActivity implements RevealBackgroundView.OnStateChangeListener,
         CameraHostProvider {

@@ -22,7 +22,7 @@ import butterknife.InjectView;
 import butterknife.OnCheckedChanged;
 
 /**
- * Created by Miroslaw Stanek on 21.02.15.
+ * Created by Miris on 09.02.15.
  */
 public class PublishActivity extends BaseActivity {
     public static final String ARG_TAKEN_PHOTO_URI = "arg_taken_photo_uri";

@@ -17,21 +17,4 @@
         android:scaleType="center"
         android:src="@drawable/img_toolbar_logo" />
 
-    <ImageView
-        android:id="@+id/ivCalendar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="10dp"
-        android:scaleType="center"
-        android:src="@drawable/ic_event_white_36dp" />
-
-    <ImageView
-        android:id="@+id/ivAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_gravity="right"
-        android:scaleType="center"
-        android:src="@drawable/ic_supervisor_account_white_36dp" />
 </android.support.v7.widget.Toolbar>

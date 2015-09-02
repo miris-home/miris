@@ -23,7 +23,7 @@ import com.miris.ui.view.SendCommentButton;
 import butterknife.InjectView;
 
 /**
- * Created by froger_mcs on 11.11.14.
+ * Created by Miris on 09.02.15.
  */
 public class CommentsActivity extends BaseDrawerActivity implements SendCommentButton.OnSendClickListener {
     public static final String ARG_DRAWING_START_LOCATION = "arg_drawing_start_location";
@@ -115,17 +115,24 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
     @Override
     public void onBackPressed() {
         ViewCompat.setElevation(getToolbar(), 0);
-        contentRoot.animate()
-                .translationY(Utils.getScreenHeight(this))
-                .setDuration(200)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        CommentsActivity.super.onBackPressed();
-                        overridePendingTransition(0, 0);
-                    }
-                })
-                .start();
+        if (m_openDrawer){
+            drawerLayout.closeDrawers();
+            m_openDrawer = false;
+            return;
+        } else {
+            contentRoot.animate()
+                    .translationY(Utils.getScreenHeight(this))
+                    .setDuration(200)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            CommentsActivity.super.onBackPressed();
+                            overridePendingTransition(0, 0);
+                        }
+                    })
+                    .start();
+        }
+
     }
 
     @Override

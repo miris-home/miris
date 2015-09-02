@@ -15,7 +15,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
 /**
- * Created by Miroslaw Stanek on 18.01.15.
+ * Created by Miris on 09.02.15.
  */
 public class RevealBackgroundView extends View {
     public static final int STATE_NOT_STARTED = 0;
