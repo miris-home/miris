@@ -92,7 +92,7 @@
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
                         android:gravity="top"
-                        android:lines="3"
+                        android:lines="5"
                         android:padding="8dp"
                         android:textColor="#333333"
                         android:textSize="14sp" />

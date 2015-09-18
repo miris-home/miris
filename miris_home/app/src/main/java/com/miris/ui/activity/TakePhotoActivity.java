@@ -8,20 +8,29 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ViewSwitcher;
 
@@ -70,6 +79,14 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     RecyclerView rvFilters;
     @InjectView(R.id.btnTakePhoto)
     Button btnTakePhoto;
+    @InjectView(R.id.btnVideoCam)
+    ImageButton btnVideoCam;
+    @InjectView(R.id.btnTakeGallery)
+    ImageButton btnTakeGallery;
+    @InjectView(R.id.btn_ic_close)
+    ImageButton btn_ic_close;
+    @InjectView(R.id.btnBack)
+    ImageButton btnBack;
 
     private boolean pendingIntro;
     private int currentState;
@@ -89,7 +106,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         updateStatusBarColor();
         updateState(STATE_TAKE_PHOTO);
         setupRevealBackground(savedInstanceState);
-        setupPhotoFilters();
+        //setupPhotoFilters(); plus334.park
 
         vUpperPanel.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -152,6 +169,112 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         btnTakePhoto.setEnabled(false);
         cameraView.takePicture(true, true);
         animateShutter();
+    }
+
+    @OnClick(R.id.btnTakeGallery)
+    public void onbtnTakeGalleryClick() {
+        Intent clsIntent = new Intent(Intent.ACTION_PICK);
+        clsIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+        clsIntent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(clsIntent, 100);
+    }
+
+    @OnClick(R.id.btnVideoCam)
+    public void onbtnVideoCamClick() {
+
+    }
+
+    protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK) {
+            if(requestCode == 100) {
+                try {
+                    Uri uri = data.getData();
+                    AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
+                    BitmapFactory.Options opt = new BitmapFactory.Options(); opt.inSampleSize = 4;
+                    Bitmap clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+                    File file = new File(getImageNameToUri(uri));
+
+                    ExifInterface exif = new ExifInterface(getImageNameToUri(uri));
+                    int exifOrientation = exif.getAttributeInt(
+                            ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                    int exifDegree = exifOrientationToDegrees(exifOrientation);
+                    clsBitmap = rotate(clsBitmap, exifDegree);
+
+                    photoPath = file;
+                    showTakenPicture(clsBitmap);
+                } catch( Exception e ) {
+                    Log.e("Picture", e.toString());
+                }
+            } else if (requestCode == 200) {
+
+            }  else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
+    public int exifOrientationToDegrees(int exifOrientation)
+    {
+        if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    public Bitmap rotate(Bitmap bitmap, int degrees) {
+        if(degrees != 0 && bitmap != null) {
+            Matrix m = new Matrix();
+            m.setRotate(degrees, (float) bitmap.getWidth() / 2,
+                    (float) bitmap.getHeight() / 2);
+
+            try {
+                Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0,
+                        bitmap.getWidth(), bitmap.getHeight(), m, true);
+                if(bitmap != converted)
+                {
+                    bitmap.recycle();
+                    bitmap = converted;
+                }
+            } catch(OutOfMemoryError ex) {
+
+            }
+        }
+        return bitmap;
+    }
+
+    public String getImageNameToUri(Uri data)
+    {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(data, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        String imgPath = cursor.getString(column_index);
+
+        return imgPath;
+    }
+
+    @OnClick(R.id.btn_ic_close)
+    public void onbtn_ic_closeClick() {
+        finish();
+    }
+    @OnClick(R.id.btnBack)
+    public void onbtnBackClick() {
+        if (currentState == STATE_SETUP_PHOTO) {
+            btnTakePhoto.setEnabled(true);
+            vUpperPanel.showNext();
+            vLowerPanel.showNext();
+            updateState(STATE_TAKE_PHOTO);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @OnClick(R.id.btnAccept)
@@ -227,6 +350,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         public Camera.Parameters adjustPreviewParameters(Camera.Parameters parameters) {
             Camera.Parameters parameters1 = super.adjustPreviewParameters(parameters);
             previewSize = parameters1.getPreviewSize();
+            parameters1.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             return parameters1;
         }
 

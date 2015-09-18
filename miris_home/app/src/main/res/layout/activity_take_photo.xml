@@ -28,6 +28,7 @@
 
 
                 <ImageButton
+                    android:id="@+id/btn_ic_close"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@drawable/btn_default_light"
@@ -72,26 +73,6 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1" />
-
-                <ImageButton
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/btn_default_light"
-                    android:src="@drawable/ic_edit_white_24dp" />
-
-                <ImageButton
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:background="@drawable/btn_default_light"
-                    android:src="@drawable/ic_edit_white_24dp" />
-
-                <ImageButton
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/btn_default_light"
-                    android:src="@drawable/ic_edit_white_24dp" />
 
                 <View
                     android:layout_width="0dp"
@@ -151,6 +132,7 @@
                     android:layout_weight="1">
 
                     <ImageButton
+                        android:id="@+id/btnTakeGallery"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
@@ -177,6 +159,7 @@
                     android:layout_weight="1">
 
                     <ImageButton
+                        android:id="@+id/btnVideoCam"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center"
