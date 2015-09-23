@@ -567,7 +567,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         protected void onPostExecute(Boolean isDone) {
             if (isDone) {
                 showTakenPicture(clsBitmap);
-                Toast.makeText(mContext, "저장되었습니다.!", Toast.LENGTH_SHORT)
+                Toast.makeText(mContext, getString(R.string.save_toast), Toast.LENGTH_SHORT)
                         .show();
             }
         }
