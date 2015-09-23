@@ -11,11 +11,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ToggleButton;
 
 import com.miris.R;
 import com.miris.Utils;
+import com.miris.net.MemberData;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -34,6 +36,8 @@ public class PublishActivity extends BaseActivity {
     ToggleButton tbDirect;
     @InjectView(R.id.ivPhoto)
     ImageView ivPhoto;
+    @InjectView(R.id.etDescription)
+    EditText etDescription;
 
     private boolean propagatingToggleState = false;
     private Uri photoUri;
@@ -115,6 +119,7 @@ public class PublishActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_publish) {
+            userData.add(new MemberData(photoUri ,etDescription.getText().toString()));
             bringMainActivityToTop();
             return true;
         } else {

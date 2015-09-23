@@ -94,11 +94,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.commonsware.cwac.camera.CameraView
-                android:id="@+id/cameraView"
+            <FrameLayout
+                android:id="@+id/camera_preview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"/>
 
             <ImageButton
                 android:id="@+id/ivTakenPhoto"
@@ -114,6 +115,12 @@
                 android:layout_height="match_parent"
                 android:background="#ffffff"
                 android:visibility="gone" />
+            <RadioButton
+                android:id="@+id/touchListener"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:alpha="0" />
         </com.miris.ui.view.SquaredFrameLayout>
 
         <ViewSwitcher

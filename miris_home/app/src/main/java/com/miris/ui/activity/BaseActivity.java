@@ -37,6 +37,7 @@ public class BaseActivity extends AppCompatActivity{
     ImageView ivCalendar;
 
     private MenuItem inboxMenuItem;
+    public static ArrayList<MemberData> userData = new ArrayList<MemberData>();
 
     @Override
     public void setContentView(int layoutResID) {
@@ -90,7 +91,6 @@ public class BaseActivity extends AppCompatActivity{
     @Optional
     @OnClick(R.id.ivAddress)
     public void onivAddressClick(final View v) {
-        Log.e("PHJ","onivAddressClick");
         Intent intent = new Intent(this, AddressActivity.class);
         startActivity(intent);
     }
@@ -98,7 +98,6 @@ public class BaseActivity extends AppCompatActivity{
     @Optional
     @OnClick(R.id.ivCalendar)
     public void onivCalendarClick(final View v) {
-        Log.e("PHJ","onivCalendarClick");
         Intent intent = new Intent(this, CalendarActivity.class);
         startActivity(intent);
     }

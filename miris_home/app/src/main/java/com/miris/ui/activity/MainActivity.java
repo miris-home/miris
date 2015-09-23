@@ -13,6 +13,7 @@ import android.view.animation.OvershootInterpolator;
 
 import com.miris.R;
 import com.miris.Utils;
+import com.miris.net.MemberData;
 import com.miris.ui.adapter.FeedAdapter;
 import com.miris.ui.view.FeedContextMenu;
 import com.miris.ui.view.FeedContextMenuManager;
@@ -60,8 +61,10 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             }
         };
         rvFeed.setLayoutManager(linearLayoutManager);
-
-        feedAdapter = new FeedAdapter(this);
+        if (userData.size() == 0) {
+            userData.add(new MemberData(null ,"미르이즈 회식"));
+        }
+        feedAdapter = new FeedAdapter(this, userData);
         feedAdapter.setOnFeedItemClickListener(this);
         rvFeed.setAdapter(feedAdapter);
         rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {

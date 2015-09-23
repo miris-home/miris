@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,44 +17,47 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.commonsware.cwac.camera.CameraHost;
-import com.commonsware.cwac.camera.CameraHostProvider;
-import com.commonsware.cwac.camera.CameraView;
-import com.commonsware.cwac.camera.PictureTransaction;
-import com.commonsware.cwac.camera.SimpleCameraHost;
 import com.miris.R;
-import com.miris.Utils;
-import com.miris.ui.adapter.PhotoFiltersAdapter;
+import com.miris.ui.view.CameraPreview;
 import com.miris.ui.view.RevealBackgroundView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+import static com.miris.Utils.isAndroid5;
+
 /**
  * Created by Miris on 09.02.15.
  */
-public class TakePhotoActivity extends BaseActivity implements RevealBackgroundView.OnStateChangeListener,
-        CameraHostProvider {
+public class TakePhotoActivity extends BaseActivity implements RevealBackgroundView.OnStateChangeListener, View.OnTouchListener{
     public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
 
     private static final Interpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
@@ -73,8 +77,8 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     ViewSwitcher vUpperPanel;
     @InjectView(R.id.vLowerPanel)
     ViewSwitcher vLowerPanel;
-    @InjectView(R.id.cameraView)
-    CameraView cameraView;
+    @InjectView(R.id.camera_preview)
+    FrameLayout camera_preview;
     @InjectView(R.id.rvFilters)
     RecyclerView rvFilters;
     @InjectView(R.id.btnTakePhoto)
@@ -87,18 +91,53 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     ImageButton btn_ic_close;
     @InjectView(R.id.btnBack)
     ImageButton btnBack;
+    @InjectView(R.id.touchListener)
+    RadioButton touchListener;
 
     private boolean pendingIntro;
     private int currentState;
 
     private File photoPath;
 
+    static String TAG = "CAMERA";
+    private Context mContext 				= this;
+    FrameLayout preview;
+    private Camera mCamera;
+    private CameraPreview mPreview;
+    private boolean isPhotoTaken 			= false;
+    private boolean isFocused 				= false;
+    private boolean errorFound 				= false;
+    private int cameraId 					= -1;
+
+    public static String savedPath;
+    Bitmap clsBitmap;
     public static void startCameraFromLocation(int[] startingLocation, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, TakePhotoActivity.class);
         intent.putExtra(ARG_REVEAL_START_LOCATION, startingLocation);
         startingActivity.startActivity(intent);
     }
 
+    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+
+            isPhotoTaken = true;
+            touchListener.setChecked(false);
+            mCamera.startPreview();
+            new ImageSaveTask().execute(data);
+        }
+    };
+
+    private Camera.AutoFocusCallback mFocus = new Camera.AutoFocusCallback() {
+        @Override
+        public void onAutoFocus(boolean success, Camera camera) {
+            if (success) {
+                touchListener.setChecked(true);
+                isFocused = true;
+            } else
+                touchListener.setChecked(false);
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,11 +157,13 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
                 return true;
             }
         });
+        mContext = this;
+        touchListener.setChecked(false);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void updateStatusBarColor() {
-        if (Utils.isAndroid5()) {
+        if (isAndroid5()) {
             getWindow().setStatusBarColor(0xff111111);
         }
     }
@@ -145,30 +186,105 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         }
     }
 
-    private void setupPhotoFilters() {
-        PhotoFiltersAdapter photoFiltersAdapter = new PhotoFiltersAdapter(this);
-        rvFilters.setHasFixedSize(true);
-        rvFilters.setAdapter(photoFiltersAdapter);
-        rvFilters.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        cameraView.onResume();
+        initLayout();
+    }
+
+    private void initLayout() {
+        if (checkCameraHardware(mContext)) {
+            mCamera = getCameraInstance(0);
+
+            preview = (FrameLayout) findViewById(R.id.camera_preview);
+            mPreview = new CameraPreview(this);
+            mPreview.setCamera(mCamera);
+
+            preview.addView(mPreview);
+
+            touchListener.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    int action = event.getAction();
+
+                    switch (action) {
+                        case MotionEvent.ACTION_DOWN:
+                            mCamera.autoFocus(mFocus);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                                mCamera.takePicture(null, null, mPicture);
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            isFocused = false;
+                            touchListener.setChecked(false);
+                    }
+                    return false;
+                }
+            });
+
+        } else if(Camera.CameraInfo.CAMERA_FACING_FRONT > -1){
+            try {
+                cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                mCamera = Camera.open(cameraId);
+            } catch (Exception e) {
+                errorFound = true;
+            }
+            if (errorFound = true) {
+                try {
+                    mCamera = Camera.open(0);
+                    cameraId = 0;
+                } catch (Exception e) {
+                    cameraId = -1;
+                }
+            }
+        } else {
+            Toast.makeText(mContext, "no camera on this device!",Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        preview = (FrameLayout) findViewById(R.id.camera_preview);
+        mPreview = new CameraPreview(this);
+        mPreview.setCamera(mCamera);
+
+        preview.addView(mPreview);
+
+        touchListener.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        mCamera.autoFocus(mFocus);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (isFocused)
+                            mCamera.takePicture(null, null, mPicture);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        isFocused = false;
+                        touchListener.setChecked(false);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        cameraView.onPause();
+        releaseCameraAndPreview();
+        preview.removeAllViews();
     }
 
     @OnClick(R.id.btnTakePhoto)
     public void onTakePhotoClick() {
-        btnTakePhoto.setEnabled(false);
-        cameraView.takePicture(true, true);
-        animateShutter();
+        mCamera.autoFocus(mFocus);
+        if (isFocused) {
+            btnTakePhoto.setEnabled(false);
+            mCamera.takePicture(null, null, mPicture);
+            animateShutter();
+        }
     }
 
     @OnClick(R.id.btnTakeGallery)
@@ -192,8 +308,18 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
                 try {
                     Uri uri = data.getData();
                     AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
-                    BitmapFactory.Options opt = new BitmapFactory.Options(); opt.inSampleSize = 4;
-                    Bitmap clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+                    BitmapFactory.Options opt = new BitmapFactory.Options();
+
+                    opt.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(getImageNameToUri(uri), opt);
+
+                    if (opt.outHeight  > 2000 || opt.outWidth > 2000)  {
+                        opt.inJustDecodeBounds = false;
+                        opt.inSampleSize = 4;
+                        clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+                    } else {
+                        clsBitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                    }
                     File file = new File(getImageNameToUri(uri));
 
                     ExifInterface exif = new ExifInterface(getImageNameToUri(uri));
@@ -227,6 +353,18 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         return 0;
     }
 
+    public String getImageNameToUri(Uri data) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(data, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        String imgPath = cursor.getString(column_index);
+
+        if(!cursor.isClosed()){cursor.close();}
+        return imgPath;
+    }
     public Bitmap rotate(Bitmap bitmap, int degrees) {
         if(degrees != 0 && bitmap != null) {
             Matrix m = new Matrix();
@@ -236,8 +374,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             try {
                 Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0,
                         bitmap.getWidth(), bitmap.getHeight(), m, true);
-                if(bitmap != converted)
-                {
+                if(bitmap != converted) {
                     bitmap.recycle();
                     bitmap = converted;
                 }
@@ -246,19 +383,6 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             }
         }
         return bitmap;
-    }
-
-    public String getImageNameToUri(Uri data)
-    {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(data, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-        cursor.moveToFirst();
-
-        String imgPath = cursor.getString(column_index);
-
-        return imgPath;
     }
 
     @OnClick(R.id.btn_ic_close)
@@ -324,51 +448,8 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     }
 
     @Override
-    public CameraHost getCameraHost() {
-        return new MyCameraHost(this);
-    }
-
-    class MyCameraHost extends SimpleCameraHost {
-
-        private Camera.Size previewSize;
-
-        public MyCameraHost(Context ctxt) {
-            super(ctxt);
-        }
-
-        @Override
-        public boolean useFullBleedPreview() {
-            return true;
-        }
-
-        @Override
-        public Camera.Size getPictureSize(PictureTransaction xact, Camera.Parameters parameters) {
-            return previewSize;
-        }
-
-        @Override
-        public Camera.Parameters adjustPreviewParameters(Camera.Parameters parameters) {
-            Camera.Parameters parameters1 = super.adjustPreviewParameters(parameters);
-            previewSize = parameters1.getPreviewSize();
-            parameters1.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            return parameters1;
-        }
-
-        @Override
-        public void saveImage(PictureTransaction xact, final Bitmap bitmap) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    showTakenPicture(bitmap);
-                }
-            });
-        }
-
-        @Override
-        public void saveImage(PictureTransaction xact, byte[] image) {
-            super.saveImage(xact, image);
-            photoPath = getPhotoPath();
-        }
+    public boolean onTouch(View v, MotionEvent event) {
+        return false;
     }
 
     private void showTakenPicture(Bitmap bitmap) {
@@ -409,6 +490,109 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             vUpperPanel.setOutAnimation(this, R.anim.slide_out_to_right);
             vLowerPanel.setOutAnimation(this, R.anim.slide_out_to_right);
             ivTakenPhoto.setVisibility(View.VISIBLE);
+        }
+    }
+    private boolean checkCameraHardware(Context context) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            return true;
+        } else {
+            Toast.makeText(mContext, "No camera found!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+    public Camera getCameraInstance(int id) {
+        Camera c = null;
+        try {
+            releaseCameraAndPreview();
+            c = Camera.open(id);
+            Log.i(TAG,"><>< Camera resource opened successfully ><><");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return c;
+    }
+    private void releaseCameraAndPreview() {
+        if(mPreview != null){
+            Log.i(TAG,"preview camera released");
+            mPreview = null;
+        }
+        if (mCamera != null) {
+            Log.i(TAG,"Safely releasing camera!!");
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+    class ImageSaveTask extends AsyncTask<byte[], Void, Boolean> {
+        
+        @Override
+        protected Boolean doInBackground(byte[]... data) {
+
+            File pictureFile = getOutputMediaFile();
+            if (pictureFile == null) {
+                return false;
+            }
+
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data[0]);
+                fos.close();
+                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+
+                Uri contentUri = Uri.fromFile(pictureFile);
+                mediaScanIntent.setData(contentUri);
+                mContext.sendBroadcast(mediaScanIntent);
+
+                photoPath = pictureFile;
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data[0], 0, data[0].length, options);
+                clsBitmap = bitmap;
+
+                ExifInterface exif = new ExifInterface(savedPath);
+                int exifOrientation = exif.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                int exifDegree = exifOrientationToDegrees(exifOrientation);
+                clsBitmap = rotate(clsBitmap, exifDegree);
+
+                Log.d(TAG, "picture loading path : " + pictureFile.getPath()+"/Miris/");
+
+            } catch (IOException e) {
+                return false;
+            }
+            return true;
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean isDone) {
+            if (isDone) {
+                showTakenPicture(clsBitmap);
+                Toast.makeText(mContext, "저장되었습니다.!", Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+
+        private File getOutputMediaFile() {
+            File mediaStorageDir = new File(
+                    Environment
+                            .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    "Miris");
+            
+            if (!mediaStorageDir.exists()) {
+                if (!mediaStorageDir.mkdirs()) {
+                    Log.d(TAG, "failed to create directory");
+                    return null;
+                }
+            }
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
+                    .format(new Date());
+            File mediaFile;
+            
+            savedPath = mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg";
+            mediaFile = new File(savedPath);
+            Log.i(TAG,"Saved at"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+            return mediaFile;
         }
     }
 }

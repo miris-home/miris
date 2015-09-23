@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.miris.R;
 import com.miris.Utils;
+import com.miris.net.MemberData;
 import com.miris.ui.activity.MainActivity;
 import com.miris.ui.view.SendingProgressView;
 
@@ -32,6 +33,8 @@ import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+
+import static com.miris.ui.activity.BaseActivity.userData;
 
 /**
  * Created by Miris on 09.02.15.
@@ -48,7 +51,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     private Context context;
     private int lastAnimatedPosition = -1;
-    private int itemsCount = 0;
+    private int itemsCount = 1;
     private boolean animateItems = false;
 
     private final Map<Integer, Integer> likesCount = new HashMap<>();
@@ -62,6 +65,10 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     public FeedAdapter(Context context) {
         this.context = context;
+    }
+    public FeedAdapter(Context context, ArrayList<MemberData> items) {
+        this.context = context;
+        userData = items;
     }
 
     @Override
@@ -116,18 +123,23 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         final CellFeedViewHolder holder = (CellFeedViewHolder) viewHolder;
         if (getItemViewType(position) == VIEW_TYPE_DEFAULT) {
             bindDefaultFeedItem(position, holder);
-        } else if (getItemViewType(position) == VIEW_TYPE_LOADER) {
-            bindLoadingFeedItem(holder);
+        } else {
+           bindLoadingFeedItem(position, holder);
         }
     }
 
     private void bindDefaultFeedItem(int position, CellFeedViewHolder holder) {
-        if (position % 2 == 0) {
+        int getPosition = userData.size() - position;
+        if (userData.size() == 1) {
             holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
-            holder.ivFeedBottom.setText("미르이즈 송년회");
+            holder.ivFeedBottom.setText(userData.get(position).geteditText());
         } else {
-            holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_2);
-            holder.ivFeedBottom.setText("미르이즈 전체회식");
+            if (position +1 == userData.size()) {
+                holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
+            } else {
+                holder.ivFeedCenter.setImageURI(userData.get(getPosition - 1).getimgUrl());
+            }
+            holder.ivFeedBottom.setText(userData.get(getPosition - 1).geteditText());
         }
         updateLikesCounter(holder, false);
         updateHeartButton(holder, false);
@@ -143,9 +155,10 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         resetLikeAnimationState(holder);
     }
 
-    private void bindLoadingFeedItem(final CellFeedViewHolder holder) {
-        holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
-        holder.ivFeedBottom.setText("미르이즈 송년회");
+    private void bindLoadingFeedItem(int position, final CellFeedViewHolder holder) {
+        holder.ivFeedCenter.setImageURI(userData.get(userData.size() - 1).getimgUrl());
+        holder.ivFeedBottom.setText(userData.get(userData.size()-1).geteditText());
+
         holder.vSendingProgress.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -346,7 +359,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     public void updateItems(boolean animated) {
-        itemsCount = 10;
+        itemsCount = userData.size();
         animateItems = animated;
         fillLikesWithRandomValues();
         notifyDataSetChanged();
@@ -364,7 +377,9 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     public void showLoadingView() {
         showLoadingView = true;
-        notifyItemChanged(0);
+        itemsCount = userData.size();
+        fillLikesWithRandomValues();
+        notifyDataSetChanged();
     }
 
     public static class CellFeedViewHolder extends RecyclerView.ViewHolder {
