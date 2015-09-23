@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.miris.R;
+import com.miris.net.MemberData;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
