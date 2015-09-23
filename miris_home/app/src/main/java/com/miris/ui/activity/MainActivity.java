@@ -62,7 +62,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         };
         rvFeed.setLayoutManager(linearLayoutManager);
         if (userData.size() == 0) {
-            userData.add(new MemberData(null ,"미르이즈 회식"));
+            userData.add(new MemberData(null ,getString(R.string.defult_user_message)));
         }
         feedAdapter = new FeedAdapter(this, userData);
         feedAdapter.setOnFeedItemClickListener(this);
