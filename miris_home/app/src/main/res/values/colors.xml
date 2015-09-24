@@ -20,4 +20,8 @@
     <color name="text_like_counter">#2b5a83</color>
 
     <color name="bg_comments">#ffffff</color>
+    <color name="light_green">#3eb74e</color>
+    <color name="light_purple">#8c61b3</color>
+    <color name="light_orange">#ffb500</color>
+    <color name="light_cyan">#00BCD4</color>
 </resources>

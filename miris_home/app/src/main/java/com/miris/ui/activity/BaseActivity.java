@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.miris.R;
 import com.miris.net.MemberData;
+import com.miris.net.SessionPreferences;
 
 import java.util.ArrayList;
 
@@ -41,6 +42,7 @@ public class BaseActivity extends AppCompatActivity{
 
     private MenuItem inboxMenuItem;
     public static ArrayList<MemberData> userData = new ArrayList<MemberData>();
+    SessionPreferences session;
 
     @Override
     public void setContentView(int layoutResID) {
