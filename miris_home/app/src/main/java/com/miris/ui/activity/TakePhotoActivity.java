@@ -356,13 +356,16 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     public String getImageNameToUri(Uri data) {
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = managedQuery(data, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        String imgPath = null;
 
-        cursor.moveToFirst();
+        if (cursor != null && cursor.getCount() != 0){
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 
-        String imgPath = cursor.getString(column_index);
+            cursor.moveToFirst();
 
-        if(!cursor.isClosed()){cursor.close();}
+            imgPath = cursor.getString(column_index);
+        }
+        cursor.close();
         return imgPath;
     }
     public Bitmap rotate(Bitmap bitmap, int degrees) {

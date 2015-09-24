@@ -89,6 +89,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             public void run() {
                 rvFeed.smoothScrollToPosition(0);
                 feedAdapter.showLoadingView();
+                feedAdapter.updateItems(true);
             }
         }, 500);
     }

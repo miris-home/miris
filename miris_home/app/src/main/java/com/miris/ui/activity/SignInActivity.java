@@ -2,6 +2,8 @@ package com.miris.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.miris.R;
 import com.miris.net.SessionPreferences;
@@ -37,10 +39,11 @@ public class SignInActivity extends BaseActivity {
                 Intent intent;
                 if (showIntro) {
                     intent = new Intent(SignInActivity.this, IntroActivity.class);
-                    finish();
+
                 } else {
                     intent = new Intent(SignInActivity.this, SignInActivity.class);
                 }
+                finish();
                 intent.putExtra("intro", false);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in,
@@ -51,5 +54,14 @@ public class SignInActivity extends BaseActivity {
 
     private void afterIntro(Bundle savedInstanceState) {
         setContentView(R.layout.activity_signin);
+        Button btnmain = (Button) findViewById(R.id.btn_main);
+        btnmain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                finish();
+                startActivity(intent);
+            }
+        });
     }
 }

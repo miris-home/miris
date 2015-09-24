@@ -377,9 +377,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     public void showLoadingView() {
         showLoadingView = true;
-        itemsCount = userData.size();
-        fillLikesWithRandomValues();
-        notifyDataSetChanged();
+        notifyItemChanged(0);
     }
 
     public static class CellFeedViewHolder extends RecyclerView.ViewHolder {
