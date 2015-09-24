@@ -355,7 +355,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     public String getImageNameToUri(Uri data) {
         String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(data, proj, null, null, null);
+        Cursor cursor = getContentResolver().query(data, proj, null, null, null);
         String imgPath = null;
 
         if (cursor != null && cursor.getCount() != 0){
