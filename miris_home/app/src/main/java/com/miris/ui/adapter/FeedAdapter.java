@@ -129,17 +129,12 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private void bindDefaultFeedItem(int position, CellFeedViewHolder holder) {
-        int getPosition = userData.size() - position;
-        if (userData.size() == 1) {
+        if (userData.size() == 0) {
             holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
-            holder.ivFeedBottom.setText(userData.get(position).geteditText());
+            holder.ivFeedBottom.setText(R.string.defult_user_message);
         } else {
-            if (position +1 == userData.size()) {
-                holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
-            } else {
-                holder.ivFeedCenter.setImageURI(userData.get(getPosition - 1).getimgUrl());
-            }
-            holder.ivFeedBottom.setText(userData.get(getPosition - 1).geteditText());
+            holder.ivFeedCenter.setImageBitmap(userData.get(position).getimgBitmap());
+            holder.ivFeedBottom.setText(userData.get(position).geteditText());
         }
         updateLikesCounter(holder, false);
         updateHeartButton(holder, false);
@@ -156,8 +151,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private void bindLoadingFeedItem(int position, final CellFeedViewHolder holder) {
-        holder.ivFeedCenter.setImageURI(userData.get(userData.size() - 1).getimgUrl());
-        holder.ivFeedBottom.setText(userData.get(userData.size()-1).geteditText());
+        holder.ivFeedCenter.setImageBitmap(userData.get(position).getimgBitmap());
+        holder.ivFeedBottom.setText(userData.get(position).geteditText());
 
         holder.vSendingProgress.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override

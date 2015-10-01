@@ -28,7 +28,7 @@
             android:layout_margin="20dp"
             android:gravity="center"
             android:layout_below="@+id/pager"
-            android:text="로그인"
+            android:text="@string/skip"
             android:textSize="28dp"
             android:textColor="@android:color/white"
             android:background="@drawable/round_rectangle_semi_transparent"

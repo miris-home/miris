@@ -297,7 +297,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     @OnClick(R.id.btnVideoCam)
     public void onbtnVideoCamClick() {
-
+        // TODO: 2015-09-21
     }
 
     protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
@@ -334,7 +334,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
                     Log.e("Picture", e.toString());
                 }
             } else if (requestCode == 200) {
-
+                // TODO: 2015-09-21
             }  else {
                 super.onActivityResult(requestCode, resultCode, data);
             }

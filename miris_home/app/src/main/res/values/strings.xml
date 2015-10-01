@@ -9,5 +9,5 @@
         <item>http://scontent-a-fra.cdninstagram.com/hphotos-xpf1/t51.2885-15/s306x306/e15/10665483_429615813855717_1490926670_n.jpg</item>
     </string-array>
     <string name="user_profile_photo">http://fimg2.pann.com/new/download.jsp?FileID=27254240</string>
-    <string name="skip">SKIP</string>
+    <string name="skip">Skip</string>
 </resources>

@@ -41,7 +41,7 @@ public class BaseActivity extends AppCompatActivity{
     ImageView ivCalendar;
 
     private MenuItem inboxMenuItem;
-    public static ArrayList<MemberData> userData = new ArrayList<MemberData>();
+    public static ArrayList<MemberData> userData;
     SessionPreferences session;
 
     @Override

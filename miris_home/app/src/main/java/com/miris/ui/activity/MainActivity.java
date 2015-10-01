@@ -1,6 +1,10 @@
 package com.miris.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
@@ -8,8 +12,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Toast;
 
 import com.miris.R;
 import com.miris.Utils;
@@ -17,7 +23,13 @@ import com.miris.net.MemberData;
 import com.miris.ui.adapter.FeedAdapter;
 import com.miris.ui.view.FeedContextMenu;
 import com.miris.ui.view.FeedContextMenuManager;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
+import java.util.ArrayList;
+import java.util.List;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
@@ -28,6 +40,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
     private static final int ANIM_DURATION_TOOLBAR = 300;
     private static final int ANIM_DURATION_FAB = 400;
+    private final long FINSH_INTERVAL_TIME    = 2000;
+    private long backPressedTime        = 0;
+    public boolean updateData = false;
 
     @InjectView(R.id.rvFeed)
     RecyclerView rvFeed;
@@ -39,6 +54,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     private FeedAdapter feedAdapter;
 
     private boolean pendingIntroAnimation;
+    List<ParseObject> ob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +64,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         setupFeed();
         if (savedInstanceState == null) {
             pendingIntroAnimation = true;
-        } else {
-            feedAdapter.updateItems(false);
         }
     }
 
@@ -61,25 +75,78 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             }
         };
         rvFeed.setLayoutManager(linearLayoutManager);
-        if (userData.size() == 0) {
-            userData.add(new MemberData(null ,getString(R.string.defult_user_message)));
-        }
-        feedAdapter = new FeedAdapter(this, userData);
-        feedAdapter.setOnFeedItemClickListener(this);
-        rvFeed.setAdapter(feedAdapter);
-        rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
+        new loadDataTask().execute();
+    }
+
+    class loadDataTask extends AsyncTask<Void, Void, Void> {
+        ProgressDialog myLoadingDialog;
+
+        @Override
+        protected void onPreExecute() {
+            if (!updateData) {
+                myLoadingDialog = new ProgressDialog(MainActivity.this);
+                myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
+                myLoadingDialog.setIndeterminate(false);
+                myLoadingDialog.setCancelable(false);
+                myLoadingDialog.show();
             }
-        });
+        }
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
+            offerQuery.orderByDescending("createdAt");
+
+            try {
+                ob = offerQuery.find();
+            } catch (ParseException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null ;
+
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            userData = new ArrayList<MemberData>();
+            for (ParseObject country : ob) {
+                ParseFile userFile = (ParseFile) country.get("user_img");
+                Bitmap bMap = null;
+                if (userFile != null) {
+                    try {
+                        byte[] data = userFile.getData();
+                        bMap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    } catch (ParseException e2) {
+                        e2.printStackTrace();
+                    }
+                }
+                userData.add(new MemberData(bMap, country.get("user_text").toString()));
+            }
+            if (!updateData) {
+                feedAdapter = new FeedAdapter(MainActivity.this, userData);
+                rvFeed.setAdapter(feedAdapter);
+                feedAdapter.setOnFeedItemClickListener(MainActivity.this);
+
+                rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
+                    }
+                });
+            }
+            if (myLoadingDialog != null) {
+                myLoadingDialog.dismiss();
+            }
+            feedAdapter.updateItems(true);
+        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (ACTION_SHOW_LOADING_ITEM.equals(intent.getAction())) {
+            updateData = true;
             showFeedLoadingItemDelayed();
+            new loadDataTask().execute();
         }
     }
 
@@ -89,9 +156,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             public void run() {
                 rvFeed.smoothScrollToPosition(0);
                 feedAdapter.showLoadingView();
-                feedAdapter.updateItems(true);
             }
-        }, 500);
+        }, 700);
     }
 
     @Override
@@ -104,16 +170,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        super.onCreateOptionsMenu(menu);
-//        if (pendingIntroAnimation) {
-//            pendingIntroAnimation = false;
-//            startIntroAnimation();
-//        }
-//        return true;
-//    }
-
     private void startIntroAnimation() {
         fabCreate.setTranslationY(2 * getResources().getDimensionPixelOffset(R.dimen.btn_fab_size));
 
@@ -122,7 +178,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         getIvLogo().setTranslationY(-actionbarSize);
         getivAddress().setTranslationY(-actionbarSize);
         getivCalendar().setTranslationY(-actionbarSize);
-        //getInboxMenuItem().getActionView().setTranslationY(-actionbarSize);
 
         getToolbar().animate()
                 .translationY(0)
@@ -140,17 +195,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 .translationY(0)
                 .setDuration(ANIM_DURATION_TOOLBAR)
                 .setStartDelay(600);
-//        getInboxMenuItem().getActionView().animate()
-//                .translationY(0)
-//                .setDuration(ANIM_DURATION_TOOLBAR)
-//                .setStartDelay(500)
-//                .setListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        startContentAnimation();
-//                    }
-//                })
-//                .start();
         startContentAnimation();
     }
 
@@ -161,7 +205,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 .setStartDelay(300)
                 .setDuration(ANIM_DURATION_FAB)
                 .start();
-        feedAdapter.updateItems(true);
     }
 
     @Override
@@ -223,12 +266,20 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
     @Override
     public void onBackPressed() {
+        long tempTime        = System.currentTimeMillis();
+        long intervalTime    = tempTime - backPressedTime;
         if (m_openDrawer){
             drawerLayout.closeDrawers();
             m_openDrawer = false;
             return;
         } else {
-            super.onBackPressed();
+            if ( 0 <= intervalTime && FINSH_INTERVAL_TIME >= intervalTime ) {
+                super.onBackPressed();
+            }
+            else {
+                backPressedTime = tempTime;
+                Toast.makeText(getApplicationContext(), getString(R.string.back_toast), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
