@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import com.miris.net.MemberData;
 import com.miris.ui.adapter.FeedAdapter;
 import com.miris.ui.view.FeedContextMenu;
 import com.miris.ui.view.FeedContextMenuManager;
+import com.miris.ui.view.WaveSwipeRefreshLayout;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -35,7 +37,7 @@ import butterknife.OnClick;
 
 
 public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFeedItemClickListener,
-        FeedContextMenu.OnFeedContextMenuItemClickListener {
+        FeedContextMenu.OnFeedContextMenuItemClickListener, WaveSwipeRefreshLayout.OnRefreshListener {
     public static final String ACTION_SHOW_LOADING_ITEM = "action_show_loading_item";
 
     private static final int ANIM_DURATION_TOOLBAR = 300;
@@ -55,6 +57,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
     private boolean pendingIntroAnimation;
     List<ParseObject> ob;
+    private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +79,29 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         };
         rvFeed.setLayoutManager(linearLayoutManager);
         new loadDataTask().execute();
+    }
+
+    @Override
+    public void onRefresh() {
+        refresh();
+    }
+
+    private void refresh(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
+                try {
+                    if (userData.size() < offerQuery.find().size()) {
+                        updateData = true;
+                        new loadDataTask().execute();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                mWaveSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 2000);
     }
 
     class loadDataTask extends AsyncTask<Void, Void, Void> {
@@ -132,6 +158,10 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
                     }
                 });
+
+                mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.main_swipe);
+                mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.WHITE);
+                mWaveSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
             }
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();

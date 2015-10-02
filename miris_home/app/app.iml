@@ -106,10 +106,12 @@
     <orderEntry type="library" exported="" name="aspectjrt-1.8.5" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="hugo-runtime-1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Parse-1.10.2" level="project" />
     <orderEntry type="library" exported="" name="palette-v7-22.2.1" level="project" />
-    <orderEntry type="library" exported="" name="butterknife-6.1.0" level="project" />
     <orderEntry type="library" exported="" name="rebound-0.3.6" level="project" />
+    <orderEntry type="library" exported="" name="butterknife-6.1.0" level="project" />
     <orderEntry type="library" exported="" name="support-v13-22.2.1" level="project" />
+    <orderEntry type="library" exported="" name="bolts-android-1.2.1" level="project" />
     <orderEntry type="library" exported="" name="design-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="camera-0.6.12" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-22.2.1" level="project" />

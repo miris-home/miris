@@ -10,4 +10,5 @@
     </string-array>
     <string name="user_profile_photo">http://fimg2.pann.com/new/download.jsp?FileID=27254240</string>
     <string name="skip">Skip</string>
+    <string name="action_refresh">Refresh</string>
 </resources>

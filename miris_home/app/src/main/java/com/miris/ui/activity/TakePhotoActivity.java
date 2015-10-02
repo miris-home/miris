@@ -111,6 +111,8 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     public static String savedPath;
     Bitmap clsBitmap;
+    Boolean viewVisible = false ;
+
     public static void startCameraFromLocation(int[] startingLocation, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, TakePhotoActivity.class);
         intent.putExtra(ARG_REVEAL_START_LOCATION, startingLocation);
@@ -190,7 +192,9 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     @Override
     protected void onResume() {
         super.onResume();
-        initLayout();
+        if (!viewVisible) {
+            initLayout();
+        }
     }
 
     private void initLayout() {
@@ -273,8 +277,10 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     @Override
     protected void onPause() {
         super.onPause();
-        releaseCameraAndPreview();
-        preview.removeAllViews();
+        if (!viewVisible) {
+            releaseCameraAndPreview();
+            preview.removeAllViews();
+        }
     }
 
     @OnClick(R.id.btnTakePhoto)
@@ -289,6 +295,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     @OnClick(R.id.btnTakeGallery)
     public void onbtnTakeGalleryClick() {
+        viewVisible = true;
         Intent clsIntent = new Intent(Intent.ACTION_PICK);
         clsIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
         clsIntent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -307,22 +314,23 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             if(requestCode == 100) {
                 try {
                     Uri uri = data.getData();
+                    String urlPath = getImageNameToUri(uri);
                     AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
                     BitmapFactory.Options opt = new BitmapFactory.Options();
 
                     opt.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(getImageNameToUri(uri), opt);
+                    BitmapFactory.decodeFile(urlPath, opt);
 
                     if (opt.outHeight  > 2000 || opt.outWidth > 2000)  {
                         opt.inJustDecodeBounds = false;
                         opt.inSampleSize = 4;
                         clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
                     } else {
-                        clsBitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                        clsBitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                     }
-                    File file = new File(getImageNameToUri(uri));
+                    File file = new File(urlPath);
 
-                    ExifInterface exif = new ExifInterface(getImageNameToUri(uri));
+                    ExifInterface exif = new ExifInterface(urlPath);
                     int exifOrientation = exif.getAttributeInt(
                             ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                     int exifDegree = exifOrientationToDegrees(exifOrientation);
@@ -330,6 +338,8 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
                     photoPath = file;
                     showTakenPicture(clsBitmap);
+                    viewVisible = true;
+
                 } catch( Exception e ) {
                     Log.e("Picture", e.toString());
                 }
@@ -394,6 +404,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     }
     @OnClick(R.id.btnBack)
     public void onbtnBackClick() {
+        viewVisible = false;
         if (currentState == STATE_SETUP_PHOTO) {
             btnTakePhoto.setEnabled(true);
             vUpperPanel.showNext();
@@ -464,6 +475,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     @Override
     public void onBackPressed() {
+        viewVisible = false;
         if (currentState == STATE_SETUP_PHOTO) {
             btnTakePhoto.setEnabled(true);
             vUpperPanel.showNext();
