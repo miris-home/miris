@@ -1,16 +1,22 @@
 package com.miris.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.miris.R;
-import com.miris.net.MemberData;
+import com.miris.net.CommitListData;
+import com.miris.net.MemberListData;
+import com.miris.net.NoticeListData;
 import com.miris.net.SessionPreferences;
+import com.miris.net.UserProImgData;
+import com.miris.net.UserProfileListData;
 
 import java.util.ArrayList;
 
@@ -41,7 +47,11 @@ public class BaseActivity extends AppCompatActivity{
     ImageView ivCalendar;
 
     private MenuItem inboxMenuItem;
-    public static ArrayList<MemberData> userData;
+    public static ArrayList<NoticeListData> noticeData;
+    public static ArrayList<CommitListData> commitData;
+    public static ArrayList<MemberListData> memberData;
+    public static ArrayList<UserProfileListData> userProfileListData;
+    public static ArrayList<UserProImgData> userProImgData;
     SessionPreferences session;
 
     @Override
@@ -66,13 +76,6 @@ public class BaseActivity extends AppCompatActivity{
             toolbar.setNavigationIcon(R.drawable.ic_menu_white);
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        inboxMenuItem = menu.findItem(R.id.action_inbox);
-//        inboxMenuItem.setActionView(R.layout.menu_item_view);
-//        return true;
 //    }
 
     public Toolbar getToolbar() {
@@ -105,5 +108,18 @@ public class BaseActivity extends AppCompatActivity{
     public void onivCalendarClick(final View v) {
         Intent intent = new Intent(this, CalendarActivity.class);
         startActivity(intent);
+    }
+
+    protected boolean hideSoftInputWindow(View a_oView) {
+        InputMethodManager imm = (InputMethodManager)a_oView.getContext().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        return imm.hideSoftInputFromWindow(a_oView.getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    protected boolean showSoftInputWindow(View a_oView) {
+        InputMethodManager imm = (InputMethodManager)a_oView.getContext().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        return imm.showSoftInput(a_oView, InputMethodManager.RESULT_UNCHANGED_SHOWN);
     }
 }

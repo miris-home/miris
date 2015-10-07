@@ -7,10 +7,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
         android:background="@color/bg_comments"
         android:elevation="@dimen/default_elevation"
         android:orientation="vertical"
+        android:scrollbars="vertical"
         android:gravity="center">
         <TextView
             android:layout_width="wrap_content"
@@ -18,9 +18,26 @@
             android:text="로그인 화면!"
             android:textSize="30dp"
             />
+        <EditText
+            android:id="@+id/btn_id"
+            android:layout_marginTop="30dp"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:hint="아이디"
+            android:maxLines="1"
+            android:textSize="23dp"/>
+        <EditText
+            android:id="@+id/btn_pass"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:hint="패스워드"
+            android:password="true"
+            android:maxLines="1"
+            android:textSize="23dp"/>
         <Button
             android:id="@+id/btn_main"
-            android:layout_width="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:text="로그인"
             android:textSize="32dp"/>

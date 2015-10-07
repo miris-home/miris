@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.miris.R;
 import com.miris.Utils;
-import com.miris.net.MemberData;
+import com.miris.net.NoticeListData;
 import com.miris.ui.adapter.FeedAdapter;
 import com.miris.ui.view.FeedContextMenu;
 import com.miris.ui.view.FeedContextMenuManager;
@@ -57,7 +57,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
     private boolean pendingIntroAnimation;
     List<ParseObject> ob;
+    List<ParseObject> img_List;
     private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
+    ProgressDialog myLoadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +94,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             public void run() {
                 ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
                 try {
-                    if (userData.size() < offerQuery.find().size()) {
+                    if (noticeData.size() < offerQuery.find().size()) {
                         updateData = true;
                         new loadDataTask().execute();
                     }
@@ -105,16 +107,11 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     }
 
     class loadDataTask extends AsyncTask<Void, Void, Void> {
-        ProgressDialog myLoadingDialog;
 
         @Override
         protected void onPreExecute() {
             if (!updateData) {
-                myLoadingDialog = new ProgressDialog(MainActivity.this);
-                myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
-                myLoadingDialog.setIndeterminate(false);
-                myLoadingDialog.setCancelable(false);
-                myLoadingDialog.show();
+                showDialog();
             }
         }
         @Override
@@ -133,10 +130,13 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         }
         @Override
         protected void onPostExecute(Void result) {
-            userData = new ArrayList<MemberData>();
+            noticeData = new ArrayList<NoticeListData>();
             for (ParseObject country : ob) {
-                ParseFile userFile = (ParseFile) country.get("user_img");
                 Bitmap bMap = null;
+                Bitmap userBmap = null;
+                ParseFile userImgfile = null;
+                ParseFile userFile = (ParseFile) country.get("user_img");
+
                 if (userFile != null) {
                     try {
                         byte[] data = userFile.getData();
@@ -145,10 +145,41 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         e2.printStackTrace();
                     }
                 }
-                userData.add(new MemberData(bMap, country.get("user_text").toString()));
+                ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("miris_member");
+                memberQuery.whereEqualTo("user_id", country.get("user_id").toString());
+
+                try {
+                    img_List = memberQuery.find();
+                } catch (ParseException e) {
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
+                }
+
+                int size = img_List.size();
+                for (int i = 0; i<size; i++){
+                    userImgfile = (ParseFile) img_List.get(i).get("user_img");
+                }
+                if (userImgfile != null) {
+                    try {
+                        byte[] data2 = userImgfile.getData();
+                        userBmap = BitmapFactory.decodeByteArray(data2, 0, data2.length);
+                        userBmap = userBmap.createScaledBitmap(userBmap, 120, 120, true);
+                    } catch (ParseException e2) {
+                        e2.printStackTrace();
+                    }
+                }
+                noticeData.add(new NoticeListData(
+                        country.getObjectId(),
+                        country.get("user_id").toString(),
+                        country.get("user_name").toString(),
+                        userBmap,
+                        bMap,
+                        country.get("user_text").toString(),
+                        country.getInt("user_like"),
+                        country.get("creatdate").toString()));
             }
             if (!updateData) {
-                feedAdapter = new FeedAdapter(MainActivity.this, userData);
+                feedAdapter = new FeedAdapter(MainActivity.this, noticeData);
                 rvFeed.setAdapter(feedAdapter);
                 feedAdapter.setOnFeedItemClickListener(MainActivity.this);
 
@@ -163,11 +194,28 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.WHITE);
                 mWaveSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
             }
+            feedAdapter.updateItems(true);
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();
             }
-            feedAdapter.updateItems(true);
         }
+    }
+
+    private void showDialog() {
+        myLoadingDialog = new ProgressDialog(MainActivity.this);
+        myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
+        myLoadingDialog.setIndeterminate(false);
+        myLoadingDialog.setCancelable(false);
+        myLoadingDialog.show();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (myLoadingDialog != null && myLoadingDialog.isShowing()) {
+            myLoadingDialog.dismiss();
+            myLoadingDialog = null;
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -242,6 +290,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         final Intent intent = new Intent(this, CommentsActivity.class);
         int[] startingLocation = new int[2];
         v.getLocationOnScreen(startingLocation);
+        intent.putExtra("objID", noticeData.get(position).getobjId());
         intent.putExtra(CommentsActivity.ARG_DRAWING_START_LOCATION, startingLocation[1]);
         startActivity(intent);
         overridePendingTransition(0, 0);
@@ -253,11 +302,12 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     }
 
     @Override
-    public void onProfileClick(View v) {
+    public void onProfileClick(View v, int position) {
         int[] startingLocation = new int[2];
         v.getLocationOnScreen(startingLocation);
         startingLocation[0] += v.getWidth() / 2;
-        com.miris.ui.activity.UserProfileActivity.startUserProfileFromLocation(startingLocation, this);
+        com.miris.ui.activity.UserProfileActivity.startUserProfileFromLocation
+                (startingLocation, this, noticeData.get(position).getuserid());
         overridePendingTransition(0, 0);
     }
 

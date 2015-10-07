@@ -16,11 +16,10 @@ import com.miris.Utils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.util.Arrays;
-import java.util.List;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+
+import static com.miris.ui.activity.BaseActivity.userProImgData;
 
 /**
  * Created by Miris on 09.02.15.
@@ -34,7 +33,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final Context context;
     private final int cellSize;
 
-    private final List<String> photos;
+    private int photos;
 
     private boolean lockedAnimations = false;
     private int lastAnimatedItem = -1;
@@ -42,7 +41,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public UserProfileAdapter(Context context) {
         this.context = context;
         this.cellSize = Utils.getScreenWidth(context) / 3;
-        this.photos = Arrays.asList(context.getResources().getStringArray(R.array.user_photos));
+        this.photos = 0;
     }
 
     @Override
@@ -63,7 +62,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void bindPhoto(final PhotoViewHolder holder, int position) {
         Picasso.with(context)
-                .load(photos.get(position))
+                .load(userProImgData.get(position).getuser_img_url())
                 .resize(cellSize, cellSize)
                 .centerCrop()
                 .into(holder.ivPhoto, new Callback() {
@@ -103,7 +102,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return photos.size();
+        return photos;
     }
 
     static class PhotoViewHolder extends RecyclerView.ViewHolder {
@@ -120,5 +119,10 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setLockedAnimations(boolean lockedAnimations) {
         this.lockedAnimations = lockedAnimations;
+    }
+
+    public void updateItems(boolean animated) {
+        photos = userProImgData.size();
+        notifyDataSetChanged();
     }
 }

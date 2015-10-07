@@ -69,6 +69,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/vUserName"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="이름"
@@ -76,9 +77,10 @@
                                 android:textSize="24sp" />
 
                             <TextView
+                                android:id="@+id/vUserNickname"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="이니셜"
+                                android:text="개발자"
                                 android:textColor="#bbbbbb"
                                 android:textSize="12sp" />
 
@@ -192,9 +194,10 @@
 
                     <ImageView
                         android:id="@+id/ivLogo"
-                        android:layout_width="match_parent"
+                        android:layout_width="fill_parent"
                         android:layout_height="match_parent"
-                        android:layout_gravity="center"
+                        android:layout_marginRight="50dp"
+                        android:layout_gravity="center|center_vertical"
                         android:scaleType="center"
                         android:src="@drawable/img_toolbar_logo" />
                 </android.support.v7.widget.Toolbar>

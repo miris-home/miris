@@ -11,6 +11,9 @@
     <string name="calender_hint">회사 한해 일정 및 개인 일정을 \n확인 할수 있습니다.</string>
     <string name="social_network_hint">미르이즈 동료에서 때론 친구로 그리고 \n가족으로 하나로 연결되 있습니다.</string>
     <string name="back_toast">뒤로 버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="login_id">아이디를 입력해주세요.</string>
+    <string name="login_pass">비밀번호를 입력해주세요.</string>
+    <string name="login_fail">아이디 및 비밀번호가 맞지 않습니다.</string>
     <string name="skip">Skip</string>
     <string name="show_lodingbar">잠시만 기다려주세요..</string>
 </resources>

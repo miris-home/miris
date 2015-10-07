@@ -12,13 +12,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/ivUserProfile"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_feed_top" />
+            android:orientation="horizontal"
+            android:layout_weight="2">
 
+            <ImageView
+                android:id="@+id/ivUserProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_feed_top" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/ivUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="16dp"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:layout_weight="1" />
+                    <TextView
+                        android:id="@+id/ivUserDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15dp" />
+                </LinearLayout>
+        </LinearLayout>
         <com.miris.ui.view.SquaredFrameLayout
             android:id="@+id/vImageRoot"
             android:layout_width="match_parent"

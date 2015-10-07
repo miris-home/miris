@@ -173,8 +173,12 @@ public class PublishActivity extends BaseActivity {
             file.saveInBackground();
 
             ParseObject testObject = new ParseObject("miris_notice");
+            testObject.put("user_id", memberData.get(0).getuserId());
+            testObject.put("user_name", memberData.get(0).getuser_name());
             testObject.put("user_img", file);
             testObject.put("user_text", etDescription.getText().toString());
+            testObject.put("user_like", 1);
+            testObject.put("creatdate", Utils.getCalendar());
             testObject.saveInBackground();
             testObject.saveInBackground(new SaveCallback() {
                 @Override

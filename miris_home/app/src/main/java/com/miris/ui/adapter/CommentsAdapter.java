@@ -18,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+import static com.miris.ui.activity.BaseActivity.commitData;
+
 /**
  * Created by Miris on 09.02.15.
  */
@@ -46,20 +48,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         runEnterAnimation(viewHolder.itemView, position);
         CommentViewHolder holder = (CommentViewHolder) viewHolder;
-        switch (position % 3) {
-            case 0:
-                holder.tvComment.setText("댓글달기1");
-                break;
-            case 1:
-                holder.tvComment.setText("댓글달기2");
-                break;
-            case 2:
-                holder.tvComment.setText("댓글달기3");
-                break;
-        }
+        holder.tvUserName.setText(commitData.get(position).getuser_name());
+        holder.tvComment.setText(commitData.get(position).getuserEditText());
 
         Picasso.with(context)
-                .load(R.drawable.ic_launcher)
+                .load(commitData.get(position).getuser_img_url())
                 .centerCrop()
                 .resize(avatarSize, avatarSize)
                 .transform(new RoundedTransformation())
@@ -94,13 +87,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void updateItems() {
-        itemsCount = 10;
+        itemsCount = commitData.size();;
         notifyDataSetChanged();
-    }
-
-    public void addItem() {
-        itemsCount++;
-        notifyItemInserted(itemsCount - 1);
     }
 
     public void setAnimationsLocked(boolean animationsLocked) {
@@ -114,8 +102,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.ivUserAvatar)
         ImageView ivUserAvatar;
+        @InjectView(R.id.tvUserName)
+        TextView tvUserName;
         @InjectView(R.id.tvComment)
         TextView tvComment;
+
 
         public CommentViewHolder(View view) {
             super(view);

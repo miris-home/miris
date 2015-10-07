@@ -22,19 +22,23 @@ import android.widget.TextView;
 
 import com.miris.R;
 import com.miris.Utils;
-import com.miris.net.MemberData;
+import com.miris.net.NoticeListData;
 import com.miris.ui.activity.MainActivity;
 import com.miris.ui.view.SendingProgressView;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-import static com.miris.ui.activity.BaseActivity.userData;
+import static com.miris.ui.activity.BaseActivity.noticeData;
 
 /**
  * Created by Miris on 09.02.15.
@@ -54,7 +58,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private int itemsCount = 1;
     private boolean animateItems = false;
 
-    private final Map<Integer, Integer> likesCount = new HashMap<>();
+//    private final Map<Integer, Integer> likesCount = new HashMap<>();
     private final Map<RecyclerView.ViewHolder, AnimatorSet> likeAnimations = new HashMap<>();
     private final ArrayList<Integer> likedPositions = new ArrayList<>();
 
@@ -66,9 +70,9 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public FeedAdapter(Context context) {
         this.context = context;
     }
-    public FeedAdapter(Context context, ArrayList<MemberData> items) {
+    public FeedAdapter(Context context, ArrayList<NoticeListData> items) {
         this.context = context;
-        userData = items;
+        noticeData = items;
     }
 
     @Override
@@ -129,16 +133,25 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private void bindDefaultFeedItem(int position, CellFeedViewHolder holder) {
-        if (userData.size() == 0) {
+        if (noticeData.size() == 0) {
             holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
             holder.ivFeedBottom.setText(R.string.defult_user_message);
         } else {
-            holder.ivFeedCenter.setImageBitmap(userData.get(position).getimgBitmap());
-            holder.ivFeedBottom.setText(userData.get(position).geteditText());
+            holder.ivUserName.setText(noticeData.get(position).getusername());
+            holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
+            holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
+            holder.ivUserDate.setText(noticeData.get(position).getdate());
+            holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmapp());
         }
-        updateLikesCounter(holder, false);
+        int currentLikesCount = noticeData.get(holder.getPosition()).getDoLike();
+        String likesCountText = context.getResources().getQuantityString(
+                R.plurals.likes_count, currentLikesCount, currentLikesCount
+        );
+        holder.tsLikesCounter.setCurrentText(likesCountText);
+
         updateHeartButton(holder, false);
 
+        holder.ivUserProfile.setTag(position);
         holder.btnComments.setTag(position);
         holder.btnMore.setTag(position);
         holder.ivFeedCenter.setTag(holder);
@@ -151,8 +164,11 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private void bindLoadingFeedItem(int position, final CellFeedViewHolder holder) {
-        holder.ivFeedCenter.setImageBitmap(userData.get(position).getimgBitmap());
-        holder.ivFeedBottom.setText(userData.get(position).geteditText());
+        holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
+        holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
+        holder.ivUserName.setText(noticeData.get(position).getusername());
+        holder.ivUserDate.setText(noticeData.get(position).getdate());
+        holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmapp());
 
         holder.vSendingProgress.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -197,7 +213,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private void updateLikesCounter(CellFeedViewHolder holder, boolean animated) {
-        int currentLikesCount = likesCount.get(holder.getPosition()) + 1;
+        final int currentLikesCount = noticeData.get(holder.getPosition()).getDoLike()+1;
         String likesCountText = context.getResources().getQuantityString(
                 R.plurals.likes_count, currentLikesCount, currentLikesCount
         );
@@ -207,8 +223,21 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         } else {
             holder.tsLikesCounter.setCurrentText(likesCountText);
         }
+        String objectID = String.valueOf(noticeData.get(holder.getPosition()).getobjId());
 
-        likesCount.put(holder.getPosition(), currentLikesCount);
+        ParseQuery testObject = ParseQuery.getQuery("miris_notice");
+        testObject.whereEqualTo("objectId", objectID);
+        testObject.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> updateLikeList, ParseException e) {
+                if (e == null) {
+                    for (ParseObject nameObj : updateLikeList) {
+                        nameObj.put("user_like", currentLikesCount);
+                        nameObj.saveInBackground();
+                    }
+                }
+            }
+        });
     }
 
     private void updateHeartButton(final CellFeedViewHolder holder, boolean animated) {
@@ -290,7 +319,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             }
         } else if (viewId == R.id.ivUserProfile) {
             if (onFeedItemClickListener != null) {
-                onFeedItemClickListener.onProfileClick(view);
+                onFeedItemClickListener.onProfileClick(view, (Integer) view.getTag());
             }
         }
     }
@@ -354,16 +383,9 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     public void updateItems(boolean animated) {
-        itemsCount = userData.size();
+        itemsCount = noticeData.size();
         animateItems = animated;
-        fillLikesWithRandomValues();
         notifyDataSetChanged();
-    }
-
-    private void fillLikesWithRandomValues() {
-        for (int i = 0; i < getItemCount(); i++) {
-            likesCount.put(i, new Random().nextInt(100));
-        }
     }
 
     public void setOnFeedItemClickListener(OnFeedItemClickListener onFeedItemClickListener) {
@@ -394,6 +416,10 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         TextSwitcher tsLikesCounter;
         @InjectView(R.id.ivUserProfile)
         ImageView ivUserProfile;
+        @InjectView(R.id.ivUserName)
+        TextView ivUserName;
+        @InjectView(R.id.ivUserDate)
+        TextView ivUserDate;
         @InjectView(R.id.vImageRoot)
         FrameLayout vImageRoot;
 
@@ -412,6 +438,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
         public void onMoreClick(View v, int position);
 
-        public void onProfileClick(View v);
+        public void onProfileClick(View v, int position);
     }
 }

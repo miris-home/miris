@@ -2,11 +2,14 @@ package com.miris.ui.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
@@ -17,8 +20,17 @@ import android.widget.LinearLayout;
 
 import com.miris.R;
 import com.miris.Utils;
+import com.miris.net.CommitListData;
 import com.miris.ui.adapter.CommentsAdapter;
 import com.miris.ui.view.SendCommentButton;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.InjectView;
 
@@ -41,6 +53,11 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
 
     private CommentsAdapter commentsAdapter;
     private int drawingStartLocation;
+    private String objectID;
+    List<ParseObject> ob;
+    List<ParseObject> img_List;
+    private boolean startIntroAnimation = false;
+    ProgressDialog myLoadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +66,15 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
         setupComments();
         setupSendCommentButton();
 
+        objectID = getIntent().getStringExtra("objID");
         drawingStartLocation = getIntent().getIntExtra(ARG_DRAWING_START_LOCATION, 0);
+        showDialog();
+        new loadCommitTask().execute();
         if (savedInstanceState == null) {
             contentRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
                     contentRoot.getViewTreeObserver().removeOnPreDrawListener(this);
-                    startIntroAnimation();
                     return true;
                 }
             });
@@ -138,13 +157,23 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
     @Override
     public void onSendClickListener(View v) {
         if (validateComment()) {
-            commentsAdapter.addItem();
-            commentsAdapter.setAnimationsLocked(false);
-            commentsAdapter.setDelayEnterAnimation(false);
-            rvComments.smoothScrollBy(0, rvComments.getChildAt(0).getHeight() * commentsAdapter.getItemCount());
-
-            etComment.setText(null);
-            btnSendComment.setCurrentState(SendCommentButton.STATE_DONE);
+            hideSoftInputWindow(v);
+            showDialog();
+            ParseObject testObject = new ParseObject("miris_commit");
+            testObject.put("user_defult_id", objectID);
+            testObject.put("user_id", memberData.get(0).getuserId());
+            testObject.put("user_name", memberData.get(0).getuser_name());
+            testObject.put("user_commit_text", etComment.getText().toString());
+            testObject.saveInBackground();
+            testObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        startIntroAnimation = true;
+                        new loadCommitTask().execute();
+                    }
+                }
+            });
         }
     }
 
@@ -155,5 +184,75 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
         }
 
         return true;
+    }
+
+    private void showDialog() {
+        myLoadingDialog = new ProgressDialog(CommentsActivity.this);
+        myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
+        myLoadingDialog.setIndeterminate(false);
+        myLoadingDialog.setCancelable(false);
+        myLoadingDialog.show();
+    }
+
+    class loadCommitTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_commit");
+            offerQuery.whereEqualTo("user_defult_id", objectID);
+            try {
+                ob = offerQuery.find();
+            } catch (ParseException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null ;
+
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            commitData = new ArrayList<CommitListData>();
+            for (ParseObject country : ob) {
+                ParseFile userImgfile = null;
+                String userImgurl = null;
+                ParseQuery<ParseObject> userImg = ParseQuery.getQuery("miris_member");
+                userImg.whereEqualTo("user_id", country.get("user_id").toString());
+
+                try {
+                    img_List = userImg.find();
+                } catch (ParseException e) {
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
+                }
+                int size = img_List.size();
+                for (int i = 0; i<size; i++){
+                    userImgfile = (ParseFile) img_List.get(i).get("user_img");
+                }
+                if (userImgfile != null) {
+                    userImgurl = userImgfile.getUrl();
+                }
+                commitData.add(new CommitListData(objectID,
+                        country.get("user_commit_text").toString(),
+                        userImgurl,
+                        country.get("user_name").toString()));
+
+            }
+            if (myLoadingDialog != null) {
+                myLoadingDialog.dismiss();
+            }
+
+            if (!startIntroAnimation) {
+                startIntroAnimation();
+            } else {
+                commentsAdapter.updateItems();
+                commentsAdapter.setAnimationsLocked(false);
+                commentsAdapter.setDelayEnterAnimation(false);
+                if (commitData.size() > 1) {
+                    rvComments.smoothScrollBy(0, rvComments.getChildAt(0).getHeight() * commentsAdapter.getItemCount());
+                }
+                etComment.setText(null);
+                btnSendComment.setCurrentState(SendCommentButton.STATE_DONE);
+            }
+        }
     }
 }

@@ -45,4 +45,16 @@ public class Utils {
     public static boolean isAndroid5() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
+    public static String getCalendar() {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        String currentDate = "";
+
+        String year = Integer.toString(cal.get(cal.YEAR));
+        String month = Integer.toString((cal.get(cal.MONTH) + 1));
+        String date = Integer.toString(cal.get(cal.DAY_OF_MONTH));
+
+        currentDate = year +"."+ month +"."+ date ;
+
+        return currentDate;
+    }
 }

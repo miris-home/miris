@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.miris.R;
 import com.miris.ui.utils.CircleTransformation;
@@ -27,6 +28,8 @@ public class BaseDrawerActivity extends BaseActivity {
     DrawerLayout drawerLayout;
     @InjectView(R.id.ivMenuUserProfilePhoto)
     ImageView ivMenuUserProfilePhoto;
+    @InjectView(R.id.ivMenuUserProfileName)
+    TextView ivMenuUserProfileName;
 
     private int avatarSize;
     private String profilePhoto;
@@ -67,7 +70,8 @@ public class BaseDrawerActivity extends BaseActivity {
                 int[] startingLocation = new int[2];
                 v.getLocationOnScreen(startingLocation);
                 startingLocation[0] += v.getWidth() / 2;
-                com.miris.ui.activity.UserProfileActivity.startUserProfileFromLocation(startingLocation, BaseDrawerActivity.this);
+                com.miris.ui.activity.UserProfileActivity.startUserProfileFromLocation(
+                        startingLocation, BaseDrawerActivity.this, memberData.get(0).getuserId());
                 overridePendingTransition(0, 0);
             }
         }, 200);
@@ -75,7 +79,8 @@ public class BaseDrawerActivity extends BaseActivity {
 
     private void setupHeader() {
         this.avatarSize = getResources().getDimensionPixelSize(R.dimen.global_menu_avatar_size);
-        this.profilePhoto = getResources().getString(R.string.user_profile_photo);
+        this.profilePhoto = memberData.get(0).getuserImgurl();
+        ivMenuUserProfileName.setText(memberData.get(0).getuser_name());
         Picasso.with(this)
                 .load(profilePhoto)
                 .placeholder(R.drawable.img_circle_placeholder)

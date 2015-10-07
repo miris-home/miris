@@ -17,6 +17,7 @@
             android:layout_margin="12dp" />
 
         <TextView
+            android:id="@+id/ivMenuUserProfileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
