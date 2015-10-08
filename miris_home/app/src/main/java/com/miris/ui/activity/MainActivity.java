@@ -110,14 +110,13 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
         @Override
         protected void onPreExecute() {
-            if (!updateData) {
-                showDialog();
-            }
+            showDialog();
         }
         @Override
         protected Void doInBackground(Void... arg0) {
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
             offerQuery.orderByDescending("createdAt");
+            noticeData = new ArrayList<NoticeListData>();
 
             try {
                 ob = offerQuery.find();
@@ -125,12 +124,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-            return null ;
 
-        }
-        @Override
-        protected void onPostExecute(Void result) {
-            noticeData = new ArrayList<NoticeListData>();
             for (ParseObject country : ob) {
                 Bitmap bMap = null;
                 Bitmap userBmap = null;
@@ -178,6 +172,10 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         country.getInt("user_like"),
                         country.get("creatdate").toString()));
             }
+            return null ;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
             if (!updateData) {
                 feedAdapter = new FeedAdapter(MainActivity.this, noticeData);
                 rvFeed.setAdapter(feedAdapter);
@@ -222,9 +220,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (ACTION_SHOW_LOADING_ITEM.equals(intent.getAction())) {
-            updateData = true;
+            feedAdapter.updateItems(true);
             showFeedLoadingItemDelayed();
-            new loadDataTask().execute();
         }
     }
 

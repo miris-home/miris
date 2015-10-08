@@ -25,8 +25,11 @@ import android.widget.ToggleButton;
 
 import com.miris.R;
 import com.miris.Utils;
+import com.miris.net.NoticeListData;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -35,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnCheckedChanged;
@@ -59,6 +63,9 @@ public class PublishActivity extends BaseActivity {
     private int photoSize;
     File photoFile;
     ProgressDialog myLoadingDialog;
+    Bitmap clsBitmap;
+    Bitmap userBitmap;
+    List<ParseObject> ob;
 
     public static void openWithPhotoUri(Activity openingActivity, Uri photoUri) {
         Intent intent = new Intent(openingActivity, PublishActivity.class);
@@ -136,6 +143,7 @@ public class PublishActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_publish) {
+            hideSoftInputWindow(findViewById(R.id.action_publish));
             new setDataTask().execute();
             return true;
         } else {
@@ -165,13 +173,18 @@ public class PublishActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             ParseFile file = null;
+            userBitmap = memberData.get(0).getuser_img();
             try {
                 file = new ParseFile("user_img.png", readBytes(photoUri));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             file.saveInBackground();
-
+            try {
+                clsBitmap 	= imgUriPath(photoUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             ParseObject testObject = new ParseObject("miris_notice");
             testObject.put("user_id", memberData.get(0).getuserId());
             testObject.put("user_name", memberData.get(0).getuser_name());
@@ -184,10 +197,31 @@ public class PublishActivity extends BaseActivity {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
-                        if (myLoadingDialog != null) {
-                            myLoadingDialog.dismiss();
+                        ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
+                        offerQuery.whereEqualTo("user_id", memberData.get(0).getuserId());
+                        offerQuery.orderByDescending("createdAt");
+                        try {
+                            ob = offerQuery.find();
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
                         }
-                        bringMainActivityToTop();
+                        for (ParseObject country : ob) {
+                            userBitmap = userBitmap.createScaledBitmap(userBitmap, 120, 120, true);
+                            if (myLoadingDialog != null) {
+                                myLoadingDialog.dismiss();
+                            }
+                            noticeData.add(0, new NoticeListData(
+                                    country.getObjectId(),
+                                    memberData.get(0).getuserId(),
+                                    memberData.get(0).getuser_name(),
+                                    userBitmap,
+                                    clsBitmap,
+                                    etDescription.getText().toString(),
+                                    1,
+                                    Utils.getCalendar()));
+                            bringMainActivityToTop();
+                            break;
+                        }
                     }
                 }
             });
@@ -195,28 +229,35 @@ public class PublishActivity extends BaseActivity {
         }
     }
 
+    public Bitmap imgUriPath(Uri uri) throws IOException {
+        Bitmap bitmap;
+        AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(uri.getPath(), opt);
+
+        if (opt.outHeight  > 2000 || opt.outWidth > 2000)  {
+            opt.inJustDecodeBounds = false;
+            opt.inSampleSize = 4;
+            bitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+        } else {
+            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+        }
+        ExifInterface exif = new ExifInterface(uri.getPath());
+        int exifOrientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int exifDegree = exifOrientationToDegrees(exifOrientation);
+        bitmap = rotate(bitmap, exifDegree);
+
+        return bitmap;
+    }
+
     public byte[] readBytes(Uri uri) throws IOException {
         byte[] data = null;
+        Bitmap bitmap;
         try {
-            Bitmap bitmap;
-            AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
-            BitmapFactory.Options opt = new BitmapFactory.Options();
-
-            opt.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(uri.getPath(), opt);
-
-            if (opt.outHeight  > 2000 || opt.outWidth > 2000)  {
-                opt.inJustDecodeBounds = false;
-                opt.inSampleSize = 4;
-                bitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
-            } else {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-            }
-            ExifInterface exif = new ExifInterface(uri.getPath());
-            int exifOrientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            int exifDegree = exifOrientationToDegrees(exifOrientation);
-            bitmap = rotate(bitmap, exifDegree);
+            bitmap = imgUriPath(uri);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
