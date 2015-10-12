@@ -1,6 +1,7 @@
 package com.miris.ui.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -71,6 +72,7 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
     private UserProfileAdapter userPhotosAdapter;
     List<ParseObject> userAcountList;
     List<ParseObject> userImgList;
+    ProgressDialog myLoadingDialog;
 
     public static void startUserProfileFromLocation(int[] startingLocation, Activity startingActivity, String userId) {
         Intent intent = new Intent(startingActivity, UserProfileActivity.class);
@@ -176,10 +178,12 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
 
         @Override
         protected void onPreExecute() {
-
+            showDialog();
         }
         @Override
         protected Void doInBackground(Void... arg0) {
+            userProfileListData = new ArrayList<UserProfileListData>();
+            userProImgData = new ArrayList<UserProImgData>();
             ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("miris_member");
             memberQuery.whereEqualTo("user_id", userId);
 
@@ -195,19 +199,12 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
 
             try {
                 userImgList = memberImgQuery.find();
-                Log.e("PHJ", "Imgcountry==" + userImgList.size());
 
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-            return null ;
 
-        }
-        @Override
-        protected void onPostExecute(Void result) {
-            userProfileListData = new ArrayList<UserProfileListData>();
-            userProImgData = new ArrayList<UserProImgData>();
             for (ParseObject country : userAcountList) {
                 ParseFile userImgfile = null;
                 String userImgurl = null;
@@ -225,16 +222,13 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
             }
 
             for (ParseObject Imgcountry : userImgList) {
-
-                ParseFile userImgfile = null;
-                String userImgurlData = null;
-                userImgfile = (ParseFile) Imgcountry.get("user_img");
-                if (userImgfile != null) {
-                    userImgurlData = userImgfile.getUrl();
-                    userProImgData.add(new UserProImgData(userImgurlData));
-                }
+                new loadImgDataTask().execute(Imgcountry);
             }
+            return null ;
 
+        }
+        @Override
+        protected void onPostExecute(Void result) {
             Picasso.with(getApplicationContext())
                     .load(userProfileListData.get(0).getuser_img_url())
                     .placeholder(R.drawable.img_circle_placeholder)
@@ -245,6 +239,37 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
 
             vUserName.setText(userProfileListData.get(0).getuser_name());
             userPhotosAdapter.updateItems(true);
+            if (myLoadingDialog != null) {
+                myLoadingDialog.dismiss();
+            }
         }
+    }
+
+
+    class loadImgDataTask extends AsyncTask<ParseObject, Void, Void> {
+        @Override
+        protected Void doInBackground(ParseObject... Imgcountry) {
+            ParseFile userImgfile = null;
+            String userImgurlData = null;
+            userImgfile = (ParseFile) Imgcountry[0].get("user_img");
+            if (userImgfile != null) {
+                userImgurlData = userImgfile.getUrl();
+                userProImgData.add(new UserProImgData(userImgurlData));
+            }
+            return null ;
+
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            userPhotosAdapter.updateItems(true);
+        }
+    }
+
+    private void showDialog() {
+        myLoadingDialog = new ProgressDialog(UserProfileActivity.this);
+        myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
+        myLoadingDialog.setIndeterminate(false);
+        myLoadingDialog.setCancelable(false);
+        myLoadingDialog.show();
     }
 }

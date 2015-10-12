@@ -101,6 +101,7 @@ public class BaseActivity extends AppCompatActivity{
     public void onivAddressClick(final View v) {
         Intent intent = new Intent(this, AddressActivity.class);
         startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 
     @Optional
@@ -108,6 +109,7 @@ public class BaseActivity extends AppCompatActivity{
     public void onivCalendarClick(final View v) {
         Intent intent = new Intent(this, CalendarActivity.class);
         startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 
     protected boolean hideSoftInputWindow(View a_oView) {

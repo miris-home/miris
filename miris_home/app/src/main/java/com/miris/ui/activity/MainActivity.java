@@ -60,6 +60,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     List<ParseObject> img_List;
     private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
     ProgressDialog myLoadingDialog;
+    int maxSize = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,10 +127,52 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             }
 
             for (ParseObject country : ob) {
+                noticeData.add(new NoticeListData(
+                        country.getObjectId(),
+                        country.get("user_id").toString(),
+                        country.get("user_name").toString(),
+                        country.get("user_text").toString(),
+                        country.getInt("user_like"),
+                        country.get("creatdate").toString()));
+                new loadImgTask().execute(country);
+            }
+            return null ;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+
+            if (!updateData) {
+                feedAdapter = new FeedAdapter(MainActivity.this, noticeData);
+                rvFeed.setAdapter(feedAdapter);
+                feedAdapter.setOnFeedItemClickListener(MainActivity.this);
+
+                rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
+                    }
+                });
+
+                mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.main_swipe);
+                mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.WHITE);
+                mWaveSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
+            }
+            feedAdapter.updateItems(true);
+            if (myLoadingDialog != null) {
+                myLoadingDialog.dismiss();
+            }
+        }
+    }
+
+    class loadImgTask extends AsyncTask<ParseObject, Void, Void> {
+
+        @Override
+        protected Void doInBackground(ParseObject... country) {
                 Bitmap bMap = null;
                 Bitmap userBmap = null;
                 ParseFile userImgfile = null;
-                ParseFile userFile = (ParseFile) country.get("user_img");
+
+                ParseFile userFile = (ParseFile) country[0].get("user_img");
 
                 if (userFile != null) {
                     try {
@@ -140,7 +183,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                     }
                 }
                 ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("miris_member");
-                memberQuery.whereEqualTo("user_id", country.get("user_id").toString());
+                memberQuery.whereEqualTo("user_id", country[0].get("user_id").toString());
 
                 try {
                     img_List = memberQuery.find();
@@ -162,40 +205,17 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         e2.printStackTrace();
                     }
                 }
-                noticeData.add(new NoticeListData(
-                        country.getObjectId(),
-                        country.get("user_id").toString(),
-                        country.get("user_name").toString(),
-                        userBmap,
-                        bMap,
-                        country.get("user_text").toString(),
-                        country.getInt("user_like"),
-                        country.get("creatdate").toString()));
-            }
+                noticeData.get(maxSize).setuserimgBitmap(userBmap);
+                noticeData.get(maxSize).setimgBitmap(bMap);
+
+                if (maxSize != ob.size()) {
+                    maxSize++;
+                }
             return null ;
         }
         @Override
         protected void onPostExecute(Void result) {
-            if (!updateData) {
-                feedAdapter = new FeedAdapter(MainActivity.this, noticeData);
-                rvFeed.setAdapter(feedAdapter);
-                feedAdapter.setOnFeedItemClickListener(MainActivity.this);
-
-                rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
-                    }
-                });
-
-                mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.main_swipe);
-                mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.WHITE);
-                mWaveSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
-            }
             feedAdapter.updateItems(true);
-            if (myLoadingDialog != null) {
-                myLoadingDialog.dismiss();
-            }
         }
     }
 

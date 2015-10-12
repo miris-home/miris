@@ -131,25 +131,6 @@ public class SignInActivity extends BaseActivity {
 
             try {
                 ob = offerQuery.find();
-            } catch (ParseException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-            return true ;
-
-        }
-
-        @Override
-        protected void onPostExecute(Boolean isDone) {
-            if (myLoadingDialog != null) {
-                myLoadingDialog.dismiss();
-            }
-            if (isDone) {
-                if (ob.size() == 0) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 memberData = new ArrayList<MemberListData>();
 
                 for (ParseObject country : ob) {
@@ -173,7 +154,25 @@ public class SignInActivity extends BaseActivity {
                             bMap,
                             userImgurl));
                 }
+            } catch (ParseException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+            return true ;
 
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isDone) {
+            if (myLoadingDialog != null) {
+                myLoadingDialog.dismiss();
+            }
+            if (isDone) {
+                if (ob.size() == 0) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 finish();
                 startActivity(intent);

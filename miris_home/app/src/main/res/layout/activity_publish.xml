@@ -99,11 +99,12 @@
                 </LinearLayout>
 
                 <Switch
+                    android:id="@+id/etSwitch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:text="ADD TO PHOTO MAP" />
+                    android:text="@string/notice_text" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 

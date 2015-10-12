@@ -141,7 +141,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
             holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
             holder.ivUserDate.setText(noticeData.get(position).getdate());
-            holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmapp());
+            holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmap());
         }
         int currentLikesCount = noticeData.get(holder.getPosition()).getDoLike();
         String likesCountText = context.getResources().getQuantityString(
@@ -168,7 +168,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
         holder.ivUserName.setText(noticeData.get(position).getusername());
         holder.ivUserDate.setText(noticeData.get(position).getdate());
-        holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmapp());
+        holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmap());
 
         holder.vSendingProgress.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override

@@ -19,8 +19,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.ToggleButton;
 
 import com.miris.R;
@@ -29,6 +31,7 @@ import com.miris.net.NoticeListData;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Callback;
@@ -57,6 +60,8 @@ public class PublishActivity extends BaseActivity {
     ImageView ivPhoto;
     @InjectView(R.id.etDescription)
     EditText etDescription;
+    @InjectView(R.id.etSwitch)
+    Switch etSwitch;
 
     private boolean propagatingToggleState = false;
     private Uri photoUri;
@@ -66,6 +71,7 @@ public class PublishActivity extends BaseActivity {
     Bitmap clsBitmap;
     Bitmap userBitmap;
     List<ParseObject> ob;
+    Boolean SwitchCheck = false;
 
     public static void openWithPhotoUri(Activity openingActivity, Uri photoUri) {
         Intent intent = new Intent(openingActivity, PublishActivity.class);
@@ -82,6 +88,16 @@ public class PublishActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        etSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    SwitchCheck = true;
+                } else {
+                    SwitchCheck = false;
+                }
             }
         });
         photoSize = getResources().getDimensionPixelSize(R.dimen.publish_photo_thumbnail_size);
@@ -219,6 +235,11 @@ public class PublishActivity extends BaseActivity {
                                     etDescription.getText().toString(),
                                     1,
                                     Utils.getCalendar()));
+                            if (SwitchCheck) {
+                                ParsePush push = new ParsePush();
+                                push.setMessage(getString(R.string.notice_push));
+                                push.sendInBackground();
+                            }
                             bringMainActivityToTop();
                             break;
                         }

@@ -28,6 +28,19 @@ public class NoticeListData {
         this.date = date;
     }
 
+    public NoticeListData(String objId, String userid, String username, String editText, int DoLike, String date) {
+        this.objId = objId;
+        this.userid = userid;
+        this.username = username;
+        this.editText = editText;
+        this.DoLike = DoLike;
+        this.date = date;
+    }
+
+    public NoticeListData(Bitmap userimgBitmap, Bitmap imgBitmap) {
+        this.userimgBitmap = userimgBitmap;
+        this.imgBitmap = imgBitmap;
+    }
     public void setobjId(String objId) {
         this.objId = objId;
     }
@@ -45,7 +58,7 @@ public class NoticeListData {
     }
 
     public void setuserimgBitmap(Bitmap imgBitmap) {
-        this.userimgBitmap = userimgBitmap;
+        this.userimgBitmap = imgBitmap;
     }
 
     public void seteditText(String editText) {
@@ -76,7 +89,7 @@ public class NoticeListData {
         return imgBitmap;
     }
 
-    public Bitmap getuserimgBitmapp() {
+    public Bitmap getuserimgBitmap() {
         return userimgBitmap;
     }
 

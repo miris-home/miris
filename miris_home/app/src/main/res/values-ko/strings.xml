@@ -16,4 +16,6 @@
     <string name="login_fail">아이디 및 비밀번호가 맞지 않습니다.</string>
     <string name="skip">Skip</string>
     <string name="show_lodingbar">잠시만 기다려주세요..</string>
+    <string name="notice_push">공지사항이 등록 됐습니다...</string>
+    <string name="notice_text">공지사항(Notification)</string>
 </resources>

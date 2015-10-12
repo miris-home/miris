@@ -44,6 +44,7 @@ import com.miris.ui.view.CameraPreview;
 import com.miris.ui.view.RevealBackgroundView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -312,42 +313,64 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
         if(resultCode == RESULT_OK) {
             if(requestCode == 100) {
-                try {
-                    Uri uri = data.getData();
-                    String urlPath = getImageNameToUri(uri);
-                    AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
-                    BitmapFactory.Options opt = new BitmapFactory.Options();
+                Uri uri = data.getData();
+                new loadImgDataTask().execute(uri);
 
-                    opt.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(urlPath, opt);
-
-                    if (opt.outHeight  > 2000 || opt.outWidth > 2000)  {
-                        opt.inJustDecodeBounds = false;
-                        opt.inSampleSize = 4;
-                        clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
-                    } else {
-                        clsBitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                    }
-                    File file = new File(urlPath);
-
-                    ExifInterface exif = new ExifInterface(urlPath);
-                    int exifOrientation = exif.getAttributeInt(
-                            ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                    int exifDegree = exifOrientationToDegrees(exifOrientation);
-                    clsBitmap = rotate(clsBitmap, exifDegree);
-
-                    photoPath = file;
-                    showTakenPicture(clsBitmap);
-                    viewVisible = true;
-
-                } catch( Exception e ) {
-                    Log.e("Picture", e.toString());
-                }
             } else if (requestCode == 200) {
                 // TODO: 2015-09-21
             }  else {
                 super.onActivityResult(requestCode, resultCode, data);
             }
+        }
+    }
+
+    class loadImgDataTask extends AsyncTask<Uri, Void, Void> {
+        @Override
+        protected Void doInBackground(Uri... uri) {
+            String urlPath = getImageNameToUri(uri[0]);
+            AssetFileDescriptor afd = null;
+            try {
+                afd = getContentResolver().openAssetFileDescriptor(uri[0], "r");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            BitmapFactory.Options opt = new BitmapFactory.Options();
+
+            opt.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(urlPath, opt);
+
+            if (opt.outHeight  > 2000 || opt.outWidth > 2000)  {
+                opt.inJustDecodeBounds = false;
+                opt.inSampleSize = 4;
+                clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+            } else {
+                try {
+                    clsBitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), uri[0]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            File file = new File(urlPath);
+
+            ExifInterface exif = null;
+            try {
+                exif = new ExifInterface(urlPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int exifOrientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            int exifDegree = exifOrientationToDegrees(exifOrientation);
+            clsBitmap = rotate(clsBitmap, exifDegree);
+            photoPath = file;
+
+            return null ;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            showTakenPicture(clsBitmap);
+            overridePendingTransition(0, 0);
+            viewVisible = true;
         }
     }
 
