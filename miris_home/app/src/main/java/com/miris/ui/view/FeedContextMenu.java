@@ -1,6 +1,7 @@
 package com.miris.ui.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -11,6 +12,8 @@ import com.miris.Utils;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.miris.ui.activity.BaseActivity.noticeData;
+
 /**
  * Created by Miris on 09.02.15.
  */
@@ -20,9 +23,11 @@ public class FeedContextMenu extends LinearLayout {
     private int feedItem = -1;
 
     private OnFeedContextMenuItemClickListener onItemClickListener;
+    Context mContext;
 
     public FeedContextMenu(Context context) {
         super(context);
+        mContext = context;
         init();
     }
 
@@ -47,24 +52,28 @@ public class FeedContextMenu extends LinearLayout {
         ((ViewGroup) getParent()).removeView(FeedContextMenu.this);
     }
 
-    @OnClick(R.id.btnReport)
+    @OnClick(R.id.btnShareText)
     public void onReportClick() {
         if (onItemClickListener != null) {
+            String title = "미르이즈 공유목록 앱";
             onItemClickListener.onReportClick(feedItem);
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, noticeData.get(feedItem).geteditText());
+            mContext.startActivity(Intent.createChooser(shareIntent, title));
         }
     }
 
     @OnClick(R.id.btnSharePhoto)
     public void onSharePhotoClick() {
         if (onItemClickListener != null) {
+            String title = "미르이즈 공유목록 앱";
             onItemClickListener.onSharePhotoClick(feedItem);
-        }
-    }
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, noticeData.get(feedItem).getimgPath());
+            mContext.startActivity(Intent.createChooser(shareIntent, title));
 
-    @OnClick(R.id.btnCopyShareUrl)
-    public void onCopyShareUrlClick() {
-        if (onItemClickListener != null) {
-            onItemClickListener.onCopyShareUrlClick(feedItem);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.miris.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -13,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.miris.R;
+import com.miris.ui.adapter.BlurBehind;
+import com.miris.ui.adapter.OnBlurCompleteListener;
 import com.miris.ui.utils.CircleTransformation;
 import com.squareup.picasso.Picasso;
 
@@ -34,10 +37,12 @@ public class BaseDrawerActivity extends BaseActivity {
     private int avatarSize;
     private String profilePhoto;
     boolean m_openDrawer = false;
+    Activity mActivity;
 
     @Override
     public void setContentView(int layoutResID) {
         super.setContentViewWithoutInject(R.layout.activity_drawer);
+        mActivity = this;
         ViewGroup viewGroup = (ViewGroup) findViewById(R.id.flContentRoot);
         LayoutInflater.from(this).inflate(layoutResID, viewGroup, true);
         NavigationView navigationView = (NavigationView)findViewById(R.id.vNavigation);
@@ -95,14 +100,31 @@ public class BaseDrawerActivity extends BaseActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem menuItem) {
+            Intent intent;
+            drawerLayout.closeDrawers();
 
             switch (menuItem.getItemId()) {
                 case R.id.menu_settings:
-                    Intent intent = new Intent(getApplication(), SettingActivity.class);
+                    intent = new Intent(getApplication(), SettingActivity.class);
                     startActivity(intent);
                     break;
-            }
 
+                case R.id.menu_about:
+                    getWindow().getDecorView().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            BlurBehind.getInstance().execute(mActivity, new OnBlurCompleteListener() {
+                                @Override
+                                public void onBlurComplete() {
+                                    Intent intent = new Intent(getApplication(), AboutActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+                    }, 300);
+                    break;
+            }
             return false;
         }
     };

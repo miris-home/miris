@@ -94,11 +94,9 @@ public class SignInActivity extends BaseActivity {
                         return;
                     } else {
                         hideSoftInputWindow(v);
-                        new loadLoginTask().execute();
+                        new loadLoginTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         break;
                     }
-
-
             }
         }
     };
@@ -152,7 +150,11 @@ public class SignInActivity extends BaseActivity {
                             country.get("user_name").toString(),
                             country.get("user_age").toString(),
                             bMap,
-                            userImgurl));
+                            userImgurl,
+                            country.getInt("user_totallike"),
+                            country.getInt("user_registernumber"),
+                            country.get("user_rank").toString(),
+                            country.get("user_email").toString()));
                 }
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());

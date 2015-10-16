@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+import static com.miris.ui.activity.BaseActivity.memberData;
 import static com.miris.ui.activity.BaseActivity.noticeData;
 
 /**
@@ -66,6 +68,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     private boolean showLoadingView = false;
     private int loadingViewSize = Utils.dpToPx(200);
+    int currentLikesCount;
 
     public FeedAdapter(Context context) {
         this.context = context;
@@ -137,13 +140,18 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
             holder.ivFeedBottom.setText(R.string.defult_user_message);
         } else {
+            if (noticeData.get(position).getuser_public().equals("N")) {
+                holder.ivUserSecret.setVisibility(View.VISIBLE);
+            } else {
+                holder.ivUserSecret.setVisibility(View.INVISIBLE);
+            }
             holder.ivUserName.setText(noticeData.get(position).getusername());
             holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
             holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
             holder.ivUserDate.setText(noticeData.get(position).getdate());
             holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmap());
         }
-        int currentLikesCount = noticeData.get(holder.getPosition()).getDoLike();
+        currentLikesCount = noticeData.get(holder.getPosition()).getDoLike();
         String likesCountText = context.getResources().getQuantityString(
                 R.plurals.likes_count, currentLikesCount, currentLikesCount
         );
@@ -212,8 +220,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         return itemsCount;
     }
 
-    private void updateLikesCounter(CellFeedViewHolder holder, boolean animated) {
-        final int currentLikesCount = noticeData.get(holder.getPosition()).getDoLike()+1;
+    private void updateLikesCounter(final CellFeedViewHolder holder, boolean animated) {
+        currentLikesCount = noticeData.get(holder.getPosition()).getDoLike()+1;
         String likesCountText = context.getResources().getQuantityString(
                 R.plurals.likes_count, currentLikesCount, currentLikesCount
         );
@@ -223,21 +231,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         } else {
             holder.tsLikesCounter.setCurrentText(likesCountText);
         }
-        String objectID = String.valueOf(noticeData.get(holder.getPosition()).getobjId());
-
-        ParseQuery testObject = ParseQuery.getQuery("miris_notice");
-        testObject.whereEqualTo("objectId", objectID);
-        testObject.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> updateLikeList, ParseException e) {
-                if (e == null) {
-                    for (ParseObject nameObj : updateLikeList) {
-                        nameObj.put("user_like", currentLikesCount);
-                        nameObj.saveInBackground();
-                    }
-                }
-            }
-        });
+        noticeData.get(holder.getPosition()).setDoLike(currentLikesCount);
+        new updateLikeTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
     }
 
     private void updateHeartButton(final CellFeedViewHolder holder, boolean animated) {
@@ -422,6 +417,9 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         TextView ivUserDate;
         @InjectView(R.id.vImageRoot)
         FrameLayout vImageRoot;
+        @InjectView(R.id.ivUserSecret)
+        ImageView ivUserSecret;
+
 
         SendingProgressView vSendingProgress;
         View vProgressBg;
@@ -439,5 +437,44 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         public void onMoreClick(View v, int position);
 
         public void onProfileClick(View v, int position);
+    }
+
+    class updateLikeTask extends AsyncTask<CellFeedViewHolder, Void, Void> {
+
+        @Override
+        protected Void doInBackground(CellFeedViewHolder... holder) {
+            String objectID = String.valueOf(noticeData.get(holder[0].getPosition()).getobjId());
+            String userID = memberData.get(0).getuserId();
+
+            ParseQuery testObject = ParseQuery.getQuery("miris_notice");
+            testObject.whereEqualTo("objectId", objectID);
+            testObject.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> updateLikeList, ParseException e) {
+                    if (e == null) {
+                        for (ParseObject nameObj : updateLikeList) {
+                            nameObj.put("user_like", currentLikesCount);
+                            nameObj.saveInBackground();
+                        }
+                    }
+                }
+            });
+            ParseQuery mamberObject = ParseQuery.getQuery("miris_member");
+            mamberObject.whereEqualTo("user_id", userID);
+            mamberObject.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> updateLikeList, ParseException e) {
+                    if (e == null) {
+                        for (ParseObject nameObj : updateLikeList) {
+                            int userTotal;
+                            userTotal = nameObj.getInt("user_totallike");
+                            nameObj.put("user_totallike", userTotal + 1);
+                            nameObj.saveInBackground();
+                        }
+                    }
+                }
+            });
+            return null;
+        }
     }
 }

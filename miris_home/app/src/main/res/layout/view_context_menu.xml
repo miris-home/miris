@@ -2,20 +2,15 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Button
-        android:id="@+id/btnReport"
+        android:id="@+id/btnShareText"
         style="@style/ContextMenuButton"
-        android:text="REPORT"
+        android:text="@string/share_text"
         android:textColor="@color/btn_context_menu_text_red" />
 
     <Button
         android:id="@+id/btnSharePhoto"
         style="@style/ContextMenuButton"
-        android:text="SHARE PHOTO" />
-
-    <Button
-        android:id="@+id/btnCopyShareUrl"
-        style="@style/ContextMenuButton"
-        android:text="COPY SHARE URL" />
+        android:text="@string/share_img_url"/>
 
     <View
         android:layout_width="match_parent"
@@ -25,6 +20,6 @@
     <Button
         android:id="@+id/btnCancel"
         style="@style/ContextMenuButton"
-        android:text="CANCEL" />
+        android:text="@string/btn_cancel" />
 
 </merge>

@@ -5,6 +5,7 @@
     <string name="contact">주소록</string>
     <string name="calender">달력</string>
     <string name="social_network">미르이즈 가족</string>
+    <string name="btn_cancel">취소</string>
 
 
     <string name="contact_hint">미르이즈 가족들의 개인 연락처를 \n확인할수 있습니다.</string>
@@ -18,4 +19,35 @@
     <string name="show_lodingbar">잠시만 기다려주세요..</string>
     <string name="notice_push">공지사항이 등록 됐습니다...</string>
     <string name="notice_text">공지사항(Notification)</string>
+    <string name="new_create">새글쓰기</string>
+    <string name="share_text">게시글 공유</string>
+    <string name="share_img_url">이미지 URL 공유</string>
+
+    <string name="btn_open_total">전체공개</string>
+    <string name="btn_nondisclosure">비공개</string>
+    <string name="text_about">\n\n\n
+        미르이즈는\n
+        사람과사람이 함께 하고싶은\n
+        그 마음을 오롯이 IT기술로 담습니다.\n\n
+        People, Finance, Process, Culture\n
+        등의 영역에서 Management역량을\n
+        확보하고 진정한 IT서비스 리더로\n
+        성장하는 업체가 되고자 합니다.
+    \n\n\n\n
+        회사명 : 주|미르이즈\n
+        설립일 : 2006년 9월\n
+        대표이사 : 이용재\n
+        사업분야 : 시스템통합,소프트웨어개발\n
+        주소 : 서울시 마포구 양화로156\n
+        &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;LG팰리스 1807호\n
+        전화 : 02)325-6530</string>
+    <string name="text_about2">\n\n\n
+        회사명 : 주|미르이즈\n
+        설립일 : 2006년 9월\n
+        대표이사 : 이용재\n
+        사업분야 : 시스템통합,소프트웨어개발\n
+        주소 : 서울시 마포구 양화로156\n
+        &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;LG팰리스 1807호\n
+        전화 : 02)325-6530</string>
+    <string name="text_about_capyright">COPYRIGHT(C) MIRIS ALL RIGHT RESERVED.</string>
 </resources>

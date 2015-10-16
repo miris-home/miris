@@ -12,14 +12,23 @@ public class MemberListData {
     String user_age;
     Bitmap user_img;
     String userImgurl;
+    int user_TotalLike;
+    int user_registernumber;
+    String user_rank;
+    String user_email;
 
     public MemberListData(String userId, String user_name, String user_age,
-                          Bitmap user_img, String userImgurl) {
+                          Bitmap user_img, String userImgurl, int user_TotalLike,
+                          int user_registernumber, String user_rank, String user_email) {
         this.userId = userId;
         this.user_name = user_name;
         this.user_age = user_age;
         this.user_img = user_img;
         this.userImgurl = userImgurl;
+        this.user_TotalLike = user_TotalLike;
+        this.user_registernumber = user_registernumber;
+        this.user_rank = user_rank;
+        this.user_email = user_email;
     }
 
     public void setuserId(String userId) {
@@ -42,6 +51,22 @@ public class MemberListData {
         this.userImgurl = userImgurl;
     }
 
+    public void setuser_TotalLike(int  user_TotalLike) {
+        this.user_TotalLike = user_TotalLike;
+    }
+
+    public void setuser_registernumber(int  user_registernumber) {
+        this.user_registernumber = user_registernumber;
+    }
+
+    public void setuser_rank(String  user_rank) {
+        this.user_rank = user_rank;
+    }
+
+    public void setuser_email(String  user_email) {
+        this.user_rank = user_email;
+    }
+
     public String getuserId() {
         return userId;
     }
@@ -60,6 +85,22 @@ public class MemberListData {
 
     public String getuserImgurl() {
         return userImgurl;
+    }
+
+    public int getuser_TotalLike() {
+        return user_TotalLike;
+    }
+
+    public int getuser_registernumber() {
+        return user_registernumber;
+    }
+
+    public String getuser_rank() {
+        return user_rank;
+    }
+
+    public String getuser_email() {
+        return user_email;
     }
 
 }

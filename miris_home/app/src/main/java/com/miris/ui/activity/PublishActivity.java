@@ -28,6 +28,7 @@ import android.widget.ToggleButton;
 import com.miris.R;
 import com.miris.Utils;
 import com.miris.net.NoticeListData;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -72,6 +73,7 @@ public class PublishActivity extends BaseActivity {
     Bitmap userBitmap;
     List<ParseObject> ob;
     Boolean SwitchCheck = false;
+    String newWritingPublic = "Y";
 
     public static void openWithPhotoUri(Activity openingActivity, Uri photoUri) {
         Intent intent = new Intent(openingActivity, PublishActivity.class);
@@ -160,7 +162,7 @@ public class PublishActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_publish) {
             hideSoftInputWindow(findViewById(R.id.action_publish));
-            new setDataTask().execute();
+            new setDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -208,11 +210,29 @@ public class PublishActivity extends BaseActivity {
             testObject.put("user_text", etDescription.getText().toString());
             testObject.put("user_like", 1);
             testObject.put("creatdate", Utils.getCalendar());
+            testObject.put("user_public", newWritingPublic);
+
             testObject.saveInBackground();
             testObject.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
+                        final int userAddApp;
+                        userAddApp = memberData.get(0).getuser_registernumber() +1 ;
+                        ParseQuery testObject = ParseQuery.getQuery("miris_member");
+                        testObject.whereEqualTo("user_id", memberData.get(0).getuserId());
+                        testObject.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> updateLikeList, ParseException e) {
+                                if (e == null) {
+                                    for (ParseObject nameObj : updateLikeList) {
+                                        nameObj.put("user_registernumber", userAddApp);
+                                        nameObj.saveInBackground();
+                                        memberData.get(0).setuser_registernumber(userAddApp);
+                                    }
+                                }
+                            }
+                        });
                         ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
                         offerQuery.whereEqualTo("user_id", memberData.get(0).getuserId());
                         offerQuery.orderByDescending("createdAt");
@@ -283,6 +303,7 @@ public class PublishActivity extends BaseActivity {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
+
             data = baos.toByteArray();
             bitmap.recycle();
             System.gc();
@@ -341,6 +362,7 @@ public class PublishActivity extends BaseActivity {
         if (!propagatingToggleState) {
             propagatingToggleState = true;
             tbDirect.setChecked(!checked);
+            newWritingPublic = "N";
             propagatingToggleState = false;
         }
     }
@@ -350,6 +372,7 @@ public class PublishActivity extends BaseActivity {
         if (!propagatingToggleState) {
             propagatingToggleState = true;
             tbFollowers.setChecked(!checked);
+            newWritingPublic = "Y";
             propagatingToggleState = false;
         }
     }

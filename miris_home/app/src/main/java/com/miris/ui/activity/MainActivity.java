@@ -32,6 +32,7 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import butterknife.InjectView;
 import butterknife.OnClick;
 
@@ -97,7 +98,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 try {
                     if (noticeData.size() < offerQuery.find().size()) {
                         updateData = true;
-                        new loadDataTask().execute();
+                        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -115,6 +116,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         }
         @Override
         protected Void doInBackground(Void... arg0) {
+            maxSize = 0;
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
             offerQuery.orderByDescending("createdAt");
             noticeData = new ArrayList<NoticeListData>();
@@ -127,13 +129,19 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             }
 
             for (ParseObject country : ob) {
+                if (country.get("user_public").toString().equals("N")) {
+                    if (!country.get("user_id").toString().equals(memberData.get(0).getuserId())) {
+                        continue;
+                    }
+                }
                 noticeData.add(new NoticeListData(
                         country.getObjectId(),
                         country.get("user_id").toString(),
                         country.get("user_name").toString(),
                         country.get("user_text").toString(),
                         country.getInt("user_like"),
-                        country.get("creatdate").toString()));
+                        country.get("creatdate").toString(),
+                        country.get("user_public").toString()));
                 new loadImgTask().execute(country);
             }
             return null ;
@@ -170,6 +178,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         protected Void doInBackground(ParseObject... country) {
                 Bitmap bMap = null;
                 Bitmap userBmap = null;
+                String bMapPath = null;
                 ParseFile userImgfile = null;
 
                 ParseFile userFile = (ParseFile) country[0].get("user_img");
@@ -177,6 +186,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 if (userFile != null) {
                     try {
                         byte[] data = userFile.getData();
+                        bMapPath = userFile.getUrl();
                         bMap = BitmapFactory.decodeByteArray(data, 0, data.length);
                     } catch (ParseException e2) {
                         e2.printStackTrace();
@@ -205,6 +215,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         e2.printStackTrace();
                     }
                 }
+                noticeData.get(maxSize).setimgPath(bMapPath);
                 noticeData.get(maxSize).setuserimgBitmap(userBmap);
                 noticeData.get(maxSize).setimgBitmap(bMap);
 
@@ -263,7 +274,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             startIntroAnimation();
         }
     }
-
 
     private void startIntroAnimation() {
         fabCreate.setTranslationY(2 * getResources().getDimensionPixelOffset(R.dimen.btn_fab_size));

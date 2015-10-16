@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,6 +29,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import butterknife.InjectView;
 
 /**
@@ -48,15 +47,10 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
     @InjectView(R.id.rvUserProfile)
     RecyclerView rvUserProfile;
 
-    @InjectView(R.id.tlUserProfileTabs)
-    TabLayout tlUserProfileTabs;
-
     @InjectView(R.id.ivUserProfilePhoto)
     ImageView ivUserProfilePhoto;
     @InjectView(R.id.vUserDetails)
     View vUserDetails;
-    @InjectView(R.id.btnFollow)
-    Button btnFollow;
     @InjectView(R.id.vUserStats)
     View vUserStats;
     @InjectView(R.id.vUserProfileRoot)
@@ -66,6 +60,11 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
     TextView vUserName;
     @InjectView(R.id.vUserNickname)
     TextView vUserNickname;
+    @InjectView(R.id.vUserLike)
+    TextView vUserLike;
+    @InjectView(R.id.vUserRegister)
+    TextView vUserRegister;
+
     private int avatarSize;
     private String profilePhoto;
     private String userId;
@@ -88,8 +87,8 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
 
         userId = getIntent().getStringExtra(USER_ID);
         this.avatarSize = getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size);
+        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        new loadDataTask().execute();
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -99,16 +98,9 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
             }
         });
 
-        setupTabs();
         setupUserProfileGrid();
         setupRevealBackground(savedInstanceState);
-    }
 
-    private void setupTabs() {
-        tlUserProfileTabs.addTab(tlUserProfileTabs.newTab().setIcon(R.drawable.ic_grid_on_white));
-        tlUserProfileTabs.addTab(tlUserProfileTabs.newTab().setIcon(R.drawable.ic_list_white));
-        tlUserProfileTabs.addTab(tlUserProfileTabs.newTab().setIcon(R.drawable.ic_place_white));
-        tlUserProfileTabs.addTab(tlUserProfileTabs.newTab().setIcon(R.drawable.ic_label_white));
     }
 
     private void setupUserProfileGrid() {
@@ -144,22 +136,14 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
     public void onStateChange(int state) {
         if (RevealBackgroundView.STATE_FINISHED == state) {
             rvUserProfile.setVisibility(View.VISIBLE);
-            tlUserProfileTabs.setVisibility(View.VISIBLE);
             vUserProfileRoot.setVisibility(View.VISIBLE);
             userPhotosAdapter = new UserProfileAdapter(this);
             rvUserProfile.setAdapter(userPhotosAdapter);
-            animateUserProfileOptions();
             animateUserProfileHeader();
         } else {
-            tlUserProfileTabs.setVisibility(View.INVISIBLE);
             rvUserProfile.setVisibility(View.INVISIBLE);
             vUserProfileRoot.setVisibility(View.INVISIBLE);
         }
-    }
-
-    private void animateUserProfileOptions() {
-        tlUserProfileTabs.setTranslationY(-tlUserProfileTabs.getHeight());
-        tlUserProfileTabs.animate().translationY(0).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
     }
 
     private void animateUserProfileHeader() {
@@ -218,11 +202,19 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                         country.get("user_id").toString(),
                         country.get("user_name").toString(),
                         country.get("user_age").toString(),
-                        userImgurl));
+                        userImgurl,
+                        country.getInt("user_totallike"),
+                        country.getInt("user_registernumber"),
+                        country.get("user_rank").toString()));
             }
 
             for (ParseObject Imgcountry : userImgList) {
-                new loadImgDataTask().execute(Imgcountry);
+                if (Imgcountry.get("user_public").toString().equals("N")) {
+                    if (!Imgcountry.get("user_id").toString().equals(memberData.get(0).getuserId())) {
+                        continue;
+                    }
+                }
+                new loadImgDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Imgcountry);
             }
             return null ;
 
@@ -237,6 +229,9 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                     .transform(new CircleTransformation())
                     .into(ivUserProfilePhoto);
 
+            vUserNickname.setText(userProfileListData.get(0).getuser_rank());
+            vUserRegister.setText(String.valueOf(userProfileListData.get(0).getuser_registernumber()));
+            vUserLike.setText(String.valueOf(userProfileListData.get(0).getuser_TotalLike()));
             vUserName.setText(userProfileListData.get(0).getuser_name());
             userPhotosAdapter.updateItems(true);
             if (myLoadingDialog != null) {
@@ -244,7 +239,6 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
             }
         }
     }
-
 
     class loadImgDataTask extends AsyncTask<ParseObject, Void, Void> {
         @Override

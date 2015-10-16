@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_weight="2">
+            android:layout_weight="12">
 
             <ImageView
                 android:id="@+id/ivUserProfile"
@@ -39,14 +39,25 @@
                         android:textSize="16dp"
                         android:textColor="@android:color/black"
                         android:textStyle="bold"
-                        android:layout_weight="1" />
+                         />
                     <TextView
                         android:id="@+id/ivUserDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="15dp" />
+
                 </LinearLayout>
+            <ImageView
+                android:id="@+id/ivUserSecret"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="11"
+                android:layout_gravity="center_vertical"
+                android:visibility="invisible"
+                android:src="@drawable/suspicion_badge" />
+
         </LinearLayout>
+
         <com.miris.ui.view.SquaredFrameLayout
             android:id="@+id/vImageRoot"
             android:layout_width="match_parent"
@@ -130,7 +141,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="123 likes"
+                        android:text="1 likes"
                         android:textColor="@color/text_like_counter" />
 
                     <TextView
