@@ -55,7 +55,7 @@ public class FeedContextMenu extends LinearLayout {
     @OnClick(R.id.btnShareText)
     public void onReportClick() {
         if (onItemClickListener != null) {
-            String title = "미르이즈 공유목록 앱";
+            String title = this.getResources().getString(R.string.share_app_list);
             onItemClickListener.onReportClick(feedItem);
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -67,7 +67,7 @@ public class FeedContextMenu extends LinearLayout {
     @OnClick(R.id.btnSharePhoto)
     public void onSharePhotoClick() {
         if (onItemClickListener != null) {
-            String title = "미르이즈 공유목록 앱";
+            String title = this.getResources().getString(R.string.share_app_list);
             onItemClickListener.onSharePhotoClick(feedItem);
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
