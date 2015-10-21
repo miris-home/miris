@@ -19,7 +19,8 @@ public class NoticeListData {
     String user_public;
 
     public NoticeListData(String objId, String userid, String username, Bitmap userimgBitmap,
-                          Bitmap imgBitmap, String editText, int DoLike, String date) {
+                          Bitmap imgBitmap, String editText, int DoLike, String date,
+                          String user_public) {
         this.objId = objId;
         this.userid = userid;
         this.username = username;
@@ -28,6 +29,25 @@ public class NoticeListData {
         this.editText = editText;
         this.DoLike = DoLike;
         this.date = date;
+        this.user_public = user_public;
+    }
+
+    public NoticeListData(String objId, String userid, String username, Bitmap userimgBitmap,
+                          String editText, int DoLike, String date, String user_public) {
+        this.objId = objId;
+        this.userid = userid;
+        this.username = username;
+        this.userimgBitmap = userimgBitmap;
+        this.editText = editText;
+        this.DoLike = DoLike;
+        this.date = date;
+        this.user_public = user_public;
+    }
+
+    public NoticeListData(Bitmap userimgBitmap, Bitmap imgBitmap, String imgPath) {
+        this.userimgBitmap = userimgBitmap;
+        this.imgBitmap = imgBitmap;
+        this.imgPath = imgPath;
     }
 
     public NoticeListData(String objId, String userid, String username, String editText,
@@ -39,12 +59,6 @@ public class NoticeListData {
         this.DoLike = DoLike;
         this.date = date;
         this.user_public = user_public;
-    }
-
-    public NoticeListData(Bitmap userimgBitmap, Bitmap imgBitmap, String imgPath) {
-        this.userimgBitmap = userimgBitmap;
-        this.imgBitmap = imgBitmap;
-        this.imgPath = imgPath;
     }
 
     public void setobjId(String objId) {
