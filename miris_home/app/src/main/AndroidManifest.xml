@@ -16,6 +16,7 @@
     <permission android:protectionLevel="signature"
         android:name="com.miris.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.miris.permission.C2D_MESSAGE" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -85,7 +86,7 @@
         </activity>
 
         <service android:name="com.parse.PushService" />
-        <receiver android:name="com.parse.ParsePushBroadcastReceiver"
+        <receiver android:name=".MirisPushReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />

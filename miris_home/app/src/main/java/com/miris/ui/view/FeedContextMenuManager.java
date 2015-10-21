@@ -96,6 +96,12 @@ public void toggleContextMenuFromView(View openingView, int feedItem, FeedContex
         }
     }
 
+    public void hidePauseMenu() {
+        if (contextMenuView != null) {
+            contextMenuView.dismiss();
+        }
+    }
+
     private void performDismissAnimation() {
         contextMenuView.setPivotX(contextMenuView.getWidth() / 2);
         contextMenuView.setPivotY(contextMenuView.getHeight());

@@ -18,7 +18,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/Parse-1.10.2.jar')
+    compile files('libs/Parse-1.10.3.jar')
     compile files('libs/bolts-android-1.2.1.jar')
     compile 'com.android.support:appcompat-v7:22.+'
     compile 'com.android.support:support-v13:22.+'

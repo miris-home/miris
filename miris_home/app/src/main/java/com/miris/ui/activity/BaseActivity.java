@@ -1,5 +1,6 @@
 package com.miris.ui.activity;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -52,6 +53,7 @@ public class BaseActivity extends AppCompatActivity{
     public static ArrayList<UserProfileListData> userProfileListData;
     public static ArrayList<UserProImgData> userProImgData;
     SessionPreferences session;
+    public static int badge_count = 0;
 
     @Override
     public void setContentView(int layoutResID) {
@@ -104,6 +106,16 @@ public class BaseActivity extends AppCompatActivity{
     }
 
     @Optional
+    @OnClick(R.id.ivLogo)
+    public void onivLogoClick(final View v) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
+
+    @Optional
     @OnClick(R.id.ivCalendar)
     public void onivCalendarClick(final View v) {
         Intent intent = new Intent(this, CalendarActivity.class);
@@ -122,5 +134,18 @@ public class BaseActivity extends AppCompatActivity{
         InputMethodManager imm = (InputMethodManager)a_oView.getContext().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         return imm.showSoftInput(a_oView, InputMethodManager.RESULT_UNCHANGED_SHOWN);
+    }
+
+    protected void mirisBadge() {
+        badge_count = 0;
+        Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
+        intent.putExtra("badge_count_package_name", getComponentName().getPackageName());
+        intent.putExtra("badge_count_class_name", "com.miris.ui.activity.SignInActivity");
+        intent.putExtra("badge_count", badge_count);
+        sendBroadcast(intent);
+
+        NotificationManager NM = (NotificationManager)
+                getSystemService(NOTIFICATION_SERVICE);
+        NM.cancel(1);
     }
 }

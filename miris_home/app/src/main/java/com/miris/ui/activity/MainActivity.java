@@ -40,6 +40,7 @@ import butterknife.OnClick;
 public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFeedItemClickListener,
         FeedContextMenu.OnFeedContextMenuItemClickListener, WaveSwipeRefreshLayout.OnRefreshListener {
     public static final String ACTION_SHOW_LOADING_ITEM = "action_show_loading_item";
+    public static final String ACTION_NO_IMG_ITEM = "action_no_img_item";
 
     private static final int ANIM_DURATION_TOOLBAR = 300;
     private static final int ANIM_DURATION_FAB = 400;
@@ -62,6 +63,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
     ProgressDialog myLoadingDialog;
     int maxSize = 0;
+    int setSkip = 0;
+    int obsize = 0;
+    boolean isLastItemVisibleOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +86,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             }
         };
         rvFeed.setLayoutManager(linearLayoutManager);
-        new loadDataTask().execute();
+        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
@@ -96,7 +100,17 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             public void run() {
                 ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
                 try {
-                    if (noticeData.size() < offerQuery.find().size()) {
+                    mirisBadge();
+                    int updatesize = 0;
+                    for (ParseObject country : offerQuery.find()) {
+                        if (country.get("user_public").toString().equals("N")) {
+                            if (!country.get("user_id").toString().equals(memberData.get(0).getuserId())) {
+                                continue;
+                            }
+                        }
+                        updatesize ++;
+                    }
+                    if (noticeData.size() < updatesize) {
                         updateData = true;
                         new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
@@ -116,21 +130,30 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         }
         @Override
         protected Void doInBackground(Void... arg0) {
-            maxSize = 0;
+
+            if (!updateData) {
+                noticeData = new ArrayList<NoticeListData>();
+                maxSize = 0;
+                setSkip = 0;
+            }
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
+            offerQuery.setLimit(10);
+            offerQuery.setSkip(setSkip);
             offerQuery.orderByDescending("createdAt");
-            noticeData = new ArrayList<NoticeListData>();
 
             try {
                 ob = offerQuery.find();
+                obsize = ob.size();
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
 
             for (ParseObject country : ob) {
+
                 if (country.get("user_public").toString().equals("N")) {
                     if (!country.get("user_id").toString().equals(memberData.get(0).getuserId())) {
+                        setSkip = setSkip + 1;
                         continue;
                     }
                 }
@@ -143,21 +166,47 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         country.get("creatdate").toString(),
                         country.get("user_public").toString()));
                 new loadImgTask().execute(country);
+                setSkip++;
             }
             return null ;
         }
         @Override
         protected void onPostExecute(Void result) {
-
             if (!updateData) {
                 feedAdapter = new FeedAdapter(MainActivity.this, noticeData);
                 rvFeed.setAdapter(feedAdapter);
                 feedAdapter.setOnFeedItemClickListener(MainActivity.this);
 
                 rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                    private int scrollY = 0;
+                    private boolean isLastItemVisible = false;
+
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+                    }
+
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
                         FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
+
+                        int visibleItemCount = recyclerView.getChildCount();
+                        int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+                        int firstVisibleItems = 0;
+                        firstVisibleItems = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                        isLastItemVisible = (totalItemCount > 0) && ((firstVisibleItems + visibleItemCount) >= totalItemCount);
+                        int pastVisibleItems = firstVisibleItems;
+                        scrollY += dy;
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                            if (!isLastItemVisibleOpen) {
+                                if (obsize != 0) {
+                                    isLastItemVisibleOpen = true;
+                                    updateData = true;
+                                    new loadDataTask().execute();
+                                }
+                            }
+                        }
                     }
                 });
 
@@ -166,9 +215,11 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 mWaveSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
             }
             feedAdapter.updateItems(true);
+            isLastItemVisibleOpen = false;
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();
             }
+            mirisBadge();
         }
     }
 
@@ -219,9 +270,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 noticeData.get(maxSize).setuserimgBitmap(userBmap);
                 noticeData.get(maxSize).setimgBitmap(bMap);
 
-                if (maxSize != ob.size()) {
-                    maxSize++;
-                }
+                maxSize++;
             return null ;
         }
         @Override
@@ -251,9 +300,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (ACTION_SHOW_LOADING_ITEM.equals(intent.getAction())) {
-            feedAdapter.updateItems(true);
             showFeedLoadingItemDelayed();
         }
+        feedAdapter.updateItems(true);
     }
 
     private void showFeedLoadingItemDelayed() {
@@ -269,12 +318,20 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     @Override
     protected void onResume() {
         super.onResume();
+        if (m_openDrawer){
+            drawerLayout.closeDrawers();
+            m_openDrawer = false;
+        }
         if (pendingIntroAnimation) {
             pendingIntroAnimation = false;
             startIntroAnimation();
         }
     }
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        FeedContextMenuManager.getInstance().hidePauseMenu();
+    }
     private void startIntroAnimation() {
         fabCreate.setTranslationY(2 * getResources().getDimensionPixelOffset(R.dimen.btn_fab_size));
 

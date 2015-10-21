@@ -146,7 +146,13 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 holder.ivUserSecret.setVisibility(View.INVISIBLE);
             }
             holder.ivUserName.setText(noticeData.get(position).getusername());
-            holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
+            if (noticeData.get(position).getimgBitmap() == null) {
+                holder.vImageRoot.setVisibility(View.GONE);
+            } else {
+                holder.vImageRoot.setVisibility(View.VISIBLE);
+                holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
+            }
+
             holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
             holder.ivUserDate.setText(noticeData.get(position).getdate());
             holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmap());
@@ -172,7 +178,12 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private void bindLoadingFeedItem(int position, final CellFeedViewHolder holder) {
-        holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
+        if (noticeData.get(position).getimgBitmap() == null) {
+            holder.vImageRoot.setVisibility(View.GONE);
+        } else {
+            holder.vImageRoot.setVisibility(View.VISIBLE);
+            holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
+        }
         holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
         holder.ivUserName.setText(noticeData.get(position).getusername());
         holder.ivUserDate.setText(noticeData.get(position).getdate());

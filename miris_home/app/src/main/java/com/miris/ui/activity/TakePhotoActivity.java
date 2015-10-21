@@ -94,6 +94,8 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     ImageButton btnBack;
     @InjectView(R.id.touchListener)
     RadioButton touchListener;
+    @InjectView(R.id.btn_ic_write)
+    ImageButton btn_ic_write;
 
     private boolean pendingIntro;
     private int currentState;
@@ -247,11 +249,6 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             Toast.makeText(mContext, "no camera on this device!",Toast.LENGTH_SHORT).show();
             finish();
         }
-        preview = (FrameLayout) findViewById(R.id.camera_preview);
-        mPreview = new CameraPreview(this);
-        mPreview.setCamera(mCamera);
-
-        preview.addView(mPreview);
 
         touchListener.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -292,6 +289,11 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             mCamera.takePicture(null, null, mPicture);
             animateShutter();
         }
+    }
+
+    @OnClick(R.id.btn_ic_write)
+    public void onBtnWriteClick() {
+        PublishActivity.openWithPhotoUri(this, null);
     }
 
     @OnClick(R.id.btnTakeGallery)

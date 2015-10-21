@@ -58,6 +58,11 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/ivFeedBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <com.miris.ui.view.SquaredFrameLayout
             android:id="@+id/vImageRoot"
             android:layout_width="match_parent"
@@ -86,10 +91,7 @@
 
         </com.miris.ui.view.SquaredFrameLayout>
 
-        <TextView
-            android:id="@+id/ivFeedBottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+
 
         <LinearLayout
             android:layout_width="match_parent"

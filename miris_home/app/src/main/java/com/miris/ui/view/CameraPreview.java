@@ -3,6 +3,7 @@ package com.miris.ui.view;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -27,11 +28,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Log.i(TAG, "surfaceCreated!");
         try {
 			Camera.Parameters parameters = mCamera.getParameters();
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            } else {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            }
 			if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
 				parameters.set("orientation", "portrait");
 				mCamera.setDisplayOrientation(90);
-				parameters.setRotation(90);
+                parameters.setRotation(90);
 			} else {
 				parameters.set("orientation", "landscape");
 				mCamera.setDisplayOrientation(0);

@@ -17,6 +17,7 @@ import com.miris.R;
 import com.miris.ui.adapter.BlurBehind;
 import com.miris.ui.adapter.OnBlurCompleteListener;
 import com.miris.ui.utils.CircleTransformation;
+import com.miris.ui.view.FeedContextMenuManager;
 import com.squareup.picasso.Picasso;
 
 import butterknife.InjectView;
@@ -59,6 +60,7 @@ public class BaseDrawerActivity extends BaseActivity {
             getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    FeedContextMenuManager.getInstance().hidePauseMenu();
                     m_openDrawer = true;
                     drawerLayout.openDrawer(Gravity.LEFT);
                 }
@@ -84,7 +86,9 @@ public class BaseDrawerActivity extends BaseActivity {
 
     private void setupHeader() {
         this.avatarSize = getResources().getDimensionPixelSize(R.dimen.global_menu_avatar_size);
-        this.profilePhoto = memberData.get(0).getuserImgurl();
+        if (!memberData.get(0).getuserImgurl().equals("")) {
+            this.profilePhoto = memberData.get(0).getuserImgurl();
+        }
         ivMenuUserProfileName.setText(memberData.get(0).getuser_name());
         Picasso.with(this)
                 .load(profilePhoto)

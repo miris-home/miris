@@ -24,6 +24,7 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="아이디"
+            android:privateImeOptions="defaultInputmode=english"
             android:maxLines="1"
             android:textSize="23dp"/>
         <EditText

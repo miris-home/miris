@@ -23,6 +23,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.miris.R;
@@ -77,7 +78,11 @@ public class PublishActivity extends BaseActivity {
 
     public static void openWithPhotoUri(Activity openingActivity, Uri photoUri) {
         Intent intent = new Intent(openingActivity, PublishActivity.class);
-        intent.putExtra(ARG_TAKEN_PHOTO_URI, photoUri);
+        if (photoUri == null) {
+            intent.putExtra(ARG_TAKEN_PHOTO_URI, "");
+        } else {
+            intent.putExtra(ARG_TAKEN_PHOTO_URI, photoUri);
+        }
         openingActivity.startActivity(intent);
     }
 
@@ -111,14 +116,18 @@ public class PublishActivity extends BaseActivity {
         }
         updateStatusBarColor();
 
-        ivPhoto.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                ivPhoto.getViewTreeObserver().removeOnPreDrawListener(this);
-                loadThumbnailPhoto();
-                return true;
-            }
-        });
+        if (photoUri == null) {
+            ivPhoto.setVisibility(View.GONE);
+        } else {
+            ivPhoto.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    ivPhoto.getViewTreeObserver().removeOnPreDrawListener(this);
+                    loadThumbnailPhoto();
+                    return true;
+                }
+            });
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -161,8 +170,12 @@ public class PublishActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_publish) {
-            hideSoftInputWindow(findViewById(R.id.action_publish));
-            new setDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            if (photoUri == null && etDescription.getText().toString().equals("")) {
+                Toast.makeText(getApplicationContext(), getString(R.string.publish_text_img_check), Toast.LENGTH_SHORT).show();
+            } else {
+                hideSoftInputWindow(findViewById(R.id.action_publish));
+                new setDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -192,21 +205,25 @@ public class PublishActivity extends BaseActivity {
         protected Void doInBackground(Void... arg0) {
             ParseFile file = null;
             userBitmap = memberData.get(0).getuser_img();
-            try {
-                file = new ParseFile("user_img.png", readBytes(photoUri));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            file.saveInBackground();
-            try {
-                clsBitmap 	= imgUriPath(photoUri);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             ParseObject testObject = new ParseObject("miris_notice");
+            if (photoUri == null) {
+            } else {
+                try {
+                    file = new ParseFile("user_img.png", readBytes(photoUri));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                file.saveInBackground();
+                try {
+                    clsBitmap 	= imgUriPath(photoUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                testObject.put("user_img", file);
+            }
             testObject.put("user_id", memberData.get(0).getuserId());
             testObject.put("user_name", memberData.get(0).getuser_name());
-            testObject.put("user_img", file);
+
             testObject.put("user_text", etDescription.getText().toString());
             testObject.put("user_like", 1);
             testObject.put("creatdate", Utils.getCalendar());
@@ -246,20 +263,40 @@ public class PublishActivity extends BaseActivity {
                             if (myLoadingDialog != null) {
                                 myLoadingDialog.dismiss();
                             }
-                            noticeData.add(0, new NoticeListData(
-                                    country.getObjectId(),
-                                    memberData.get(0).getuserId(),
-                                    memberData.get(0).getuser_name(),
-                                    userBitmap,
-                                    clsBitmap,
-                                    etDescription.getText().toString(),
-                                    1,
-                                    Utils.getCalendar()));
+                            if (photoUri == null) {
+                                noticeData.add(0, new NoticeListData(
+                                        country.getObjectId(),
+                                        memberData.get(0).getuserId(),
+                                        memberData.get(0).getuser_name(),
+                                        userBitmap,
+                                        etDescription.getText().toString(),
+                                        1,
+                                        Utils.getCalendar(),
+                                        newWritingPublic));
+                            } else {
+                                noticeData.add(0, new NoticeListData(
+                                        country.getObjectId(),
+                                        memberData.get(0).getuserId(),
+                                        memberData.get(0).getuser_name(),
+                                        userBitmap,
+                                        clsBitmap,
+                                        etDescription.getText().toString(),
+                                        1,
+                                        Utils.getCalendar(),
+                                        newWritingPublic));
+                            }
+
                             if (SwitchCheck) {
                                 ParsePush push = new ParsePush();
                                 push.setMessage(getString(R.string.notice_push));
                                 push.sendInBackground();
                             }
+                            badge_count = badge_count +1;
+                            Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
+                            intent.putExtra("badge_count_package_name", getComponentName().getPackageName());
+                            intent.putExtra("badge_count_class_name", "com.miris.ui.activity.SignInActivity");
+                            intent.putExtra("badge_count", badge_count);
+                            sendBroadcast(intent);
                             bringMainActivityToTop();
                             break;
                         }
@@ -347,7 +384,11 @@ public class PublishActivity extends BaseActivity {
     private void bringMainActivityToTop() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.setAction(MainActivity.ACTION_SHOW_LOADING_ITEM);
+        if (photoUri == null) {
+            intent.setAction(MainActivity.ACTION_NO_IMG_ITEM);
+        } else {
+            intent.setAction(MainActivity.ACTION_SHOW_LOADING_ITEM);
+        }
         startActivity(intent);
     }
 
@@ -363,6 +404,8 @@ public class PublishActivity extends BaseActivity {
             propagatingToggleState = true;
             tbDirect.setChecked(!checked);
             newWritingPublic = "N";
+            etSwitch.setChecked(false);
+            etSwitch.setVisibility(View.INVISIBLE);
             propagatingToggleState = false;
         }
     }
@@ -373,6 +416,7 @@ public class PublishActivity extends BaseActivity {
             propagatingToggleState = true;
             tbFollowers.setChecked(!checked);
             newWritingPublic = "Y";
+            etSwitch.setVisibility(View.VISIBLE);
             propagatingToggleState = false;
         }
     }

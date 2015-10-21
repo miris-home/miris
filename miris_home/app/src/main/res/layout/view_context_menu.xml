@@ -4,8 +4,7 @@
     <Button
         android:id="@+id/btnShareText"
         style="@style/ContextMenuButton"
-        android:text="@string/share_text"
-        android:textColor="@color/btn_context_menu_text_red" />
+        android:text="@string/share_text"/>
 
     <Button
         android:id="@+id/btnSharePhoto"
