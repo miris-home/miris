@@ -1,6 +1,8 @@
 package com.miris.ui.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +39,7 @@ public class IntroActivity extends BaseActivity {
         setContentView(R.layout.activity_intro_base);
         
         session = new SessionPreferences(getApplicationContext());
+        setshortcut();
         Button btnLogin = (Button) findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,6 +209,33 @@ public class IntroActivity extends BaseActivity {
             isSliderAnimation = inState.getBoolean(SAVING_STATE_SLIDER_ANIMATION,false);
         }
         super.onRestoreInstanceState(inState);
+    }
 
+    private void setshortcut() {
+        try {
+            PackageManager pm = this.getPackageManager();
+            PackageInfo packageInfo = pm.getPackageInfo(getPackageName(), 0);
+            int VERSION = packageInfo.versionCode;
+            int old_Ver = session.getShortcut();
+            if (old_Ver < VERSION) {
+                Intent shortcutIntent = new Intent(Intent.ACTION_MAIN);
+                shortcutIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                shortcutIntent.setClassName(this, "com.miris.ui.activity.SignInActivity");
+                shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+
+                Intent intent = new Intent();
+                intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                intent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
+                        getResources().getString(R.string.app_name));
+                intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
+                        Intent.ShortcutIconResource.fromContext(this, R.drawable.ic_launcher));
+                intent.putExtra("duplicate", false);
+                intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                sendBroadcast(intent);
+                session.setShortcut(VERSION);
+            }
+        } catch (Exception e) {
+        }
     }
 }

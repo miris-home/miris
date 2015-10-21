@@ -128,6 +128,7 @@ public class PublishActivity extends BaseActivity {
                 }
             });
         }
+
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

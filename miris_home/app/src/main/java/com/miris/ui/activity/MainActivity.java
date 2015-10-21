@@ -98,25 +98,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
-                try {
-                    mirisBadge();
-                    int updatesize = 0;
-                    for (ParseObject country : offerQuery.find()) {
-                        if (country.get("user_public").toString().equals("N")) {
-                            if (!country.get("user_id").toString().equals(memberData.get(0).getuserId())) {
-                                continue;
-                            }
-                        }
-                        updatesize ++;
-                    }
-                    if (noticeData.size() < updatesize) {
-                        updateData = true;
-                        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                mirisBadge();
+                updateData = true;
+                new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 mWaveSwipeRefreshLayout.setRefreshing(false);
             }
         }, 2000);
@@ -126,7 +110,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
         @Override
         protected void onPreExecute() {
-            showDialog();
+            if (!updateData) {
+                showDialog();
+            }
         }
         @Override
         protected Void doInBackground(Void... arg0) {
@@ -148,7 +134,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-
             for (ParseObject country : ob) {
 
                 if (country.get("user_public").toString().equals("N")) {

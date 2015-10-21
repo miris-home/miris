@@ -54,4 +54,12 @@ public class SessionPreferences {
 
     }
 
+    public void setShortcut(int vsrsionName){
+        editor.putInt("version", vsrsionName);
+        editor.commit();
+    }
+
+    public int getShortcut(){
+        return pref.getInt("version", 0);
+    }
 }
