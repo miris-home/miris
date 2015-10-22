@@ -1,6 +1,8 @@
 package com.miris.ui.activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +27,7 @@ import com.miris.ui.adapter.FeedAdapter;
 import com.miris.ui.view.FeedContextMenu;
 import com.miris.ui.view.FeedContextMenuManager;
 import com.miris.ui.view.WaveSwipeRefreshLayout;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -66,6 +69,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     int setSkip = 0;
     int obsize = 0;
     boolean isLastItemVisibleOpen = false;
+    boolean isDeleteList = false;
+    loadImgTask setLoadImgTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +123,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         protected Void doInBackground(Void... arg0) {
 
             if (!updateData) {
+                if (noticeData != null) {
+                    noticeData.clear();
+                }
                 noticeData = new ArrayList<NoticeListData>();
                 maxSize = 0;
                 setSkip = 0;
@@ -135,7 +143,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 e.printStackTrace();
             }
             for (ParseObject country : ob) {
-
+                if (isCancelled()) {
+                    return null;
+                }
                 if (country.get("user_public").toString().equals("N")) {
                     if (!country.get("user_id").toString().equals(memberData.get(0).getuserId())) {
                         setSkip = setSkip + 1;
@@ -150,14 +160,15 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         country.getInt("user_like"),
                         country.get("creatdate").toString(),
                         country.get("user_public").toString()));
-                new loadImgTask().execute(country);
+                setLoadImgTask = new loadImgTask();
+                setLoadImgTask.execute(country);
                 setSkip++;
             }
             return null ;
         }
         @Override
         protected void onPostExecute(Void result) {
-            if (!updateData) {
+            if (!updateData && !isDeleteList) {
                 feedAdapter = new FeedAdapter(MainActivity.this, noticeData);
                 rvFeed.setAdapter(feedAdapter);
                 feedAdapter.setOnFeedItemClickListener(MainActivity.this);
@@ -188,7 +199,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                                 if (obsize != 0) {
                                     isLastItemVisibleOpen = true;
                                     updateData = true;
-                                    new loadDataTask().execute();
+                                    new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
                             }
                         }
@@ -201,10 +212,10 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             }
             feedAdapter.updateItems(true);
             isLastItemVisibleOpen = false;
+            updateData = false;
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();
             }
-            mirisBadge();
         }
     }
 
@@ -212,6 +223,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
         @Override
         protected Void doInBackground(ParseObject... country) {
+                if (isCancelled()) {
+                    return null;
+                }
                 Bitmap bMap = null;
                 Bitmap userBmap = null;
                 String bMapPath = null;
@@ -398,6 +412,60 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     @Override
     public void onCancelClick(int feedItem) {
         FeedContextMenuManager.getInstance().hideContextMenu();
+    }
+
+    @Override
+    public void onUserDeleteClick(View v, final int position) {
+        AlertDialog dlg = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.delete_text))
+                .setMessage(getString(R.string.delete_message))
+                .setNegativeButton(getString(R.string.btn_cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (whichButton == DialogInterface.BUTTON_NEGATIVE) {
+                            dialog.cancel();
+                        }
+                    }
+                })
+                .setPositiveButton(getString(R.string.btn_confirm), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (whichButton == DialogInterface.BUTTON_POSITIVE) {
+                            if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
+                                setLoadImgTask.cancel(true);
+                            }
+                            ParseObject.createWithoutData("objectId", noticeData.get(position).getobjId()).deleteEventually();
+                            ParseQuery<ParseObject> mainListQuery = new ParseQuery<ParseObject>("miris_notice");
+                            mainListQuery.whereEqualTo("objectId", noticeData.get(position).getobjId());
+                            mainListQuery.findInBackground(new FindCallback<ParseObject>() {
+                                public void done(List<ParseObject> module, ParseException e) {
+                                    if (e == null) {
+                                        for (ParseObject delete : module) {
+                                            delete.deleteInBackground();
+                                        }
+                                    } else {
+                                        Log.e("Error", e.getMessage());
+                                    }
+                                }
+                            });
+                            ParseQuery<ParseObject> commitListQuery = new ParseQuery<ParseObject>("miris_commit");
+                            commitListQuery.whereEqualTo("user_defult_id", noticeData.get(position).getobjId());
+                            commitListQuery.findInBackground(new FindCallback<ParseObject>() {
+                                public void done(List<ParseObject> module, ParseException e) {
+                                    if (e == null) {
+                                        for (ParseObject delete : module) {
+                                            delete.deleteInBackground();
+                                        }
+                                    } else {
+                                        Log.e("Error", e.getMessage());
+                                    }
+                                }
+                            });
+                            isDeleteList = true;
+                            new loadDataTask().execute();
+                            Snackbar.make(clContent, getString(R.string.delete_toast), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .show();
     }
 
     @OnClick(R.id.btnCreate)

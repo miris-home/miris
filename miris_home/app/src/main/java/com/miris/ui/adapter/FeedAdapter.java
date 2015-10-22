@@ -88,6 +88,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             cellFeedViewHolder.ivFeedCenter.setOnClickListener(this);
             cellFeedViewHolder.btnLike.setOnClickListener(this);
             cellFeedViewHolder.ivUserProfile.setOnClickListener(this);
+            cellFeedViewHolder.ivUserDelete.setOnClickListener(this);
         } else if (viewType == VIEW_TYPE_LOADER) {
             View bgView = new View(context);
             bgView.setLayoutParams(new FrameLayout.LayoutParams(
@@ -145,6 +146,11 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             } else {
                 holder.ivUserSecret.setVisibility(View.INVISIBLE);
             }
+            if (noticeData.get(position).getuserid().equals(memberData.get(0).getuserId())) {
+                holder.ivUserDelete.setVisibility(View.VISIBLE);
+            } else {
+                holder.ivUserDelete.setVisibility(View.INVISIBLE);
+            }
             holder.ivUserName.setText(noticeData.get(position).getusername());
             if (noticeData.get(position).getimgBitmap() == null) {
                 holder.vImageRoot.setVisibility(View.GONE);
@@ -170,6 +176,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         holder.btnMore.setTag(position);
         holder.ivFeedCenter.setTag(holder);
         holder.btnLike.setTag(holder);
+        holder.ivUserDelete.setTag(position);
 
         if (likeAnimations.containsKey(holder)) {
             likeAnimations.get(holder).cancel();
@@ -327,6 +334,10 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             if (onFeedItemClickListener != null) {
                 onFeedItemClickListener.onProfileClick(view, (Integer) view.getTag());
             }
+        } else if (viewId == R.id.ivUserDelete) {
+            if (onFeedItemClickListener != null) {
+                onFeedItemClickListener.onUserDeleteClick(view, (Integer) view.getTag());
+            }
         }
     }
 
@@ -430,6 +441,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         FrameLayout vImageRoot;
         @InjectView(R.id.ivUserSecret)
         ImageView ivUserSecret;
+        @InjectView(R.id.ivUserDelete)
+        ImageButton ivUserDelete;
 
 
         SendingProgressView vSendingProgress;
@@ -448,6 +461,9 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         public void onMoreClick(View v, int position);
 
         public void onProfileClick(View v, int position);
+
+        public void onUserDeleteClick(View v, int position);
+
     }
 
     class updateLikeTask extends AsyncTask<CellFeedViewHolder, Void, Void> {

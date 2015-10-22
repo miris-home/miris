@@ -6,7 +6,7 @@
     <string name="calender">달력</string>
     <string name="social_network">미르이즈 가족</string>
     <string name="btn_cancel">취소</string>
-
+    <string name="btn_confirm">확인</string>
 
     <string name="contact_hint">미르이즈 가족들의 개인 연락처를 \n확인할수 있습니다.</string>
     <string name="calender_hint">회사 한해 일정 및 개인 일정을 \n확인 할수 있습니다.</string>
@@ -52,4 +52,7 @@
     <string name="text_about_capyright">COPYRIGHT(C) MIRIS ALL RIGHT RESERVED.</string>
     <string name="share_app_list">미르이즈 공유목록 앱</string>
     <string name="publish_text_img_check">새글항목에 작성한 내역이 없습니다.</string>
+    <string name="delete_text">게시글 삭제</string>
+    <string name="delete_message">정말로 삭제 하시겠습니까?</string>
+    <string name="delete_toast">삭제 되었습니다.</string>
 </resources>
