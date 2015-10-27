@@ -13,19 +13,22 @@ public class MemberListData {
     Bitmap user_img;
     String userImgurl;
     int user_TotalLike;
+    int user_TotalCommit;
     int user_registernumber;
     String user_rank;
     String user_email;
 
     public MemberListData(String userId, String user_name, String user_age,
                           Bitmap user_img, String userImgurl, int user_TotalLike,
-                          int user_registernumber, String user_rank, String user_email) {
+                          int user_TotalCommit, int user_registernumber,
+                          String user_rank, String user_email) {
         this.userId = userId;
         this.user_name = user_name;
         this.user_age = user_age;
         this.user_img = user_img;
         this.userImgurl = userImgurl;
         this.user_TotalLike = user_TotalLike;
+        this.user_TotalCommit = user_TotalCommit;
         this.user_registernumber = user_registernumber;
         this.user_rank = user_rank;
         this.user_email = user_email;
@@ -53,6 +56,10 @@ public class MemberListData {
 
     public void setuser_TotalLike(int  user_TotalLike) {
         this.user_TotalLike = user_TotalLike;
+    }
+
+    public void setuser_TotalCommit(int  user_TotalCommit) {
+        this.user_TotalCommit = user_TotalCommit;
     }
 
     public void setuser_registernumber(int  user_registernumber) {
@@ -89,6 +96,10 @@ public class MemberListData {
 
     public int getuser_TotalLike() {
         return user_TotalLike;
+    }
+
+    public int getuser_TotalCommit() {
+        return user_TotalCommit;
     }
 
     public int getuser_registernumber() {

@@ -153,6 +153,7 @@ public class SignInActivity extends BaseActivity {
                             bMap,
                             userImgurl,
                             country.getInt("user_totallike"),
+                            country.getInt("user_totalcommit"),
                             country.getInt("user_registernumber"),
                             country.get("user_rank").toString(),
                             country.get("user_email").toString()));

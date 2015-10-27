@@ -165,7 +165,11 @@ public class SendingProgressView extends View {
     }
 
     private void resetTempCanvas() {
-        tempBitmap = Bitmap.createBitmap(getWidth(), getWidth(), Bitmap.Config.ARGB_8888);
+        int getLayoutWidth = getWidth();
+        if (getLayoutWidth == 0) {
+            getLayoutWidth = 600;
+        }
+        tempBitmap = Bitmap.createBitmap(getLayoutWidth, getLayoutWidth, Bitmap.Config.ARGB_8888);
         tempCanvas = new Canvas(tempBitmap);
     }
 
@@ -205,7 +209,9 @@ public class SendingProgressView extends View {
             return;
         }
 
-        tempBitmap.recycle();
+        if (tempBitmap != null) {
+            tempBitmap.recycle();
+        }
         resetTempCanvas();
 
         this.state = state;

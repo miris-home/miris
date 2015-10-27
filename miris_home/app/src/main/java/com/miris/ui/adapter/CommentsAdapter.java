@@ -15,6 +15,9 @@ import com.miris.R;
 import com.miris.ui.utils.RoundedTransformation;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -50,6 +53,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         CommentViewHolder holder = (CommentViewHolder) viewHolder;
         holder.tvUserName.setText(commitData.get(position).getuser_name());
         holder.tvComment.setText(commitData.get(position).getuserEditText());
+        holder.tvDate.setText(dateTimeZone(commitData.get(position).getuser_createDate()));
 
         Picasso.with(context)
                 .load(commitData.get(position).getuser_img_url())
@@ -81,6 +85,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    private String dateTimeZone(Date duDate) {
+        String createDate = null;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh:mm");
+        TimeZone tz = TimeZone.getTimeZone("Asia/Seoul");
+        df.setTimeZone(tz);
+        createDate = df.format(duDate);
+
+        return createDate;
+    }
     @Override
     public int getItemCount() {
         return itemsCount;
@@ -106,6 +119,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView tvUserName;
         @InjectView(R.id.tvComment)
         TextView tvComment;
+        @InjectView(R.id.tvDate)
+        TextView tvDate;
 
 
         public CommentViewHolder(View view) {

@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +29,6 @@ import android.widget.ToggleButton;
 
 import com.miris.R;
 import com.miris.Utils;
-import com.miris.net.NoticeListData;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -40,7 +40,6 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
@@ -68,11 +67,7 @@ public class PublishActivity extends BaseActivity {
     private boolean propagatingToggleState = false;
     private Uri photoUri;
     private int photoSize;
-    File photoFile;
     ProgressDialog myLoadingDialog;
-    Bitmap clsBitmap;
-    Bitmap userBitmap;
-    List<ParseObject> ob;
     Boolean SwitchCheck = false;
     String newWritingPublic = "Y";
 
@@ -205,7 +200,6 @@ public class PublishActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             ParseFile file = null;
-            userBitmap = memberData.get(0).getuser_img();
             ParseObject testObject = new ParseObject("miris_notice");
             if (photoUri == null) {
             } else {
@@ -215,18 +209,12 @@ public class PublishActivity extends BaseActivity {
                     e.printStackTrace();
                 }
                 file.saveInBackground();
-                try {
-                    clsBitmap 	= imgUriPath(photoUri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 testObject.put("user_img", file);
             }
             testObject.put("user_id", memberData.get(0).getuserId());
             testObject.put("user_name", memberData.get(0).getuser_name());
-
             testObject.put("user_text", etDescription.getText().toString());
-            testObject.put("user_like", 1);
+            testObject.put("user_like", 0);
             testObject.put("creatdate", Utils.getCalendar());
             testObject.put("user_public", newWritingPublic);
 
@@ -235,72 +223,31 @@ public class PublishActivity extends BaseActivity {
                 @Override
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
-                        final int userAddApp;
-                        userAddApp = memberData.get(0).getuser_registernumber() +1 ;
                         ParseQuery testObject = ParseQuery.getQuery("miris_member");
                         testObject.whereEqualTo("user_id", memberData.get(0).getuserId());
                         testObject.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> updateLikeList, ParseException e) {
                                 if (e == null) {
+                                    Log.e("PHJ", "¼º°ø");
                                     for (ParseObject nameObj : updateLikeList) {
+                                        int userAddApp = memberData.get(0).getuser_registernumber() +1 ;
                                         nameObj.put("user_registernumber", userAddApp);
                                         nameObj.saveInBackground();
+
                                         memberData.get(0).setuser_registernumber(userAddApp);
                                     }
                                 }
                             }
                         });
-                        ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_notice");
-                        offerQuery.whereEqualTo("user_id", memberData.get(0).getuserId());
-                        offerQuery.orderByDescending("createdAt");
-                        try {
-                            ob = offerQuery.find();
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
+                        ParsePush push = new ParsePush();
+                        if (SwitchCheck) {
+                            push.setMessage(getString(R.string.notice_push));
+                        } else {
+                            push.setMessage("false");
                         }
-                        for (ParseObject country : ob) {
-                            userBitmap = userBitmap.createScaledBitmap(userBitmap, 120, 120, true);
-                            if (myLoadingDialog != null) {
-                                myLoadingDialog.dismiss();
-                            }
-                            if (photoUri == null) {
-                                noticeData.add(0, new NoticeListData(
-                                        country.getObjectId(),
-                                        memberData.get(0).getuserId(),
-                                        memberData.get(0).getuser_name(),
-                                        userBitmap,
-                                        etDescription.getText().toString(),
-                                        1,
-                                        Utils.getCalendar(),
-                                        newWritingPublic));
-                            } else {
-                                noticeData.add(0, new NoticeListData(
-                                        country.getObjectId(),
-                                        memberData.get(0).getuserId(),
-                                        memberData.get(0).getuser_name(),
-                                        userBitmap,
-                                        clsBitmap,
-                                        etDescription.getText().toString(),
-                                        1,
-                                        Utils.getCalendar(),
-                                        newWritingPublic));
-                            }
-
-                            if (SwitchCheck) {
-                                ParsePush push = new ParsePush();
-                                push.setMessage(getString(R.string.notice_push));
-                                push.sendInBackground();
-                            }
-                            badge_count = badge_count +1;
-                            Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
-                            intent.putExtra("badge_count_package_name", getComponentName().getPackageName());
-                            intent.putExtra("badge_count_class_name", "com.miris.ui.activity.SignInActivity");
-                            intent.putExtra("badge_count", badge_count);
-                            sendBroadcast(intent);
-                            bringMainActivityToTop();
-                            break;
-                        }
+                        push.sendInBackground();
+                        bringMainActivityToTop();
                     }
                 }
             });
@@ -312,7 +259,6 @@ public class PublishActivity extends BaseActivity {
         Bitmap bitmap;
         AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
         BitmapFactory.Options opt = new BitmapFactory.Options();
-
         opt.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(uri.getPath(), opt);
 
@@ -320,8 +266,12 @@ public class PublishActivity extends BaseActivity {
             opt.inJustDecodeBounds = false;
             opt.inSampleSize = 4;
             bitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+        } else if (opt.outHeight  > 1000 || opt.outWidth > 1000) {
+            opt.inJustDecodeBounds = false;
+            opt.inSampleSize = 2;
+            bitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
         } else {
-            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            bitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
         }
         ExifInterface exif = new ExifInterface(uri.getPath());
         int exifOrientation = exif.getAttributeInt(
@@ -340,7 +290,6 @@ public class PublishActivity extends BaseActivity {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
 
             data = baos.toByteArray();
             bitmap.recycle();

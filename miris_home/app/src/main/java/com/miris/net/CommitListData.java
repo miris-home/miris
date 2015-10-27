@@ -1,5 +1,7 @@
 package com.miris.net;
 
+import java.util.Date;
+
 /**
  * Created by fantastic on 2015-09-22.
  */
@@ -9,13 +11,15 @@ public class CommitListData {
     String userEditText;
     String user_img_url;
     String user_name;
+    Date user_createDate;
 
     public CommitListData(String objId, String userEditText,
-                          String user_img_url, String user_name) {
+                          String user_img_url, String user_name, Date user_createDate) {
         this.objId = objId;
         this.userEditText = userEditText;
         this.user_img_url = user_img_url;
         this.user_name = user_name;
+        this.user_createDate = user_createDate;
     }
 
     public void setobjId(String objId) {
@@ -34,6 +38,10 @@ public class CommitListData {
         this.user_name = user_name;
     }
 
+    public void setuser_createDate(Date user_createDate) {
+        this.user_createDate = user_createDate;
+    }
+
     public String getobjId() {
         return objId;
     }
@@ -48,5 +56,9 @@ public class CommitListData {
 
     public String getuser_name() {
         return user_name;
+    }
+
+    public Date getuser_createDate() {
+        return user_createDate;
     }
 }

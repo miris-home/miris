@@ -203,7 +203,10 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     private void initLayout() {
         if (checkCameraHardware(mContext)) {
             mCamera = getCameraInstance(0);
-
+            if (mCamera == null) {
+                Toast.makeText(mContext, getString(R.string.toast_not_camera),Toast.LENGTH_SHORT).show();
+                finish();
+            }
             preview = (FrameLayout) findViewById(R.id.camera_preview);
             mPreview = new CameraPreview(this);
             mPreview.setCamera(mCamera);
@@ -345,6 +348,10 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
                 opt.inJustDecodeBounds = false;
                 opt.inSampleSize = 4;
                 clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+            } else if (opt.outHeight  > 1000 || opt.outWidth > 1000) {
+                opt.inJustDecodeBounds = false;
+                opt.inSampleSize = 2;
+                clsBitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
             } else {
                 try {
                     clsBitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), uri[0]);
@@ -442,6 +449,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     @OnClick(R.id.btnAccept)
     public void onAcceptClick() {
+        viewVisible = false;
         PublishActivity.openWithPhotoUri(this, Uri.fromFile(photoPath));
     }
 
@@ -634,5 +642,18 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             Log.i(TAG,"Saved at"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
             return mediaFile;
         }
+    }
+    @Override
+    public void onDestroy() {
+        if(mPreview != null){
+            Log.i(TAG,"preview camera released");
+            mPreview = null;
+        }
+        if (mCamera != null) {
+            Log.i(TAG,"Safely releasing camera!!");
+            mCamera.release();
+            mCamera = null;
+        }
+        super.onDestroy();
     }
 }

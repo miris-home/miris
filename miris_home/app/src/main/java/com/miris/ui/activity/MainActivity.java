@@ -28,6 +28,7 @@ import com.miris.ui.view.FeedContextMenu;
 import com.miris.ui.view.FeedContextMenuManager;
 import com.miris.ui.view.WaveSwipeRefreshLayout;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -49,7 +50,11 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     private static final int ANIM_DURATION_FAB = 400;
     private final long FINSH_INTERVAL_TIME    = 2000;
     private long backPressedTime        = 0;
-    public boolean updateData = false;
+    public boolean dialogUpdate = false;
+    public boolean updateNoticeData = false;
+    public boolean updateAdapter = false;
+    public boolean newIntentUpdate = false;
+    boolean isLastItemVisibleOpen = false;
 
     @InjectView(R.id.rvFeed)
     RecyclerView rvFeed;
@@ -68,8 +73,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     int maxSize = 0;
     int setSkip = 0;
     int obsize = 0;
-    boolean isLastItemVisibleOpen = false;
-    boolean isDeleteList = false;
+
     loadImgTask setLoadImgTask;
 
     @Override
@@ -104,7 +108,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             @Override
             public void run() {
                 mirisBadge();
-                updateData = true;
+                dialogUpdate = true;
+                updateAdapter = true;
                 new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 mWaveSwipeRefreshLayout.setRefreshing(false);
             }
@@ -115,14 +120,14 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
         @Override
         protected void onPreExecute() {
-            if (!updateData) {
+            if (!dialogUpdate) {
                 showDialog();
             }
         }
         @Override
         protected Void doInBackground(Void... arg0) {
 
-            if (!updateData) {
+            if (!updateNoticeData) {
                 if (noticeData != null) {
                     noticeData.clear();
                 }
@@ -168,7 +173,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         }
         @Override
         protected void onPostExecute(Void result) {
-            if (!updateData && !isDeleteList) {
+            if (!updateAdapter) {
                 feedAdapter = new FeedAdapter(MainActivity.this, noticeData);
                 rvFeed.setAdapter(feedAdapter);
                 feedAdapter.setOnFeedItemClickListener(MainActivity.this);
@@ -184,7 +189,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
                         FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
 
                         int visibleItemCount = recyclerView.getChildCount();
@@ -198,23 +202,31 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                             if (!isLastItemVisibleOpen) {
                                 if (obsize != 0) {
                                     isLastItemVisibleOpen = true;
-                                    updateData = true;
+                                    updateNoticeData = true;
+                                    updateAdapter = true;
                                     new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
                             }
                         }
                     }
                 });
-
                 mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.main_swipe);
                 mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.WHITE);
                 mWaveSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
             }
+
             feedAdapter.updateItems(true);
             isLastItemVisibleOpen = false;
-            updateData = false;
+            dialogUpdate = false;
+            updateNoticeData = false;
+            updateAdapter = false;
+
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();
+            }
+            if (newIntentUpdate) {
+                showFeedLoadingItemDelayed();
+                newIntentUpdate = false;
             }
         }
     }
@@ -223,58 +235,126 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
         @Override
         protected Void doInBackground(ParseObject... country) {
-                if (isCancelled()) {
-                    return null;
-                }
-                Bitmap bMap = null;
-                Bitmap userBmap = null;
-                String bMapPath = null;
-                ParseFile userImgfile = null;
+            if (isCancelled()) {
+                return null;
+            }
+            Bitmap bMap = null;
+            Bitmap userBmap = null;
+            String bMapPath = null;
+            ParseFile userImgfile = null;
 
-                ParseFile userFile = (ParseFile) country[0].get("user_img");
+            ParseFile userFile = (ParseFile) country[0].get("user_img");
 
-                if (userFile != null) {
-                    try {
-                        byte[] data = userFile.getData();
-                        bMapPath = userFile.getUrl();
-                        bMap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    } catch (ParseException e2) {
-                        e2.printStackTrace();
-                    }
-                }
-                ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("miris_member");
-                memberQuery.whereEqualTo("user_id", country[0].get("user_id").toString());
-
+            if (userFile != null) {
                 try {
-                    img_List = memberQuery.find();
-                } catch (ParseException e) {
-                    Log.e("Error", e.getMessage());
-                    e.printStackTrace();
+                    byte[] data = userFile.getData();
+                    bMapPath = userFile.getUrl();
+                    bMap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                } catch (ParseException e2) {
+                    e2.printStackTrace();
                 }
+            }
+            ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("miris_member");
+            memberQuery.whereEqualTo("user_id", country[0].get("user_id").toString());
 
-                int size = img_List.size();
-                for (int i = 0; i<size; i++){
-                    userImgfile = (ParseFile) img_List.get(i).get("user_img");
-                }
-                if (userImgfile != null) {
-                    try {
-                        byte[] data2 = userImgfile.getData();
-                        userBmap = BitmapFactory.decodeByteArray(data2, 0, data2.length);
-                        userBmap = userBmap.createScaledBitmap(userBmap, 120, 120, true);
-                    } catch (ParseException e2) {
-                        e2.printStackTrace();
-                    }
-                }
-                noticeData.get(maxSize).setimgPath(bMapPath);
-                noticeData.get(maxSize).setuserimgBitmap(userBmap);
-                noticeData.get(maxSize).setimgBitmap(bMap);
+            try {
+                img_List = memberQuery.find();
+            } catch (ParseException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
 
-                maxSize++;
+            int size = img_List.size();
+            for (int i = 0; i<size; i++){
+                userImgfile = (ParseFile) img_List.get(i).get("user_img");
+            }
+            if (userImgfile != null) {
+                try {
+                    byte[] data2 = userImgfile.getData();
+                    userBmap = BitmapFactory.decodeByteArray(data2, 0, data2.length);
+                    userBmap = userBmap.createScaledBitmap(userBmap, 120, 120, true);
+                } catch (ParseException e2) {
+                    e2.printStackTrace();
+                }
+            }
+            noticeData.get(maxSize).setimgPath(bMapPath);
+            noticeData.get(maxSize).setuserimgBitmap(userBmap);
+            noticeData.get(maxSize).setimgBitmap(bMap);
             return null ;
         }
         @Override
         protected void onPostExecute(Void result) {
-            feedAdapter.updateItems(true);
+            feedAdapter.notifyItemChanged(maxSize);
+            maxSize++;
+        }
+    }
+
+    class deleteImgTask extends AsyncTask<Integer, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+            ParseQuery<ParseObject> commitListQuery = new ParseQuery<ParseObject>("miris_commit");
+            commitListQuery.whereEqualTo("user_defult_id", noticeData.get(params[0]).getobjId());
+            commitListQuery.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> module, ParseException e) {
+                    if (e == null) {
+                        for (ParseObject delete : module) {
+                            ParseQuery<ParseObject> userListQuery = new ParseQuery<ParseObject>("miris_member");
+                            userListQuery.whereEqualTo("user_id", delete.get("user_id").toString());
+                            userListQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                public void done(ParseObject module, ParseException e) {
+                                    if (e == null) {
+                                        int uCommit = module.getInt("user_totalcommit") - 1;
+
+                                        module.put("user_totalcommit", uCommit);
+                                        module.saveInBackground();
+                                        if (memberData.get(0).getuserId().equals(module.get("user_id"))) {
+                                            memberData.get(0).setuser_TotalCommit(uCommit);
+                                        }
+                                    }
+                                }
+                            });
+                            delete.deleteInBackground();
+                        }
+                    }
+                }
+            });
+
+            ParseQuery<ParseObject> mainListQuery = new ParseQuery<ParseObject>("miris_notice");
+            mainListQuery.whereEqualTo("objectId", noticeData.get(params[0]).getobjId());
+            mainListQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject noticemodule, ParseException e) {
+                    if (e == null) {
+                        final int noticeLike = noticemodule.getInt("user_totallike");
+                        ParseQuery<ParseObject> userListQuery = new ParseQuery<ParseObject>("miris_member");
+                        userListQuery.whereEqualTo("user_id", noticemodule.get("user_id").toString());
+                        userListQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                            public void done(ParseObject membermodule, ParseException e) {
+                                if (e == null) {
+                                    int totalLike = membermodule.getInt("user_totallike");
+                                    int uRegister = membermodule.getInt("user_registernumber") - 1;
+                                    membermodule.put("user_totallike", totalLike - noticeLike);
+                                    membermodule.put("user_registernumber", uRegister);
+                                    membermodule.saveInBackground();
+
+                                    memberData.get(0).setuser_TotalLike(totalLike - noticeLike);
+                                    memberData.get(0).setuser_registernumber(uRegister);
+
+                                }
+                            }
+                        });
+                        noticemodule.deleteInBackground();
+                    }
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            updateAdapter = true;
+            Snackbar.make(clContent, getString(R.string.delete_toast), Snackbar.LENGTH_SHORT).show();
+            new loadDataTask().execute();
         }
     }
 
@@ -298,10 +378,12 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        updateAdapter = true;
         if (ACTION_SHOW_LOADING_ITEM.equals(intent.getAction())) {
-            showFeedLoadingItemDelayed();
+            dialogUpdate = true;
+            newIntentUpdate = true;
         }
-        feedAdapter.updateItems(true);
+        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void showFeedLoadingItemDelayed() {
@@ -311,7 +393,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 rvFeed.smoothScrollToPosition(0);
                 feedAdapter.showLoadingView();
             }
-        }, 700);
+        }, 200);
     }
 
     @Override
@@ -432,36 +514,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                             if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
                                 setLoadImgTask.cancel(true);
                             }
-                            ParseObject.createWithoutData("objectId", noticeData.get(position).getobjId()).deleteEventually();
-                            ParseQuery<ParseObject> mainListQuery = new ParseQuery<ParseObject>("miris_notice");
-                            mainListQuery.whereEqualTo("objectId", noticeData.get(position).getobjId());
-                            mainListQuery.findInBackground(new FindCallback<ParseObject>() {
-                                public void done(List<ParseObject> module, ParseException e) {
-                                    if (e == null) {
-                                        for (ParseObject delete : module) {
-                                            delete.deleteInBackground();
-                                        }
-                                    } else {
-                                        Log.e("Error", e.getMessage());
-                                    }
-                                }
-                            });
-                            ParseQuery<ParseObject> commitListQuery = new ParseQuery<ParseObject>("miris_commit");
-                            commitListQuery.whereEqualTo("user_defult_id", noticeData.get(position).getobjId());
-                            commitListQuery.findInBackground(new FindCallback<ParseObject>() {
-                                public void done(List<ParseObject> module, ParseException e) {
-                                    if (e == null) {
-                                        for (ParseObject delete : module) {
-                                            delete.deleteInBackground();
-                                        }
-                                    } else {
-                                        Log.e("Error", e.getMessage());
-                                    }
-                                }
-                            });
-                            isDeleteList = true;
-                            new loadDataTask().execute();
-                            Snackbar.make(clContent, getString(R.string.delete_toast), Snackbar.LENGTH_SHORT).show();
+                            new deleteImgTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, position);
                         }
                     }
                 })

@@ -55,4 +55,5 @@
     <string name="delete_text">게시글 삭제</string>
     <string name="delete_message">정말로 삭제 하시겠습니까?</string>
     <string name="delete_toast">삭제 되었습니다.</string>
+    <string name="toast_not_camera">카메라를 실행할 수 없습니다.</string>
 </resources>

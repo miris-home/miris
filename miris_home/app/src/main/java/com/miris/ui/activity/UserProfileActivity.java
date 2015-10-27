@@ -64,6 +64,8 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
     TextView vUserLike;
     @InjectView(R.id.vUserRegister)
     TextView vUserRegister;
+    @InjectView(R.id.vUserCommit)
+    TextView vUserCommit;
 
     private int avatarSize;
     private String profilePhoto;
@@ -204,6 +206,7 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                         country.get("user_age").toString(),
                         userImgurl,
                         country.getInt("user_totallike"),
+                        country.getInt("user_totalcommit"),
                         country.getInt("user_registernumber"),
                         country.get("user_rank").toString()));
             }
@@ -229,10 +232,12 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                     .transform(new CircleTransformation())
                     .into(ivUserProfilePhoto);
 
+            vUserName.setText(userProfileListData.get(0).getuser_name());
             vUserNickname.setText(userProfileListData.get(0).getuser_rank());
+
             vUserRegister.setText(String.valueOf(userProfileListData.get(0).getuser_registernumber()));
             vUserLike.setText(String.valueOf(userProfileListData.get(0).getuser_TotalLike()));
-            vUserName.setText(userProfileListData.get(0).getuser_name());
+            vUserCommit.setText(String.valueOf(userProfileListData.get(0).getuser_TotalCommit()));
             userPhotosAdapter.updateItems(true);
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();

@@ -185,12 +185,9 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private void bindLoadingFeedItem(int position, final CellFeedViewHolder holder) {
-        if (noticeData.get(position).getimgBitmap() == null) {
-            holder.vImageRoot.setVisibility(View.GONE);
-        } else {
-            holder.vImageRoot.setVisibility(View.VISIBLE);
-            holder.ivFeedCenter.setImageBitmap(noticeData.get(position).getimgBitmap());
-        }
+        holder.vImageRoot.setVisibility(View.VISIBLE);
+        holder.ivFeedCenter.setImageBitmap(noticeData.get(0).getimgBitmap());
+
         holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
         holder.ivUserName.setText(noticeData.get(position).getusername());
         holder.ivUserDate.setText(noticeData.get(position).getdate());

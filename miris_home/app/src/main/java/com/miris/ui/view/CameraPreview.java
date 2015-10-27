@@ -9,6 +9,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     String TAG = "CameraPreview";
@@ -67,27 +69,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-    private Camera.Size getBestPreviewSize(int width, int height)
-    {
-        Camera.Size result = null;
-        Camera.Parameters p = mCamera.getParameters();
-        for (Camera.Size size : p.getSupportedPreviewSizes()) {
-            if (size.width <= width && size.height <= height) {
-                if (result == null) {
-                    result = size;
-                } else {
-                    int resultArea = result.width * result.height;
-                    int newArea = size.width * size.height;
-
-                    if (newArea > resultArea) {
-                        result = size;
-                    }
-                }
-            }
-        }
-        return result;
-
-    }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         Log.i(TAG,"Surface Changed");
@@ -100,7 +81,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
 
         Camera.Parameters parameters = mCamera.getParameters();
-        parameters.setPreviewSize(w, h);
+
+        List<Camera.Size> cameraSize = parameters.getSupportedPreviewSizes();
+        Camera.Size mPreviewSize = cameraSize.get(0);
+
+        for (Camera.Size s : cameraSize) {
+            if ((s.width * s.height) > (mPreviewSize.width * mPreviewSize.height)) {
+                mPreviewSize = s;
+            }
+        }
+        parameters.setPreviewSize(mPreviewSize.height, mPreviewSize.height);
         mCamera.setParameters(parameters);
         requestLayout();
 
@@ -113,5 +103,22 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    private static class SizeComparator implements
+            Comparator<Camera.Size> {
+
+        @Override
+        public int compare(Camera.Size lhs, Camera.Size rhs) {
+            int left=lhs.width * lhs.height;
+            int right=rhs.width * rhs.height;
+
+            if (left < right) {
+                return(-1);
+            }
+            else if (left > right) {
+                return(1);
+            }
+            return (0);
+        }
+    }
 }
 

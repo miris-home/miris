@@ -44,6 +44,11 @@ public class BaseDrawerActivity extends BaseActivity {
     public void setContentView(int layoutResID) {
         super.setContentViewWithoutInject(R.layout.activity_drawer);
         mActivity = this;
+        if (memberData.get(0) == null) {
+            Intent i = new Intent(this, SignInActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        }
         ViewGroup viewGroup = (ViewGroup) findViewById(R.id.flContentRoot);
         LayoutInflater.from(this).inflate(layoutResID, viewGroup, true);
         NavigationView navigationView = (NavigationView)findViewById(R.id.vNavigation);
@@ -86,9 +91,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
     private void setupHeader() {
         this.avatarSize = getResources().getDimensionPixelSize(R.dimen.global_menu_avatar_size);
-        if (!memberData.get(0).getuserImgurl().equals("")) {
-            this.profilePhoto = memberData.get(0).getuserImgurl();
-        }
+        this.profilePhoto = memberData.get(0).getuserImgurl();
         ivMenuUserProfileName.setText(memberData.get(0).getuser_name());
         Picasso.with(this)
                 .load(profilePhoto)
