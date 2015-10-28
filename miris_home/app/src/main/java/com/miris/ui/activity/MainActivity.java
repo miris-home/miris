@@ -133,12 +133,20 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
+            setLoadImgTask.cancel(true);
+        }
         newIntentUpdate = true;
         if (ACTION_SHOW_LOADING_ITEM.equals(intent.getAction())) {
             dialogUpdate = true;
             newIntentUpdateLoding = true;
         }
-        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }, 1000);
     }
 
     private void showFeedLoadingItemDelayed() {
@@ -268,10 +276,11 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 })
                 .setPositiveButton(getString(R.string.btn_confirm), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
+                        showDialog();
+                        if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
+                            setLoadImgTask.cancel(true);
+                        }
                         if (whichButton == DialogInterface.BUTTON_POSITIVE) {
-                            if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
-                                setLoadImgTask.cancel(true);
-                            }
                             new deleteImgTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, position);
                         }
                     }
@@ -316,7 +325,9 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         @Override
         protected void onPreExecute() {
             if (!dialogUpdate) {
-                showDialog();
+                if (!myLoadingDialog.isShowing()) {
+                    showDialog();
+                }
             }
         }
         @Override
@@ -545,8 +556,14 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         @Override
         protected void onPostExecute(Void result) {
             updateAdapter = true;
-            Snackbar.make(clContent, getString(R.string.delete_toast), Snackbar.LENGTH_SHORT).show();
-            new loadDataTask().execute();
+            dialogUpdate = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new loadDataTask().execute();
+                    Snackbar.make(clContent, getString(R.string.delete_toast), Snackbar.LENGTH_SHORT).show();
+                }
+            }, 2000);
         }
     }
 }

@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -136,7 +137,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         }
     }
 
-    private void bindDefaultFeedItem(int position, CellFeedViewHolder holder) {
+    private void bindDefaultFeedItem(int position, final CellFeedViewHolder holder) {
         if (noticeData.size() == 0) {
             holder.ivFeedCenter.setImageResource(R.drawable.img_feed_center_1);
             holder.ivFeedBottom.setText(R.string.defult_user_message);
@@ -147,7 +148,12 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 holder.ivUserSecret.setVisibility(View.INVISIBLE);
             }
             if (noticeData.get(position).getuserid().equals(memberData.get(0).getuserId())) {
-                holder.ivUserDelete.setVisibility(View.VISIBLE);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.ivUserDelete.setVisibility(View.VISIBLE);
+                    }
+                }, 2000);
             } else {
                 holder.ivUserDelete.setVisibility(View.INVISIBLE);
             }
@@ -163,7 +169,11 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             holder.ivUserDate.setText(noticeData.get(position).getdate());
             holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmap());
         }
-        currentLikesCount = noticeData.get(holder.getPosition()).getDoLike();
+        try {
+            currentLikesCount = noticeData.get(holder.getPosition()).getDoLike();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
         String likesCountText = context.getResources().getQuantityString(
                 R.plurals.likes_count, currentLikesCount, currentLikesCount
         );
