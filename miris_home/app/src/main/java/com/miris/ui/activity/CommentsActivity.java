@@ -213,6 +213,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
 
         @Override
         protected Void doInBackground(Void... arg0) {
+            commitData = new ArrayList<CommitListData>();
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_commit");
             offerQuery.whereEqualTo("user_defult_id", objectID);
             offerQuery.orderByDescending("createdAt");
@@ -222,12 +223,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-            return null ;
 
-        }
-        @Override
-        protected void onPostExecute(Void result) {
-            commitData = new ArrayList<CommitListData>();
             for (ParseObject country : ob) {
                 ParseFile userImgfile = null;
                 String userImgurl = null;
@@ -252,8 +248,12 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
                         userImgurl,
                         country.get("user_name").toString(),
                         country.getCreatedAt()));
-
             }
+            return null ;
+
+        }
+        @Override
+        protected void onPostExecute(Void result) {
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();
             }
@@ -273,3 +273,4 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
         }
     }
 }
+

@@ -16,7 +16,7 @@ public class SendCommentButton extends ViewAnimator implements View.OnClickListe
     public static final int STATE_SEND = 0;
     public static final int STATE_DONE = 1;
 
-    private static final long RESET_STATE_DELAY_MILLIS = 2000;
+    private static final long RESET_STATE_DELAY_MILLIS = 1000;
 
     private int currentState;
 

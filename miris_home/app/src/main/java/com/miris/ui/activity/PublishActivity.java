@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -229,7 +228,6 @@ public class PublishActivity extends BaseActivity {
                             @Override
                             public void done(List<ParseObject> updateLikeList, ParseException e) {
                                 if (e == null) {
-                                    Log.e("PHJ", "¼º°ø");
                                     for (ParseObject nameObj : updateLikeList) {
                                         int userAddApp = memberData.get(0).getuser_registernumber() +1 ;
                                         nameObj.put("user_registernumber", userAddApp);
@@ -240,13 +238,15 @@ public class PublishActivity extends BaseActivity {
                                 }
                             }
                         });
-                        ParsePush push = new ParsePush();
-                        if (SwitchCheck) {
-                            push.setMessage(getString(R.string.notice_push));
-                        } else {
-                            push.setMessage("false");
+                        if (newWritingPublic.equals("Y")) {
+                            ParsePush push = new ParsePush();
+                            if (SwitchCheck) {
+                                push.setMessage(getString(R.string.notice_push));
+                            } else {
+                                push.setMessage("false");
+                            }
+                            push.sendInBackground();
                         }
-                        push.sendInBackground();
                         bringMainActivityToTop();
                     }
                 }
