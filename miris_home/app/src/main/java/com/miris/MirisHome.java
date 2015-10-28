@@ -12,7 +12,7 @@ public class MirisHome extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Parse.enableLocalDatastore(this);
+        Parse.enableLocalDatastore(this); 
         Parse.initialize(this, "1tcvaqHWwpQowXoaeKMrNAFETTl2HRPCVJ5onpOZ", "SeQa0xGDWBge4AIOEIPfLPnU2zfFgdrVIL5OyUkQ");
         ParseInstallation.getCurrentInstallation().saveInBackground();
     }
