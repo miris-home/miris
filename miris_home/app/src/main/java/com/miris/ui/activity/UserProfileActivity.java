@@ -161,6 +161,16 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
            vUserStats.animate().alpha(1).setDuration(200).setStartDelay(400).setInterpolator(INTERPOLATOR).start();
     }
 
+    @Override
+    public void onDestroy() {
+        if (userProfileListData != null){
+            userProfileListData.clear();
+        }
+        if (userProImgData != null){
+            userProImgData.clear();
+        }
+        super.onDestroy();
+    }
     class loadDataTask extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -170,20 +180,13 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
         @Override
         protected Void doInBackground(Void... arg0) {
             userProfileListData = new ArrayList<UserProfileListData>();
-            userProImgData = new ArrayList<UserProImgData>();
             ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("miris_member");
             memberQuery.whereEqualTo("user_id", userId);
             memberQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                 public void done(ParseObject membermodule, ParseException e) {
                     if (e == null) {
-                        ParseFile userImgfile = null;
                         String userImgurl = null;
-                        userImgfile = (ParseFile) membermodule.get("user_img");
-
-                        if (userImgfile != null) {
-                            userImgurl = userImgfile.getUrl();
-                        }
-
+                        userImgurl = ((ParseFile) membermodule.get("user_img")).getUrl();
                         userProfileListData.add(new UserProfileListData(
                                 membermodule.get("user_id").toString(),
                                 membermodule.get("user_name").toString(),
@@ -193,70 +196,71 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                                 membermodule.getInt("user_totalcommit"),
                                 membermodule.getInt("user_registernumber"),
                                 membermodule.get("user_rank").toString()));
+
+                        new loadImgDataTask().execute();
                     }
                 }
             });
-
-            ParseQuery<ParseObject> memberImgQuery = ParseQuery.getQuery("miris_notice");
-            memberImgQuery.whereEqualTo("user_id", userId);
-
-            try {
-                userImgList = memberImgQuery.find();
-
-            } catch (ParseException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            for (ParseObject Imgcountry : userImgList) {
-                if (Imgcountry.get("user_public").toString().equals("N")) {
-                    if (!Imgcountry.get("user_id").toString().equals(memberData.get(0).getuserId())) {
-                        continue;
-                    }
-                }
-                new loadImgDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Imgcountry);
-            }
             return null ;
 
         }
         @Override
         protected void onPostExecute(Void result) {
-            Picasso.with(getApplicationContext())
-                    .load(userProfileListData.get(0).getuser_img_url())
-                    .placeholder(R.drawable.img_circle_placeholder)
-                    .resize(avatarSize, avatarSize)
-                    .centerCrop()
-                    .transform(new CircleTransformation())
-                    .into(ivUserProfilePhoto);
-
-            vUserName.setText(userProfileListData.get(0).getuser_name());
-            vUserNickname.setText(userProfileListData.get(0).getuser_rank());
-
-            vUserRegister.setText(String.valueOf(userProfileListData.get(0).getuser_registernumber()));
-            vUserLike.setText(String.valueOf(userProfileListData.get(0).getuser_TotalLike()));
-            vUserCommit.setText(String.valueOf(userProfileListData.get(0).getuser_TotalCommit()));
-            userPhotosAdapter.updateItems(true);
-            if (myLoadingDialog != null) {
-                myLoadingDialog.dismiss();
-            }
         }
     }
 
-    class loadImgDataTask extends AsyncTask<ParseObject, Void, Void> {
+    class loadImgDataTask extends AsyncTask<Void, Void, Void> {
         @Override
-        protected Void doInBackground(ParseObject... Imgcountry) {
-            ParseFile userImgfile = null;
-            String userImgurlData = null;
-            userImgfile = (ParseFile) Imgcountry[0].get("user_img");
-            if (userImgfile != null) {
-                userImgurlData = userImgfile.getUrl();
-                userProImgData.add(new UserProImgData(userImgurlData));
+        protected Void doInBackground(Void... arg0) {
+            userProImgData = new ArrayList<UserProImgData>();
+            ParseQuery<ParseObject> memberImgQuery = ParseQuery.getQuery("miris_notice");
+            memberImgQuery.whereEqualTo("user_id", userId);
+            try {
+                for (ParseObject img : memberImgQuery.find()) {
+                    if (img.get("user_public").toString().equals("N")) {
+                        if (!img.get("user_id").toString().equals(memberData.get(0).getuserId())) {
+                            continue;
+                        }
+                    }
+                    ParseFile userImgfile = null;
+                    String userImgurlData = null;
+                    userImgfile = (ParseFile) img.get("user_img");
+                    if (userImgfile != null) {
+                        userImgurlData = userImgfile.getUrl();
+                        userProImgData.add(new UserProImgData(userImgurlData));
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
             return null ;
-
         }
         @Override
         protected void onPostExecute(Void result) {
-            userPhotosAdapter.updateItems(true);
+            try {
+                Picasso.with(getApplicationContext())
+                        .load(userProfileListData.get(0).getuser_img_url())
+                        .placeholder(R.drawable.img_circle_placeholder)
+                        .resize(avatarSize, avatarSize)
+                        .centerCrop()
+                        .transform(new CircleTransformation())
+                        .into(ivUserProfilePhoto);
+
+                vUserName.setText(userProfileListData.get(0).getuser_name());
+                vUserNickname.setText(userProfileListData.get(0).getuser_rank());
+
+                vUserRegister.setText(String.valueOf(userProfileListData.get(0).getuser_registernumber()));
+                vUserLike.setText(String.valueOf(userProfileListData.get(0).getuser_TotalLike()));
+                vUserCommit.setText(String.valueOf(userProfileListData.get(0).getuser_TotalCommit()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (userPhotosAdapter != null) {
+                userPhotosAdapter.updateItems(true);
+            }
+            if (myLoadingDialog != null) {
+                myLoadingDialog.dismiss();
+            }
         }
     }
 

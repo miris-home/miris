@@ -57,4 +57,5 @@
     <string name="delete_toast">삭제 되었습니다.</string>
     <string name="toast_not_camera">카메라를 실행할 수 없습니다.</string>
     <string name="thread_close">스레드가 종료중입니다.. 재 시도해주세요..</string>
+    <string name="like_you">좋아요!</string>
 </resources>

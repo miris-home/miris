@@ -230,19 +230,20 @@ public class PublishActivity extends BaseActivity {
                                     membermodule.put("user_registernumber", userAddApp + 1);
                                     membermodule.saveInBackground();
                                     memberData.get(0).setuser_registernumber(userAddApp + 1);
+
+                                    if (newWritingPublic.equals("Y")) {
+                                        ParsePush push = new ParsePush();
+                                        if (SwitchCheck) {
+                                            push.setMessage(getString(R.string.notice_push));
+                                        } else {
+                                            push.setMessage("false");
+                                        }
+                                        push.sendInBackground();
+                                    }
+                                    bringMainActivityToTop();
                                 }
                             }
                         });
-                        if (newWritingPublic.equals("Y")) {
-                            ParsePush push = new ParsePush();
-                            if (SwitchCheck) {
-                                push.setMessage(getString(R.string.notice_push));
-                            } else {
-                                push.setMessage("false");
-                            }
-                            push.sendInBackground();
-                        }
-                        bringMainActivityToTop();
                     }
                 }
             });

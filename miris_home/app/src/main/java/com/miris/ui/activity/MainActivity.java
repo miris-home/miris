@@ -124,9 +124,11 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
 
     @Override
     public void onDestroy() {
-        if (myLoadingDialog != null && myLoadingDialog.isShowing()) {
-            myLoadingDialog.dismiss();
-            myLoadingDialog = null;
+        if (myLoadingDialog != null){
+            if(myLoadingDialog.isShowing()) {
+                myLoadingDialog.dismiss();
+                myLoadingDialog = null;
+            }
         }
         super.onDestroy();
     }
@@ -301,7 +303,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     }
 
     public void showLikedSnackbar() {
-        Snackbar.make(clContent, "Liked!", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(clContent, getString(R.string.like_you), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -328,8 +330,10 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         @Override
         protected void onPreExecute() {
             if (!dialogUpdate) {
-                if (!myLoadingDialog.isShowing()) {
-                    showDialog();
+                if (myLoadingDialog != null) {
+                    if (!myLoadingDialog.isShowing()) {
+                        showDialog();
+                    }
                 }
             }
         }
