@@ -27,14 +27,13 @@ import com.miris.Utils;
 import com.miris.net.NoticeListData;
 import com.miris.ui.activity.MainActivity;
 import com.miris.ui.view.SendingProgressView;
-import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -482,29 +481,24 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
             ParseQuery testObject = ParseQuery.getQuery("miris_notice");
             testObject.whereEqualTo("objectId", objectID);
-            testObject.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> updateLikeList, ParseException e) {
+            testObject.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject noticemodule, ParseException e) {
                     if (e == null) {
-                        for (ParseObject nameObj : updateLikeList) {
-                            nameObj.put("user_like", currentLikesCount);
-                            nameObj.saveInBackground();
-                        }
+                        noticemodule.put("user_like", currentLikesCount);
+                        noticemodule.saveInBackground();
                     }
                 }
             });
+
             ParseQuery mamberObject = ParseQuery.getQuery("miris_member");
             mamberObject.whereEqualTo("user_id", userID);
-            mamberObject.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> updateLikeList, ParseException e) {
+            mamberObject.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject membermodule, ParseException e) {
                     if (e == null) {
-                        for (ParseObject nameObj : updateLikeList) {
-                            int userTotal;
-                            userTotal = nameObj.getInt("user_totallike");
-                            nameObj.put("user_totallike", userTotal + 1);
-                            nameObj.saveInBackground();
-                        }
+                        int userTotal = membermodule.getInt("user_totallike");
+                        membermodule.put("user_totallike", userTotal + 1);
+                        membermodule.saveInBackground();
+                        memberData.get(0).setuser_TotalLike(userTotal + 1);
                     }
                 }
             });

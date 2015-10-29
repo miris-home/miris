@@ -104,7 +104,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         mirisBadge();
         dialogUpdate = true;
         updateAdapter = true;
-        if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
+        if (setLoadImgTask != null &&
+                setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
             setLoadImgTask.cancel(true);
             Snackbar.make(clContent, getString(R.string.thread_close), Snackbar.LENGTH_SHORT).show();
             mWaveSwipeRefreshLayout.setRefreshing(false);
@@ -133,7 +134,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
+        if (setLoadImgTask != null &&
+                setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
             setLoadImgTask.cancel(true);
         }
         newIntentUpdate = true;
@@ -277,7 +279,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 .setPositiveButton(getString(R.string.btn_confirm), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         showDialog();
-                        if (setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
+                        if (setLoadImgTask != null &&
+                                setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
                             setLoadImgTask.cancel(true);
                         }
                         if (whichButton == DialogInterface.BUTTON_POSITIVE) {
@@ -508,12 +511,12 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                             userListQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                                 public void done(ParseObject module, ParseException e) {
                                     if (e == null) {
-                                        int uCommit = module.getInt("user_totalcommit") - 1;
+                                        int uCommit = module.getInt("user_totalcommit");
 
-                                        module.put("user_totalcommit", uCommit);
+                                        module.put("user_totalcommit", uCommit -1);
                                         module.saveInBackground();
                                         if (memberData.get(0).getuserId().equals(module.get("user_id"))) {
-                                            memberData.get(0).setuser_TotalCommit(uCommit);
+                                            memberData.get(0).setuser_TotalCommit(uCommit -1);
                                         }
                                     }
                                 }
@@ -536,13 +539,13 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                             public void done(ParseObject membermodule, ParseException e) {
                                 if (e == null) {
                                     int totalLike = membermodule.getInt("user_totallike");
-                                    int uRegister = membermodule.getInt("user_registernumber") - 1;
+                                    int uRegister = membermodule.getInt("user_registernumber");
                                     membermodule.put("user_totallike", totalLike - noticeLike);
-                                    membermodule.put("user_registernumber", uRegister);
+                                    membermodule.put("user_registernumber", uRegister -1);
                                     membermodule.saveInBackground();
 
                                     memberData.get(0).setuser_TotalLike(totalLike - noticeLike);
-                                    memberData.get(0).setuser_registernumber(uRegister);
+                                    memberData.get(0).setuser_registernumber(uRegister -1);
                                 }
                             }
                         });

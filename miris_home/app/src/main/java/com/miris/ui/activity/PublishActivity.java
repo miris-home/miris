@@ -28,7 +28,7 @@ import android.widget.ToggleButton;
 
 import com.miris.R;
 import com.miris.Utils;
-import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -41,7 +41,6 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnCheckedChanged;
@@ -224,17 +223,13 @@ public class PublishActivity extends BaseActivity {
                     if (e == null) {
                         ParseQuery testObject = ParseQuery.getQuery("miris_member");
                         testObject.whereEqualTo("user_id", memberData.get(0).getuserId());
-                        testObject.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> updateLikeList, ParseException e) {
+                        testObject.getFirstInBackground(new GetCallback<ParseObject>() {
+                            public void done(ParseObject membermodule, ParseException e) {
                                 if (e == null) {
-                                    for (ParseObject nameObj : updateLikeList) {
-                                        int userAddApp = memberData.get(0).getuser_registernumber() +1 ;
-                                        nameObj.put("user_registernumber", userAddApp);
-                                        nameObj.saveInBackground();
-
-                                        memberData.get(0).setuser_registernumber(userAddApp);
-                                    }
+                                    int userAddApp = membermodule.getInt("user_registernumber");
+                                    membermodule.put("user_registernumber", userAddApp + 1);
+                                    membermodule.saveInBackground();
+                                    memberData.get(0).setuser_registernumber(userAddApp + 1);
                                 }
                             }
                         });

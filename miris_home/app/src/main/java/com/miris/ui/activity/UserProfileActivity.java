@@ -21,6 +21,7 @@ import com.miris.net.UserProfileListData;
 import com.miris.ui.adapter.UserProfileAdapter;
 import com.miris.ui.utils.CircleTransformation;
 import com.miris.ui.view.RevealBackgroundView;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -172,13 +173,29 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
             userProImgData = new ArrayList<UserProImgData>();
             ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("miris_member");
             memberQuery.whereEqualTo("user_id", userId);
+            memberQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject membermodule, ParseException e) {
+                    if (e == null) {
+                        ParseFile userImgfile = null;
+                        String userImgurl = null;
+                        userImgfile = (ParseFile) membermodule.get("user_img");
 
-            try {
-                userAcountList = memberQuery.find();
-            } catch (ParseException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
+                        if (userImgfile != null) {
+                            userImgurl = userImgfile.getUrl();
+                        }
+
+                        userProfileListData.add(new UserProfileListData(
+                                membermodule.get("user_id").toString(),
+                                membermodule.get("user_name").toString(),
+                                membermodule.get("user_age").toString(),
+                                userImgurl,
+                                membermodule.getInt("user_totallike"),
+                                membermodule.getInt("user_totalcommit"),
+                                membermodule.getInt("user_registernumber"),
+                                membermodule.get("user_rank").toString()));
+                    }
+                }
+            });
 
             ParseQuery<ParseObject> memberImgQuery = ParseQuery.getQuery("miris_notice");
             memberImgQuery.whereEqualTo("user_id", userId);
@@ -190,27 +207,6 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-
-            for (ParseObject country : userAcountList) {
-                ParseFile userImgfile = null;
-                String userImgurl = null;
-                userImgfile = (ParseFile) country.get("user_img");
-
-                if (userImgfile != null) {
-                    userImgurl = userImgfile.getUrl();
-                }
-
-                userProfileListData.add(new UserProfileListData(
-                        country.get("user_id").toString(),
-                        country.get("user_name").toString(),
-                        country.get("user_age").toString(),
-                        userImgurl,
-                        country.getInt("user_totallike"),
-                        country.getInt("user_totalcommit"),
-                        country.getInt("user_registernumber"),
-                        country.get("user_rank").toString()));
-            }
-
             for (ParseObject Imgcountry : userImgList) {
                 if (Imgcountry.get("user_public").toString().equals("N")) {
                     if (!Imgcountry.get("user_id").toString().equals(memberData.get(0).getuserId())) {

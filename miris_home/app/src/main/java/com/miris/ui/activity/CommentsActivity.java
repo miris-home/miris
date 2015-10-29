@@ -23,7 +23,7 @@ import com.miris.Utils;
 import com.miris.net.CommitListData;
 import com.miris.ui.adapter.CommentsAdapter;
 import com.miris.ui.view.SendCommentButton;
-import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -172,18 +172,17 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
                     if (e == null) {
                         ParseQuery<ParseObject> userListQuery = new ParseQuery<ParseObject>("miris_member");
                         userListQuery.whereEqualTo("user_id", memberData.get(0).getuserId());
-                        userListQuery.findInBackground(new FindCallback<ParseObject>() {
-                            public void done(List<ParseObject> module, ParseException e) {
+                        userListQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                            public void done(ParseObject membermodule, ParseException e) {
                                 if (e == null) {
-                                    for (ParseObject update : module) {
-                                        int uCommit = update.getInt("user_totalcommit") + 1 ;
-                                        update.put("user_totalcommit", uCommit);
-                                        update.saveInBackground();
-                                        memberData.get(0).setuser_TotalCommit(uCommit);
-                                    }
+                                    int uCommit = membermodule.getInt("user_totalcommit");
+                                    membermodule.put("user_totalcommit", uCommit + 1);
+                                    membermodule.saveInBackground();
+                                    memberData.get(0).setuser_TotalCommit(uCommit + 1);
                                 }
                             }
                         });
+
                         startIntroAnimation = true;
                         new loadCommitTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
