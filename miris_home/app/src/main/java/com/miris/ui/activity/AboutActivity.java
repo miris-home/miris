@@ -2,6 +2,8 @@ package com.miris.ui.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.view.MotionEventCompat;
+import android.view.MotionEvent;
 
 import com.miris.R;
 import com.miris.ui.adapter.BlurBehind;
@@ -18,10 +20,22 @@ public class AboutActivity extends BaseActivity {
 
         BlurBehind.getInstance()
                 .withAlpha(100)
-                //.withFilterColor(Color.parseColor("#0075c0"))
                 .withFilterColor(Color.parseColor("#000000"))
                 .setBackground(this);
+    }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (super.onTouchEvent(ev)) {
+            return true;
+        }
 
+        final int action = ev.getAction() & MotionEventCompat.ACTION_MASK;
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                finish();
+                break;
+        }
+        return true;
     }
 }

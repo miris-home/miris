@@ -43,7 +43,7 @@ public class SignInActivity extends BaseActivity {
 
         boolean isRunIntro = getIntent().getBooleanExtra("intro", true);
         if(isRunIntro) {
-            if (!session.isLoggedIn()) {
+            if (!session.getIntro()) {
                 showIntro = true;
             }
             beforeIntro(showIntro);
@@ -95,7 +95,7 @@ public class SignInActivity extends BaseActivity {
                         return;
                     } else {
                         hideSoftInputWindow(v);
-                        new loadLoginTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        new loadLoginTask().execute();
                         break;
                     }
             }

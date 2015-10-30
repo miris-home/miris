@@ -129,7 +129,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             isPhotoTaken = true;
             touchListener.setChecked(false);
             mCamera.startPreview();
-            new ImageSaveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data);
+            new ImageSaveTask().execute(data);
         }
     };
 
@@ -319,7 +319,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         if(resultCode == RESULT_OK) {
             if(requestCode == 100) {
                 Uri uri = data.getData();
-                new loadImgDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, uri);
+                new loadImgDataTask().execute(uri);
 
             } else if (requestCode == 200) {
                 // TODO: 2015-09-21

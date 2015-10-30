@@ -44,7 +44,7 @@ public class IntroActivity extends BaseActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                session.setIsIntro(true);
+                session.setIntro(true);
                 Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
                 intent.putExtra("intro", false);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

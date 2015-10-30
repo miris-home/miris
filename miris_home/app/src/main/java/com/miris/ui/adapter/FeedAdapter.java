@@ -256,7 +256,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             holder.tsLikesCounter.setCurrentText(likesCountText);
         }
         noticeData.get(holder.getPosition()).setDoLike(currentLikesCount);
-        new updateLikeTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
+        new updateLikeTask().execute(holder);
     }
 
     private void updateHeartButton(final CellFeedViewHolder holder, boolean animated) {

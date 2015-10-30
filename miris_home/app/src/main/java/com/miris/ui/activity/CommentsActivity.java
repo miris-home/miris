@@ -70,7 +70,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
         objectID = getIntent().getStringExtra("objID");
         drawingStartLocation = getIntent().getIntExtra(ARG_DRAWING_START_LOCATION, 0);
         showDialog();
-        new loadCommitTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new loadCommitTask().execute();
         if (savedInstanceState == null) {
             contentRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -184,7 +184,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
                         });
 
                         startIntroAnimation = true;
-                        new loadCommitTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        new loadCommitTask().execute();
                     }
                 }
             });

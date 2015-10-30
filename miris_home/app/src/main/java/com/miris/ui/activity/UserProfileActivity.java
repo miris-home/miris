@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
@@ -90,8 +89,7 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
 
         userId = getIntent().getStringExtra(USER_ID);
         this.avatarSize = getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size);
-        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        new loadDataTask().execute();
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -171,6 +169,7 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
         }
         super.onDestroy();
     }
+
     class loadDataTask extends AsyncTask<Void, Void, Void> {
 
         @Override

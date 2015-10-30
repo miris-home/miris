@@ -74,8 +74,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     int maxSize = 0;
     int setSkip = 0;
     int obsize = 0;
-
-    loadImgTask setLoadImgTask;
+    LinearLayoutManager linearLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,29 +88,26 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     }
 
     private void setupFeed() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this) {
+        linearLayoutManager = new LinearLayoutManager(this) {
             @Override
             protected int getExtraLayoutSpace(RecyclerView.State state) {
                 return 300;
             }
         };
         rvFeed.setLayoutManager(linearLayoutManager);
-        new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new loadDataTask().execute();
     }
 
     @Override
     public void onRefresh() {
-        mirisBadge();
         dialogUpdate = true;
         updateAdapter = true;
-        if (setLoadImgTask != null &&
-                setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
-            setLoadImgTask.cancel(true);
-            Snackbar.make(clContent, getString(R.string.thread_close), Snackbar.LENGTH_SHORT).show();
-            mWaveSwipeRefreshLayout.setRefreshing(false);
-        } else {
-            new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }, 1000);
     }
 
     private void showDialog() {
@@ -136,21 +132,12 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (setLoadImgTask != null &&
-                setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
-            setLoadImgTask.cancel(true);
-        }
         newIntentUpdate = true;
         if (ACTION_SHOW_LOADING_ITEM.equals(intent.getAction())) {
             dialogUpdate = true;
             newIntentUpdateLoding = true;
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        }, 1000);
+        new loadDataTask().execute();
     }
 
     private void showFeedLoadingItemDelayed() {
@@ -169,6 +156,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     @Override
     protected void onResume() {
         super.onResume();
+        mirisBadge();
         if (m_openDrawer){
             drawerLayout.closeDrawers();
             m_openDrawer = false;
@@ -281,12 +269,8 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 .setPositiveButton(getString(R.string.btn_confirm), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         showDialog();
-                        if (setLoadImgTask != null &&
-                                setLoadImgTask.getStatus() == AsyncTask.Status.RUNNING) {
-                            setLoadImgTask.cancel(true);
-                        }
                         if (whichButton == DialogInterface.BUTTON_POSITIVE) {
-                            new deleteImgTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, position);
+                            new deleteImgTask().execute(position);
                         }
                     }
                 })
@@ -377,8 +361,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         country.getInt("user_like"),
                         country.get("creatdate").toString(),
                         country.get("user_public").toString()));
-                setLoadImgTask = new loadImgTask();
-                setLoadImgTask.execute(country);
+                new loadImgTask().execute(country);
                 setSkip++;
             }
             return null ;
@@ -391,6 +374,10 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 feedAdapter.setOnFeedItemClickListener(MainActivity.this);
 
                 rvFeed.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                    private int visibleItemCount = 0;
+                    private int totalItemCount = 0;
+                    private int firstVisibleItemIndex = 0;
+
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         super.onScrollStateChanged(recyclerView, newState);
@@ -401,16 +388,21 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         super.onScrolled(recyclerView, dx, dy);
                         FeedContextMenuManager.getInstance().onScrolled(recyclerView, dx, dy);
 
+                        visibleItemCount = rvFeed.getChildCount();
+                        totalItemCount = linearLayoutManager.getItemCount();
+                        firstVisibleItemIndex = linearLayoutManager.findFirstVisibleItemPosition();
+
                         View view = recyclerView.getChildAt(recyclerView.getChildCount() - 1);
                         int diff = (view.getBottom() - (recyclerView.getHeight() + recyclerView.getScrollY()));
 
                         if (recyclerView.getHeight() > view.getBottom()) {
-                            if (isLastItemVisibleOpen && view.getBottom() == recyclerView.getHeight() + diff) {
+                            if (isLastItemVisibleOpen && view.getBottom() == recyclerView.getHeight() + diff
+                                    && (visibleItemCount + firstVisibleItemIndex) >= totalItemCount) {
                                 if (obsize != 0) {
                                     isLastItemVisibleOpen = false;
                                     updateNoticeData = true;
                                     updateAdapter = true;
-                                    new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                    new loadDataTask().execute();
                                 }
                             }
                         }

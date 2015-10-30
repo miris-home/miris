@@ -168,7 +168,7 @@ public class PublishActivity extends BaseActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.publish_text_img_check), Toast.LENGTH_SHORT).show();
             } else {
                 hideSoftInputWindow(findViewById(R.id.action_publish));
-                new setDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new setDataTask().execute();
             }
             return true;
         } else {
