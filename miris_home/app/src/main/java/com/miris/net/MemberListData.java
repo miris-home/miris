@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 public class MemberListData {
 
     String userId;
+    String user_password;
     String user_name;
     String user_age;
     Bitmap user_img;
@@ -18,11 +19,13 @@ public class MemberListData {
     String user_rank;
     String user_email;
 
-    public MemberListData(String userId, String user_name, String user_age,
+    public MemberListData(String userId, String user_password, String user_name, String user_age,
                           Bitmap user_img, String userImgurl, int user_TotalLike,
                           int user_TotalCommit, int user_registernumber,
                           String user_rank, String user_email) {
+
         this.userId = userId;
+        this.user_password = user_password;
         this.user_name = user_name;
         this.user_age = user_age;
         this.user_img = user_img;
@@ -36,6 +39,10 @@ public class MemberListData {
 
     public void setuserId(String userId) {
         this.userId = userId;
+    }
+
+    public void setuser_password(String user_password) {
+        this.user_password = user_password;
     }
 
     public void setuser_name(String user_name) {
@@ -76,6 +83,10 @@ public class MemberListData {
 
     public String getuserId() {
         return userId;
+    }
+
+    public String getuser_password() {
+        return user_password;
     }
 
     public String getuser_name() {

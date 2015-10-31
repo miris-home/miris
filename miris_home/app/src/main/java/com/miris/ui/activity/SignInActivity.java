@@ -148,6 +148,7 @@ public class SignInActivity extends BaseActivity {
 
                     memberData.add(new MemberListData(
                             country.get("user_id").toString(),
+                            country.get("user_password").toString(),
                             country.get("user_name").toString(),
                             country.get("user_age").toString(),
                             bMap,
