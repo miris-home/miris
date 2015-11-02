@@ -2,7 +2,7 @@ package com.miris.net;
 
 import java.util.Date;
 
-/**
+/** 
  * Created by fantastic on 2015-09-22.
  */
 public class CommitListData {
