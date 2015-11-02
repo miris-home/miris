@@ -53,23 +53,33 @@ public class SignInActivity extends BaseActivity {
     }
 
     private void beforeIntro(final boolean showIntro) {
-        getWindow().getDecorView().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent;
-                if (showIntro) {
-                    intent = new Intent(SignInActivity.this, IntroActivity.class);
-
-                } else {
-                    intent = new Intent(SignInActivity.this, SignInActivity.class);
+        if (session.getAutoLogin()) {
+            getWindow().getDecorView().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new loadLoginTask().execute();
                 }
-                finish();
-                intent.putExtra("intro", false);
-                startActivity(intent);
-                overridePendingTransition(android.R.anim.fade_in,
-                        android.R.anim.fade_out);
-            }
-        }, 2000);
+            }, 2000);
+
+        } else {
+            getWindow().getDecorView().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent;
+                    if (showIntro) {
+                        intent = new Intent(SignInActivity.this, IntroActivity.class);
+
+                    } else {
+                        intent = new Intent(SignInActivity.this, SignInActivity.class);
+                    }
+                    finish();
+                    intent.putExtra("intro", false);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,
+                            android.R.anim.fade_out);
+                }
+            }, 2000);
+        }
     }
 
     private void afterIntro(Bundle savedInstanceState) {
@@ -115,18 +125,25 @@ public class SignInActivity extends BaseActivity {
 
         @Override
         protected void onPreExecute() {
+            if (!session.getAutoLogin()) {
                 myLoadingDialog = new ProgressDialog(SignInActivity.this);
                 myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
                 myLoadingDialog.setIndeterminate(false);
                 myLoadingDialog.setCancelable(false);
                 myLoadingDialog.show();
+            }
         }
 
         @Override
         protected Boolean doInBackground(Void... arg0) {
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_member");
-            offerQuery.whereEqualTo("user_id", btn_id.getText().toString());
-            offerQuery.whereEqualTo("user_password", btn_pass.getText().toString());
+            if (session.getAutoLogin()) {
+                offerQuery.whereEqualTo("user_id",          session.getUser_id());
+                offerQuery.whereEqualTo("user_password",    session.getUser_passwd());
+            } else {
+                offerQuery.whereEqualTo("user_id",          btn_id.getText().toString());
+                offerQuery.whereEqualTo("user_password",    btn_pass.getText().toString());
+            }
 
             try {
                 ob = offerQuery.find();
@@ -145,7 +162,8 @@ public class SignInActivity extends BaseActivity {
                             e2.printStackTrace();
                         }
                     }
-
+                    session.setUser_id(country.get("user_id").toString()); //아이디 담기
+                    session.setUser_passwd(country.get("user_password").toString()); //패스워드 담기
                     memberData.add(new MemberListData(
                             country.get("user_id").toString(),
                             country.get("user_password").toString(),
@@ -170,19 +188,30 @@ public class SignInActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Boolean isDone) {
-            if (myLoadingDialog != null) {
-                myLoadingDialog.dismiss();
-            }
-            if (isDone) {
+            if (session.getAutoLogin()) {
                 if (ob.size() == 0) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
-                    return;
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_account_fail), Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    finish();
+                    startActivity(intent);
                 }
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                finish();
-                startActivity(intent);
             } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
+                if (myLoadingDialog != null) {
+                    myLoadingDialog.dismiss();
+                }
+                if (isDone) {
+                    if (ob.size() == 0) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    finish();
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

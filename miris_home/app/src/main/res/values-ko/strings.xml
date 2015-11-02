@@ -15,6 +15,10 @@
     <string name="login_id">아이디를 입력해주세요.</string>
     <string name="login_pass">비밀번호를 입력해주세요.</string>
     <string name="login_fail">아이디 및 비밀번호가 맞지 않습니다.</string>
+    <string name="login_account_fail">서버에 계정 정보가 없습니다.</string>
+    <string name="pass_confirm_fail">재입력한 비밀번호가 다릅니다.</string>
+    <string name="pass_server_fail">사용자 비밀번호와 일치하지 않습니다.</string>
+
     <string name="skip">Skip</string>
     <string name="show_lodingbar">잠시만 기다려주세요..</string>
     <string name="notice_push">공지사항이 등록 됐습니다...</string>
@@ -58,4 +62,18 @@
     <string name="toast_not_camera">카메라를 실행할 수 없습니다.</string>
     <string name="thread_close">스레드가 종료중입니다.. 재 시도해주세요..</string>
     <string name="like_you">좋아요!</string>
+    <string name="account">계정관리</string>
+    <string name="myInfo">내정보</string>
+    <string name="changePass">비밀번호변경</string>
+    <string name="accountOut">회원탈퇴</string>
+    <string name="pushAlert">푸쉬알림</string>
+    <string name="autoLogin">자동로그인</string>
+    <string name="autoLogin_on">자동로그인을 설정합니다.</string>
+    <string name="autoLogin_off">자동로그인을 해제합니다.</string>
+    <string name="pushAlert_on">미르이즈 알림을 받습니다.</string>
+    <string name="pushAlert_off">미르이즈 알림을 받지않습니다.</string>
+    <string name="accountOut_pass">회원탈퇴처리되었습니다.</string>
+    <string name="accountOut_fail">회원탈퇴처리 중 오류가 발생하였습니다.</string>
+    <string name="changePass_pass">비밀번호가 변경되었습니다.</string>
+    <string name="changePass_fail">비밀번호 변경 도중 오류가 발생하였습니다.</string>
 </resources>

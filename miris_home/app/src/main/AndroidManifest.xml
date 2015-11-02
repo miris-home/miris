@@ -83,9 +83,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.activity.AboutActivity"
+            android:name=".ui.activity.MyinfoActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActivity"/>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.activity.ChangePassActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.activity.AccountOutActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.activity.IntroActivity"
             android:screenOrientation="portrait"

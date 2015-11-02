@@ -15,4 +15,9 @@
     <dimen name="round_rect_stroke">2dp</dimen>
     <dimen name="padding_normal">10dp</dimen>
     <dimen name="margin_small">5dp</dimen>
+
+    <dimen name="mtf_cardHeight_initial">4dp</dimen>
+    <dimen name="mtf_cardHeight_final">40dp</dimen>
+    <dimen name="mtf_cardview_additionnal">0dp</dimen>
+
 </resources>

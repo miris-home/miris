@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.miris.ui.activity.BaseActivity;
+import com.miris.net.SessionPreferences;
 import com.miris.ui.activity.SignInActivity;
 import com.parse.ParsePushBroadcastReceiver;
 
@@ -28,6 +29,7 @@ public class MirisPushReceiver extends ParsePushBroadcastReceiver {
 
     @Override
     public void onPushReceive(Context context, Intent intent) {
+        SessionPreferences session = new SessionPreferences(context);
         JSONObject pushData;
         String alert = null;
         try {
@@ -35,7 +37,7 @@ public class MirisPushReceiver extends ParsePushBroadcastReceiver {
             alert = pushData.getString("alert");
         } catch (JSONException e) {}
 
-        if (!alert.equals("false")) {
+        if (!alert.equals("false") && session.getPushAlert() == true) {
             Intent cIntent = new Intent(MirisPushReceiver.ACTION_PUSH_OPEN);
             cIntent.putExtras(intent.getExtras());
             cIntent.setPackage(context.getPackageName());

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="CalendarActivity">
+    tools:context="SettingActivity">
 
     <include
         android:id="@+id/toolbar"
@@ -18,11 +18,113 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="미르이즈 설정화면 만들기!"
-            android:textSize="30dp"
-            />
-    </LinearLayout>
+            android:text="알림"
+            android:textColor="@color/pink"
+            android:textSize="24sp"
+            android:layout_gravity="center_horizontal"/>
+        <View
+            android:layout_width="300dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:background="@color/black_semi_transparent" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/autoLogin"
+                android:layout_gravity="left"/>
 
+            <Switch
+                android:id="@+id/logswitch"
+                android:layout_width="100dp"
+                android:gravity="right"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pushAlert"
+                android:gravity="left"
+                android:layout_gravity="start"/>
+
+            <Switch
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:id="@+id/pushswitch"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="개인정보"
+            android:textColor="@color/pink"
+            android:textSize="24sp"
+            android:layout_gravity="center_horizontal"/>
+
+        <View
+            android:layout_width="300dp"
+            android:layout_height="2dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@color/black_semi_transparent" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:text="@string/myInfo"
+                android:textColor="#000000"
+                android:textSize="10pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="#FFFFFF"
+                android:id="@+id/myInfo"/>
+            <View
+                android:layout_width="300dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:background="@color/black_semi_transparent" />
+            <Button
+                android:text="@string/changePass"
+                android:textColor="#000000"
+                android:textSize="10pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="#FFFFFF"
+                android:id="@+id/changePass"/>
+            <View
+                android:layout_width="300dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:background="@color/black_semi_transparent" />
+            <Button
+                android:text="@string/accountOut"
+                android:textColor="#000000"
+                android:textSize="10pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="#FFFFFF"
+                android:id="@+id/accountOut"/>
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>
 
 
