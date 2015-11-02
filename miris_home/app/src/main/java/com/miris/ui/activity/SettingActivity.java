@@ -94,7 +94,7 @@ public class SettingActivity extends BaseActivity {
     public void onchangePassClick(final View v) {
         Intent intent = new Intent(getApplicationContext(), ChangePassActivity.class);
         overridePendingTransition(0, 0);
-        startActivity(intent);//ChangePassActivity.화면 이동
+        startActivity(intent);
     }
 
     @Optional
@@ -102,6 +102,6 @@ public class SettingActivity extends BaseActivity {
     public void onaccountOutClick(final View v) {
         Intent intent = new Intent(getApplicationContext(), AccountOutActivity.class);
         overridePendingTransition(0, 0);
-        startActivity(intent);//AccountOutActivity.화면 이동
+        startActivity(intent);
     }
 }

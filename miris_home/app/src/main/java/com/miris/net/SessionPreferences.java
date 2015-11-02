@@ -33,41 +33,39 @@ public class SessionPreferences {
         return pref.getBoolean(IS_INTRO, false);
     }
 
-    //아이디 담기
     public void setUser_id(String user_id) {
         editor.putString("session.user_id", user_id);
         editor.commit();
     }
-    //비밀번호 담기
+
     public void setUser_passwd(String user_passwd) {
         editor.putString("session.user_passwd", user_passwd);
         editor.commit();
     }
-    //자동로그인 정보 담기
+
     public void setAutoLogin(boolean isAutoLogin) {
         editor.putBoolean("session.autoLogin", isAutoLogin);
         editor.commit();
     }
 
-    //푸시 정보 담기
     public void setPushAlert(boolean isPushAlert) {
         editor.putBoolean("session.pushAlert", isPushAlert);
         editor.commit();
     }
 
-    //아이디 가져오기
+
     public String getUser_id() {
         return pref.getString("session.user_id", "");
     }
-    //비밀번호 가져오기
+
     public String getUser_passwd() {
         return pref.getString("session.user_passwd", "");
     }
-    //자동로그인정보 가져오기
+
     public boolean getAutoLogin() {
         return pref.getBoolean("session.autoLogin", false);
     }
-    //푸시알림정보 가져오기
+
     public boolean getPushAlert() {
         return pref.getBoolean("session.pushAlert", false);
     }

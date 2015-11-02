@@ -20,9 +20,6 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
 
-/**
- * Created by florentchampigny on 27/08/15.
- */
 public class MaterialTextField extends FrameLayout {
 
 
