@@ -28,7 +28,7 @@ import java.util.List;
 public class SignInActivity extends BaseActivity {
 
     boolean showIntro = false;
-    Button btn_main;
+    Button btn_main, login_signupbtn;
     EditText btn_id;
     EditText btn_pass;
     List<ParseObject> ob;
@@ -88,7 +88,9 @@ public class SignInActivity extends BaseActivity {
         btn_main = (Button) findViewById(R.id.btn_main);
         btn_id = (EditText) findViewById(R.id.btn_id);
         btn_pass = (EditText) findViewById(R.id.btn_pass);
+        login_signupbtn = (Button) findViewById(R.id.login_signupbtn);
         btn_main.setOnClickListener(listener);
+        login_signupbtn.setOnClickListener(listener);
     }
 
     View.OnClickListener listener = new View.OnClickListener() {
@@ -108,6 +110,10 @@ public class SignInActivity extends BaseActivity {
                         new loadLoginTask().execute();
                         break;
                     }
+                case R.id.login_signupbtn:
+                    Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                    overridePendingTransition(0, 0);
+                    startActivity(intent);
             }
         }
     };
