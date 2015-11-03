@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.miris.R;
+import com.miris.net.CalendarListData;
 import com.miris.net.CommitListData;
 import com.miris.net.MemberListData;
 import com.miris.net.NoticeListData;
@@ -52,6 +53,8 @@ public class BaseActivity extends AppCompatActivity{
     public static ArrayList<MemberListData> memberData;
     public static ArrayList<UserProfileListData> userProfileListData;
     public static ArrayList<UserProImgData> userProImgData;
+    public static ArrayList<CalendarListData> calendarData;
+
     SessionPreferences session;
     public static int badge_count = 0;
 

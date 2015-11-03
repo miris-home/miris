@@ -23,5 +23,4 @@ public class CalendarActivity extends BaseActivity {
             }
         });
     }
-
 }
