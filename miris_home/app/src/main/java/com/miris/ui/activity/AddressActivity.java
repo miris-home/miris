@@ -91,12 +91,7 @@ public class AddressActivity extends BaseActivity
 
         @Override
         protected void onPreExecute() {
-            if (myLoadingDialog != null) {
-                if (!myLoadingDialog.isShowing()) {
-                    showDialog();
-                }
-            }
-
+            showDialog();
         }
         @Override
         protected Void doInBackground(Void... arg0) {
@@ -147,6 +142,9 @@ public class AddressActivity extends BaseActivity
                     super.onScrolled(recyclerView, dx, dy);
                 }
             });
+            if (myLoadingDialog != null) {
+                myLoadingDialog.dismiss();
+            }
             addressAdapterr.updateItems(true);
         }
     }
