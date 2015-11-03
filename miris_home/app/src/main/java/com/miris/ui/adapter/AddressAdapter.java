@@ -18,6 +18,7 @@ import com.miris.ui.utils.CircleTransformation;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -43,12 +44,13 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private boolean animateItems = false;
 
     private OnFeedItemClickListener onFeedItemClickListener;
-
-    private boolean showLoadingView = false;
+    private ArrayList<CalendarListData> searcharraylist;
 
     public AddressAdapter(Context context, ArrayList<CalendarListData> items) {
         this.context = context;
         calendarData = items;
+        this.searcharraylist = new ArrayList<CalendarListData>();
+        this.searcharraylist.addAll(items);
     }
 
     @Override
@@ -80,7 +82,6 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         runEnterAnimation(viewHolder.itemView, position);
         final CellFeedViewHolder holder = (CellFeedViewHolder) viewHolder;
-
         Picasso.with(context)
                 .load(calendarData.get(position).getuserImgurl())
                 .placeholder(R.drawable.img_circle_placeholder)
@@ -121,13 +122,6 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         animateItems = animated;
         notifyDataSetChanged();
     }
-
-    public void showLoadingView() {
-        showLoadingView = true;
-        notifyItemChanged(0);
-    }
-
-
 
     public static class CellFeedViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.ivUserProfile)
@@ -170,4 +164,26 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void onSendMessage(View v, int position);
         public void onSendCall(View v, int position);
     }
+
+    public void getFilter(String charText) {
+
+        charText = charText.toLowerCase(Locale.getDefault());
+        calendarData.clear();
+        if (charText.length() == 0) {
+            calendarData.addAll(searcharraylist);
+        } else {
+            for (CalendarListData calList : searcharraylist) {
+                if (calList.getuser_name().toLowerCase(Locale.getDefault()).contains(charText)){
+                    calendarData.add(calList);
+                }
+            }
+        }
+        if (calendarData.size() == 0) {
+            calendarData.addAll(searcharraylist);
+        }
+        updateItems(false);
+    }
+
+
+
 }

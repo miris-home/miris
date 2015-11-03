@@ -7,13 +7,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import com.miris.R;
 import com.miris.net.CalendarListData;
 import com.miris.ui.adapter.AddressAdapter;
-import com.miris.ui.view.SwipeLayout;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -21,6 +23,7 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.InjectView;
 
@@ -31,12 +34,13 @@ public class AddressActivity extends BaseActivity
         implements AddressAdapter.OnFeedItemClickListener{
     @InjectView(R.id.rvAddress)
     RecyclerView rvAddress;
+    @InjectView(R.id.inputSearch)
+    EditText inputSearch;
     LinearLayoutManager linearLayoutManager;
-    private AddressAdapter addressAdapterr;
+    private AddressAdapter addressAdapter;
     ProgressDialog myLoadingDialog;
     List<ParseObject> ob;
 
-    private SwipeLayout sample1, sample2, sample3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,21 @@ public class AddressActivity extends BaseActivity
             }
         });
         setupFeed();
+        inputSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                addressAdapter.getFilter(inputSearch.getText().toString().toLowerCase(Locale.getDefault()));
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void setupFeed() {
@@ -126,9 +145,9 @@ public class AddressActivity extends BaseActivity
         }
         @Override
         protected void onPostExecute(Void result) {
-            addressAdapterr = new AddressAdapter(AddressActivity.this, calendarData);
-            rvAddress.setAdapter(addressAdapterr);
-            addressAdapterr.setOnFeedItemClickListener(AddressActivity.this);
+            addressAdapter = new AddressAdapter(AddressActivity.this, calendarData);
+            rvAddress.setAdapter(addressAdapter);
+            addressAdapter.setOnFeedItemClickListener(AddressActivity.this);
 
             rvAddress.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -145,7 +164,7 @@ public class AddressActivity extends BaseActivity
             if (myLoadingDialog != null) {
                 myLoadingDialog.dismiss();
             }
-            addressAdapterr.updateItems(true);
+            addressAdapter.updateItems(true);
         }
     }
 }
