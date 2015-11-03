@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="MaterialTextField">
-        <attr name="mtf_cardCollapsedHeight" format="dimension"/>
-        <attr name="mtf_labelColor" format="color"/>
-        <attr name="mtf_cardColor" format="color"/>
-        <attr name="mtf_image" format="reference"/>
-        <attr name="mtf_animationDuration" format="integer"/>
-        <attr name="mtf_openKeyboardOnFocus" format="boolean"/>
+	<declare-styleable name="FloatLabeledEditText">
+        <attr name="fletTextAppearance" format="reference" />
+        <attr name="fletPadding" format="reference|dimension" />
+        <attr name="fletPaddingLeft" format="reference|dimension" />
+        <attr name="fletPaddingTop" format="reference|dimension" />
+        <attr name="fletPaddingRight" format="reference|dimension" />
+        <attr name="fletPaddingBottom" format="reference|dimension" />
+        <attr name="fletBackground" format="reference|color" />
     </declare-styleable>
 </resources>

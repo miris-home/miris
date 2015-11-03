@@ -1,144 +1,142 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="아이디 * "
-                android:id="@+id/textView_id"
-                android:textColor="#0000ff" />
-
-            <EditText
-                android:id="@+id/main_edtxid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:ems="10"
-                android:hint="5자리 이상 입력"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="비밀번호 *  "
-                android:id="@+id/textView_pw"
-                android:textColor="#0000ff"/>
-
-            <EditText
-                android:id="@+id/main_edtxps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:hint="6자이상 입력."/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="비밀번호 확인 * "
-                android:id="@+id/textView_pwConfirm"
-                android:textColor="#0000ff"/>
-
-            <EditText
-                android:id="@+id/main_edtxpsc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:hint="비밀번호 재입력"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="휴대폰 번호 * "
-                android:id="@+id/textView_phoneNum"
-                android:textColor="#0000ff"/>
-
-            <EditText
-                android:id="@+id/main_edtxphnum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:ems="10"
-                android:hint="전화번호 입력"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="직급 * "
-                android:id="@+id/textView_position"
-                android:textColor="#0000ff"/>
-
-            <EditText
-                android:id="@+id/main_edtxpst"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:ems="10"
-                android:hint="직급 입력"/>
-        </TableRow>
-
-    </TableLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:scrollbars="none"
+    tools:context="SignupActivity">
 
     <LinearLayout
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:background="@color/md_divider_white"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:elevation="@dimen/default_elevation"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/main_singupbtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="회원가입"
-            />
-        <Button
-            android:id="@+id/main_cancleupbtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="나가기"
-            />
+        <ImageView
+            android:id="@+id/ivUserProfilePhoto"
+            android:layout_width="@dimen/user_profile_avatar_size"
+            android:layout_height="@dimen/user_profile_avatar_size"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"/>
 
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal">
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/main_edtxid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="아이디" />
+                </com.miris.ui.view.FloatLabeledEditText>
+
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/main_edtname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="이름" />
+                </com.miris.ui.view.FloatLabeledEditText>
+
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/main_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="이메일 주소" />
+                </com.miris.ui.view.FloatLabeledEditText>
+
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/main_edtxps"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="비밀번호" />
+                </com.miris.ui.view.FloatLabeledEditText>
+
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/main_edtxpsc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="비밀번호 재입력" />
+                </com.miris.ui.view.FloatLabeledEditText>
+
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/main_edtxphnum"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="연락처" />
+                </com.miris.ui.view.FloatLabeledEditText>
+
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/main_edtage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="나이" />
+                </com.miris.ui.view.FloatLabeledEditText>
+
+                <com.miris.ui.view.FloatLabeledEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/main_edtxpst"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="직급" />
+                </com.miris.ui.view.FloatLabeledEditText>
+        </TableLayout>
+
+        <LinearLayout
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/main_singupbtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="회원가입"
+                />
+            <Button
+                android:id="@+id/main_cancleupbtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="나가기" />
+        </LinearLayout>
     </LinearLayout>
-
-</RelativeLayout>
-
+</ScrollView>

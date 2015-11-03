@@ -181,7 +181,8 @@ public class SignInActivity extends BaseActivity {
                             country.getInt("user_totalcommit"),
                             country.getInt("user_registernumber"),
                             country.get("user_rank").toString(),
-                            country.get("user_email").toString()));
+                            country.get("user_email").toString(),
+                            country.get("user_phonenumber").toString()));
                 }
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());

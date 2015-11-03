@@ -18,11 +18,12 @@ public class MemberListData {
     int user_registernumber;
     String user_rank;
     String user_email;
+    String user_phonenumber;
 
     public MemberListData(String userId, String user_password, String user_name, String user_age,
                           Bitmap user_img, String userImgurl, int user_TotalLike,
                           int user_TotalCommit, int user_registernumber,
-                          String user_rank, String user_email) {
+                          String user_rank, String user_email, String user_phonenumber) {
 
         this.userId = userId;
         this.user_password = user_password;
@@ -35,6 +36,7 @@ public class MemberListData {
         this.user_registernumber = user_registernumber;
         this.user_rank = user_rank;
         this.user_email = user_email;
+        this.user_phonenumber = user_phonenumber;
     }
 
     public void setuserId(String userId) {
@@ -81,6 +83,10 @@ public class MemberListData {
         this.user_rank = user_email;
     }
 
+    public void setuser_phonenumber(String  user_phonenumber) {
+        this.user_phonenumber = user_phonenumber;
+    }
+
     public String getuserId() {
         return userId;
     }
@@ -123,6 +129,10 @@ public class MemberListData {
 
     public String getuser_email() {
         return user_email;
+    }
+
+    public String getuser_phonenumber() {
+        return user_phonenumber;
     }
 
 }
