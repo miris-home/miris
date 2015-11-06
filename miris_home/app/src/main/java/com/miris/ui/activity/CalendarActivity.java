@@ -39,7 +39,7 @@ import butterknife.OnClick;
 public class CalendarActivity extends BaseActivity {
     public static final String ACTION_SHOW_NEW_ITEM = "action_show_new_item";
     private Calendar currentCalender = Calendar.getInstance(Locale.getDefault());
-    private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("yyyy≥‚ MMM", Locale.getDefault());
+    private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("yyyyÎÖÑ MMM", Locale.getDefault());
 
     @InjectView(R.id.rvCalendar)
     RecyclerView rvCalendar;
@@ -176,32 +176,32 @@ public class CalendarActivity extends BaseActivity {
         }
         cal = new GregorianCalendar();
         int[][] holidays = {
-                {cal.get(Calendar.YEAR), 0, 1}, // Ω≈¡§
-                {cal.get(Calendar.YEAR), 2, 1}, // ªÔ¿œ¿˝
-                {cal.get(Calendar.YEAR), 4, 5}, // æÓ∏∞¿Ã≥Ø
-                {cal.get(Calendar.YEAR), 5, 6}, // «ˆ√Ê¿œ
-                {cal.get(Calendar.YEAR), 7, 15}, // ±§∫π¿˝
-                {cal.get(Calendar.YEAR), 9, 3}, // ∞≥√µ¿˝
-                {cal.get(Calendar.YEAR), 9, 9}, // «—±€≥Ø
-                {cal.get(Calendar.YEAR), 11, 25}, // º∫≈∫¿˝
+                {cal.get(Calendar.YEAR), 0, 1},
+                {cal.get(Calendar.YEAR), 2, 1},
+                {cal.get(Calendar.YEAR), 4, 5},
+                {cal.get(Calendar.YEAR), 5, 6},
+                {cal.get(Calendar.YEAR), 7, 15},
+                {cal.get(Calendar.YEAR), 9, 3},
+                {cal.get(Calendar.YEAR), 9, 9},
+                {cal.get(Calendar.YEAR), 11, 25},
         };
 
         String[] holidaysName = {
-                "Ω≈¡§",
-                "ªÔ¿œ¿˝",
-                "æÓ∏∞¿Ã≥Ø",
-                "«ˆ√Ê¿œ",
-                "±§∫π¿˝",
-                "∞≥√µ¿˝",
-                "«—±€≥Ø",
-                "º∫≈∫¿˝",
+                "Ïã†Ï†ï",
+                "ÏÇºÏùºÏ†à",
+                "Ïñ¥Î¶∞Ïù¥ÎÇ†",
+                "ÌòÑÏ∂©Ïùº",
+                "Í¥ëÎ≥µÏ†à",
+                "Í∞úÏ≤úÏ†à",
+                "ÌïúÍ∏ÄÎÇ†",
+                "ÏÑ±ÌÉÑÏ†à",
         };
         for(int i = 0; i < holidays.length; i++){
             cal = new GregorianCalendar(holidays[i][0],holidays[i][1],holidays[i][2]);
             today = cal.getTime();
             calendarData.add(new CalendarListData(
                     "Defult",
-                    "∞¯»ﬁ¿œ",
+                    "Í≥µÌú¥Ïùº",
                     today,
                     holidaysName[i],
                     "Y"));
