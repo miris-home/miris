@@ -34,9 +34,4 @@
             android:background="@drawable/round_rectangle_semi_transparent"
         />
     </LinearLayout>
-
-
-
-
-
 </RelativeLayout>

@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.miris.R;
 import com.miris.Utils;
-import com.miris.net.CalendarListData;
+import com.miris.net.AddressListData;
 import com.miris.ui.utils.CircleTransformation;
 import com.squareup.picasso.Picasso;
 
@@ -23,7 +23,7 @@ import java.util.Locale;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-import static com.miris.ui.activity.BaseActivity.calendarData;
+import static com.miris.ui.activity.BaseActivity.addressData;
 
 /**
  * Created by fantastic on 2015-11-03.
@@ -44,12 +44,12 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private boolean animateItems = false;
 
     private OnFeedItemClickListener onFeedItemClickListener;
-    private ArrayList<CalendarListData> searcharraylist;
+    private ArrayList<AddressListData> searcharraylist;
 
-    public AddressAdapter(Context context, ArrayList<CalendarListData> items) {
+    public AddressAdapter(Context context, ArrayList<AddressListData> items) {
         this.context = context;
-        calendarData = items;
-        this.searcharraylist = new ArrayList<CalendarListData>();
+        addressData = items;
+        this.searcharraylist = new ArrayList<AddressListData>();
         this.searcharraylist.addAll(items);
     }
 
@@ -83,7 +83,7 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         runEnterAnimation(viewHolder.itemView, position);
         final CellFeedViewHolder holder = (CellFeedViewHolder) viewHolder;
         Picasso.with(context)
-                .load(calendarData.get(position).getuserImgurl())
+                .load(addressData.get(position).getuserImgurl())
                 .placeholder(R.drawable.img_circle_placeholder)
                 .resize(context.getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size),
                         context.getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size))
@@ -91,10 +91,10 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 .transform(new CircleTransformation())
                 .into(holder.ivUserProfile);
 
-        holder.ivUserName.setText(calendarData.get(position).getuser_name()
-                +" ("+calendarData.get(position).getuser_rank() +")");
-        holder.ivUserNumber.setText(calendarData.get(position).getuser_phonenumber());
-        holder.ivUserEmail.setText(calendarData.get(position).getuser_email());
+        holder.ivUserName.setText(addressData.get(position).getuser_name()
+                +" ("+addressData.get(position).getuser_rank() +")");
+        holder.ivUserNumber.setText(addressData.get(position).getuser_phonenumber());
+        holder.ivUserEmail.setText(addressData.get(position).getuser_email());
 
         holder.ivUserProfile.setTag(position);
         holder.ivUserName.setTag(position);
@@ -118,7 +118,7 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void updateItems(boolean animated) {
-        itemsCount = calendarData.size();
+        itemsCount = addressData.size();
         animateItems = animated;
         notifyDataSetChanged();
     }
@@ -168,22 +168,19 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void getFilter(String charText) {
 
         charText = charText.toLowerCase(Locale.getDefault());
-        calendarData.clear();
+        addressData.clear();
         if (charText.length() == 0) {
-            calendarData.addAll(searcharraylist);
+            addressData.addAll(searcharraylist);
         } else {
-            for (CalendarListData calList : searcharraylist) {
+            for (AddressListData calList : searcharraylist) {
                 if (calList.getuser_name().toLowerCase(Locale.getDefault()).contains(charText)){
-                    calendarData.add(calList);
+                    addressData.add(calList);
                 }
             }
         }
-        if (calendarData.size() == 0) {
-            calendarData.addAll(searcharraylist);
+        if (addressData.size() == 0) {
+            addressData.addAll(searcharraylist);
         }
         updateItems(false);
     }
-
-
-
 }

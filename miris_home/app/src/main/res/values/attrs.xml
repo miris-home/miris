@@ -26,4 +26,11 @@
         </attr>
         <attr name="clickToClose" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="CompactCalendarView">
+        <attr name="compactCalendarTextSize" format="dimension"/>
+        <attr name="compactCalendarBackgroundColor" format="color"/>
+        <attr name="compactCalendarCurrentDayBackgroundColor" format="color"/>
+        <attr name="compactCalendarCurrentSelectedDayBackgroundColor" format="color"/>
+        <attr name="compactCalendarTextColor" format="color"/>
+    </declare-styleable>
 </resources>

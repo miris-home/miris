@@ -44,10 +44,11 @@ public class BaseDrawerActivity extends BaseActivity {
     public void setContentView(int layoutResID) {
         super.setContentViewWithoutInject(R.layout.activity_drawer);
         mActivity = this;
-        if (memberData.get(0) == null) {
+        if (memberData == null) {
             Intent i = new Intent(this, SignInActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(i);
         }
         ViewGroup viewGroup = (ViewGroup) findViewById(R.id.flContentRoot);
         LayoutInflater.from(this).inflate(layoutResID, viewGroup, true);

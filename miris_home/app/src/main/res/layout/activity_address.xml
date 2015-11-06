@@ -34,7 +34,7 @@
                 android:id="@+id/inputSearch"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="찾으시는 이름을 입력해주세요."
+                android:hint="@string/search_edittext"
                 android:inputType="textVisiblePassword"/>
         </com.miris.ui.view.FloatLabeledEditText>
     </LinearLayout>

@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.miris.R;
-import com.miris.net.CalendarListData;
+import com.miris.net.AddressListData;
 import com.miris.ui.adapter.AddressAdapter;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -85,7 +85,7 @@ public class AddressActivity extends BaseActivity
     @Override
     public void onSendMessage(View v, int position) {
         Intent messagentent = new Intent(Intent.ACTION_SENDTO);
-        messagentent.setData(Uri.parse("smsto:" + calendarData.get(position).getuser_phonenumber()));
+        messagentent.setData(Uri.parse("smsto:" + addressData.get(position).getuser_phonenumber()));
         startActivity(messagentent);
         overridePendingTransition(0, 0);
     }
@@ -93,7 +93,7 @@ public class AddressActivity extends BaseActivity
     @Override
     public void onSendCall(View v, int position) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + calendarData.get(position).getuser_phonenumber()));
+        callIntent.setData(Uri.parse("tel:" + addressData.get(position).getuser_phonenumber()));
         startActivity(callIntent);
         overridePendingTransition(0, 0);
     }
@@ -114,7 +114,7 @@ public class AddressActivity extends BaseActivity
         }
         @Override
         protected Void doInBackground(Void... arg0) {
-            calendarData = new ArrayList<CalendarListData>();
+            addressData = new ArrayList<AddressListData>();
 
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_member");
             offerQuery.orderByDescending("createdAt");
@@ -132,7 +132,7 @@ public class AddressActivity extends BaseActivity
                 if (isCancelled()) {
                     return null;
                 }
-                calendarData.add(new CalendarListData(
+                addressData.add(new AddressListData(
                         country.get("user_id").toString(),
                         country.get("user_name").toString(),
                         country.get("user_age").toString(),
@@ -145,7 +145,7 @@ public class AddressActivity extends BaseActivity
         }
         @Override
         protected void onPostExecute(Void result) {
-            addressAdapter = new AddressAdapter(AddressActivity.this, calendarData);
+            addressAdapter = new AddressAdapter(AddressActivity.this, addressData);
             rvAddress.setAdapter(addressAdapter);
             addressAdapter.setOnFeedItemClickListener(AddressActivity.this);
 
