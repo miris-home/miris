@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="CalendarActivity">
-
     <include
         android:id="@+id/toolbar"
         layout="@layout/view_feed_toolbar_sc" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,12 +15,44 @@
         android:elevation="@dimen/default_elevation"
         android:orientation="vertical"
         android:gravity="center">
-        <TextView
+
+    <TextView
+        android:id="@+id/this_month_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#888888" />
+
+    <FrameLayout
+        android:id="@+id/main_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/main_bottom"
+        android:layout_below="@+id/this_month_tv">
+
+        <fragment
+            android:id="@+id/monthly"
+            android:name="com.miris.ui.activity.MonthlyFragment"
+            android:layout_width="match_parent"
+            android:layout_height="466dp"/>
+
+    </FrameLayout>
+        <LinearLayout
+            android:id="@+id/buttonLayout"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="미르이즈 달력 만들기!"
-            android:textSize="30dp"
-            />
+            android:layout_height="38dp"
+            android:layout_gravity="right"
+            >
+        <Button
+            android:id="@+id/CalOkbtn"
+            android:layout_width="130dp"
+            android:layout_height="66dp"
+            android:layout_marginBottom="50dp"
+            android:text="일정등록"
+                 />
+
+    </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

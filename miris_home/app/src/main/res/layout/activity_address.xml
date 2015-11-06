@@ -34,7 +34,7 @@
                 android:id="@+id/inputSearch"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ã£À¸½Ã´Â ÀÌ¸§À» ÀÔ·ÂÇØÁÖ¼¼¿ä."
+                android:hint="ì°¾ìœ¼ì‹œëŠ” ì´ë¦„ì„ ìž…ë ¥í•´ì£¼ì„¸ìš”."
                 android:inputType="textVisiblePassword"/>
         </com.miris.ui.view.FloatLabeledEditText>
     </LinearLayout>
