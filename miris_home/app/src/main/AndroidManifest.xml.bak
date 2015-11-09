@@ -103,10 +103,6 @@
             android:name=".ui.activity.TakeCalendarActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-		<activity
-			android:name=".ui.activity.AboutActivity"
-			android:screenOrientation="portrait"
-			android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.activity.IntroActivity"
             android:screenOrientation="portrait"
