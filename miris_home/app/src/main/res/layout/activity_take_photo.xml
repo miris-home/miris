@@ -8,9 +8,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical"/>
+
+    <ImageButton
+        android:id="@+id/ivTakenPhoto"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+    <View
+        android:id="@+id/vShutter"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffffff"
+        android:visibility="gone" />
+
+    <RadioButton
+        android:id="@+id/touchListener"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:alpha="0" />
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="vertical">
 
         <ViewSwitcher
@@ -25,7 +52,6 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="24dp"
                 android:paddingRight="24dp">
-
 
                 <ImageButton
                     android:id="@+id/btn_ic_close"
@@ -51,7 +77,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#111111"
                 android:gravity="center_vertical"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
@@ -85,36 +110,10 @@
 
         <com.miris.ui.view.SquaredFrameLayout
             android:id="@+id/vPhotoRoot"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
-            <FrameLayout
-                android:id="@+id/camera_preview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"/>
 
-            <ImageButton
-                android:id="@+id/ivTakenPhoto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
-
-            <View
-                android:id="@+id/vShutter"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#ffffff"
-                android:visibility="gone" />
-            <RadioButton
-                android:id="@+id/touchListener"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:alpha="0" />
         </com.miris.ui.view.SquaredFrameLayout>
 
         <ViewSwitcher
@@ -181,7 +180,5 @@
 
             </LinearLayout>
         </ViewSwitcher>
-
-
     </LinearLayout>
 </FrameLayout>

@@ -150,15 +150,12 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         updateStatusBarColor();
         updateState(STATE_TAKE_PHOTO);
         setupRevealBackground(savedInstanceState);
-        //setupPhotoFilters(); plus334.park
 
         vUpperPanel.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
                 vUpperPanel.getViewTreeObserver().removeOnPreDrawListener(this);
                 pendingIntro = true;
-                vUpperPanel.setTranslationY(-vUpperPanel.getHeight());
-                vLowerPanel.setTranslationY(vLowerPanel.getHeight());
                 return true;
             }
         });
@@ -213,26 +210,6 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
             preview.addView(mPreview);
 
-            touchListener.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    int action = event.getAction();
-
-                    switch (action) {
-                        case MotionEvent.ACTION_DOWN:
-                            mCamera.autoFocus(mFocus);
-                            break;
-                        case MotionEvent.ACTION_UP:
-                                mCamera.takePicture(null, null, mPicture);
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            isFocused = false;
-                            touchListener.setChecked(false);
-                    }
-                    return false;
-                }
-            });
-
         } else if(Camera.CameraInfo.CAMERA_FACING_FRONT > -1){
             try {
                 cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
@@ -257,14 +234,13 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
-
+                mCamera.autoFocus(mFocus);
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
-                        mCamera.autoFocus(mFocus);
+                        mCamera.takePicture(null, null, mPicture);
                         break;
                     case MotionEvent.ACTION_UP:
-                        if (isFocused)
-                            mCamera.takePicture(null, null, mPicture);
+                        mCamera.takePicture(null, null, mPicture);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         isFocused = false;
@@ -287,11 +263,10 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     @OnClick(R.id.btnTakePhoto)
     public void onTakePhotoClick() {
         mCamera.autoFocus(mFocus);
-        if (isFocused) {
-            btnTakePhoto.setEnabled(false);
-            mCamera.takePicture(null, null, mPicture);
-            animateShutter();
-        }
+        btnTakePhoto.setEnabled(false);
+        mCamera.takePicture(null, null, mPicture);
+        animateShutter();
+
     }
 
     @OnClick(R.id.btn_ic_write)

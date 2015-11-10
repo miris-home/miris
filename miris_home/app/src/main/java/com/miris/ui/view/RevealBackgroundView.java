@@ -90,6 +90,7 @@ public class RevealBackgroundView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        //canvas.drawColor(0x50000000, PorterDuff.Mode.DST_IN);
         if (state == STATE_FINISHED) {
             canvas.drawRect(0, 0, getWidth(), getHeight(), fillPaint);
         } else {

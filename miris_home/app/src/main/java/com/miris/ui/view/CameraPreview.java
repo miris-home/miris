@@ -9,7 +9,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
@@ -30,10 +29,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Log.i(TAG, "surfaceCreated!");
         try {
 			Camera.Parameters parameters = mCamera.getParameters();
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+                parameters.setFocusMode(parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             } else {
-                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                parameters.setFocusMode(parameters.FOCUS_MODE_AUTO);
             }
 			if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
 				parameters.set("orientation", "portrait");
@@ -69,7 +68,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         Log.i(TAG,"Surface Changed");
         if (mHolder.getSurface() == null){
@@ -90,7 +88,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 mPreviewSize = s;
             }
         }
-        parameters.setPreviewSize(mPreviewSize.height, mPreviewSize.height);
+        parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
         mCamera.setParameters(parameters);
         requestLayout();
 
@@ -102,23 +100,4 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
-
-    private static class SizeComparator implements
-            Comparator<Camera.Size> {
-
-        @Override
-        public int compare(Camera.Size lhs, Camera.Size rhs) {
-            int left=lhs.width * lhs.height;
-            int right=rhs.width * rhs.height;
-
-            if (left < right) {
-                return(-1);
-            }
-            else if (left > right) {
-                return(1);
-            }
-            return (0);
-        }
-    }
 }
-
