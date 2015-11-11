@@ -4,15 +4,22 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.miris.R;
 import com.miris.net.SessionPreferences;
 import com.miris.ui.utils.CircleTransformation;
 import com.miris.ui.view.FloatLabeledEditText;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import butterknife.InjectView;
@@ -134,10 +141,61 @@ public class MyinfoActivity extends BaseActivity {
     @Optional
     @OnClick(R.id.btn_ok)
     public void onibtn_okClick(final View v) {
-        Intent intent = new Intent(this, MainActivity.class);
+
+        ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_member");
+        offerQuery.whereEqualTo("user_id",          memberData.get(0).getuserId());
+        offerQuery.whereEqualTo("user_password",    memberData.get(0).getuser_password());
+        offerQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    String input_user_name = user_name.getText().toString();
+                    if (input_user_name == null || "".equals(input_user_name)) {
+                        input_user_name = memberData.get(0).getuser_name();
+                    }
+                    String input_user_email = user_email.getText().toString();
+                    if (input_user_email == null || "".equals(input_user_email)) {
+                        input_user_email = memberData.get(0).getuser_email();
+                    }
+                    String input_user_number = user_number.getText().toString();
+                    if (input_user_number == null || "".equals(input_user_number)) {
+                        input_user_number = memberData.get(0).getuser_phonenumber();
+                    }
+                    String input_user_age = user_age.getText().toString();
+                    if (input_user_age == null || "".equals(input_user_age)) {
+                        input_user_age = memberData.get(0).getuser_age();
+                    }
+                    String input_user_rank = user_rank.getText().toString();
+                    if (input_user_rank == null || "".equals(input_user_rank)) {
+                        input_user_rank = memberData.get(0).getuser_rank();
+                    }
+                    parseObject.put("user_name",        input_user_name);
+                    parseObject.put("user_email",       input_user_email);
+                    parseObject.put("user_phonenumber", input_user_number);
+                    parseObject.put("user_age",         input_user_age);
+                    parseObject.put("user_rank",        input_user_rank);
+                    parseObject.saveInBackground();
+                    parseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Toast.makeText(getApplication(), getString(R.string.changeMyinfo_pass), Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(getApplication(), getString(R.string.changeMyinfo_fail), Toast.LENGTH_SHORT).show();
+                                Log.d("내정보수정 오류", "[" + e.toString() + "]");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        /*
+        Intent intent = new Intent(this, SettingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(0, 0);
+        */
     }
 }
