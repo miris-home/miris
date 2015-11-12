@@ -14,7 +14,7 @@
         android:layout_height="fill_parent"
         android:layout_gravity="center_vertical"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/ivTakenPhoto"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -164,7 +164,7 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center"
                         android:background="@drawable/btn_capture_options"
-                        android:src="@drawable/ic_videocam_white_24dp" />
+                        android:src="@drawable/ic_camera_rear_white_24dp" />
                 </FrameLayout>
             </LinearLayout>
 

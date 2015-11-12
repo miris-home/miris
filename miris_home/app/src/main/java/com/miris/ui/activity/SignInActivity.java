@@ -168,8 +168,6 @@ public class SignInActivity extends BaseActivity {
                             e2.printStackTrace();
                         }
                     }
-                    session.setUser_id(country.get("user_id").toString()); //아이디 담기
-                    session.setUser_passwd(country.get("user_password").toString()); //패스워드 담기
                     memberData.add(new MemberListData(
                             country.get("user_id").toString(),
                             country.get("user_password").toString(),

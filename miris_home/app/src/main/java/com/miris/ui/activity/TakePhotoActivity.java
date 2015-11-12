@@ -24,7 +24,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -43,6 +42,7 @@ import com.miris.R;
 import com.miris.ui.view.CameraPreview;
 import com.miris.ui.view.RevealBackgroundView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -99,22 +99,15 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     private boolean pendingIntro;
     private int currentState;
-
     private File photoPath;
-
-    static String TAG = "CAMERA";
-    private Context mContext 				= this;
+    private Context mContext = this;
     FrameLayout preview;
     private Camera mCamera;
     private CameraPreview mPreview;
-    private boolean isPhotoTaken 			= false;
-    private boolean isFocused 				= false;
-    private boolean errorFound 				= false;
-    private int cameraId 					= -1;
-
     public static String savedPath;
     Bitmap clsBitmap;
     Boolean viewVisible = false ;
+    private boolean cameraFront = false;
 
     public static void startCameraFromLocation(int[] startingLocation, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, TakePhotoActivity.class);
@@ -125,11 +118,9 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-
-            isPhotoTaken = true;
             touchListener.setChecked(false);
-            mCamera.startPreview();
             new ImageSaveTask().execute(data);
+            mCamera.startPreview();
         }
     };
 
@@ -138,15 +129,16 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         public void onAutoFocus(boolean success, Camera camera) {
             if (success) {
                 touchListener.setChecked(true);
-                isFocused = true;
             } else
                 touchListener.setChecked(false);
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo);
+        initLayout();
         updateStatusBarColor();
         updateState(STATE_TAKE_PHOTO);
         setupRevealBackground(savedInstanceState);
@@ -188,62 +180,70 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         }
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
-        if (!viewVisible) {
-            initLayout();
-        }
-    }
-
-    private void initLayout() {
-        if (checkCameraHardware(mContext)) {
-            mCamera = getCameraInstance(0);
-            if (mCamera == null) {
-                Toast.makeText(mContext, getString(R.string.toast_not_camera),Toast.LENGTH_SHORT).show();
-                finish();
-            }
-            preview = (FrameLayout) findViewById(R.id.camera_preview);
-            mPreview = new CameraPreview(this);
-            mPreview.setCamera(mCamera);
-
-            preview.addView(mPreview);
-
-        } else if(Camera.CameraInfo.CAMERA_FACING_FRONT > -1){
-            try {
-                cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                mCamera = Camera.open(cameraId);
-            } catch (Exception e) {
-                errorFound = true;
-            }
-            if (errorFound = true) {
-                try {
-                    mCamera = Camera.open(0);
-                    cameraId = 0;
-                } catch (Exception e) {
-                    cameraId = -1;
-                }
-            }
-        } else {
+        if (!checkCameraHardware(mContext)) {
             Toast.makeText(mContext, "no camera on this device!",Toast.LENGTH_SHORT).show();
             finish();
         }
+        if (mCamera == null) {
+            if (findFrontFacingCamera() < 0) {
+                Toast.makeText(this, "No front facing camera found.", Toast.LENGTH_LONG).show();
+            }
+            mCamera = Camera.open(findBackFacingCamera());
+            mPreview.refreshCamera(mCamera);
+        }
+    }
+
+    private int findFrontFacingCamera() {
+        int cameraId = -1;
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                cameraId = i;
+                cameraFront = true;
+                break;
+            }
+        }
+        return cameraId;
+    }
+
+    private int findBackFacingCamera() {
+        int cameraId = -1;
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                cameraId = i;
+                cameraFront = false;
+                break;
+            }
+        }
+        return cameraId;
+    }
+
+    private void initLayout() {
+        preview = (FrameLayout) findViewById(R.id.camera_preview);
+        mPreview = new CameraPreview(this, mCamera);
+        preview.addView(mPreview);
 
         touchListener.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
-                mCamera.autoFocus(mFocus);
+
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
-                        mCamera.takePicture(null, null, mPicture);
+                        mCamera.autoFocus(mFocus);
                         break;
                     case MotionEvent.ACTION_UP:
-                        mCamera.takePicture(null, null, mPicture);
+                        mCamera.autoFocus(mFocus);
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        isFocused = false;
                         touchListener.setChecked(false);
                 }
                 return false;
@@ -254,10 +254,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
     @Override
     protected void onPause() {
         super.onPause();
-        if (!viewVisible) {
-            releaseCameraAndPreview();
-            preview.removeAllViews();
-        }
+        releaseCamera();
     }
 
     @OnClick(R.id.btnTakePhoto)
@@ -266,7 +263,6 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         btnTakePhoto.setEnabled(false);
         mCamera.takePicture(null, null, mPicture);
         animateShutter();
-
     }
 
     @OnClick(R.id.btn_ic_write)
@@ -285,7 +281,14 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
 
     @OnClick(R.id.btnVideoCam)
     public void onbtnVideoCamClick() {
-        // TODO: 2015-09-21
+        int camerasNumber = Camera.getNumberOfCameras();
+        if (camerasNumber > 1) {
+            releaseCamera();
+            chooseCamera();
+        } else {
+            Toast toast = Toast.makeText(this, "Sorry, your phone has only one camera!", Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
     protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
@@ -300,6 +303,32 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
                 // TODO: 2015-09-21
             }  else {
                 super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
+    private void releaseCamera() {
+        // stop and release camera
+        if (mCamera != null) {
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    public void chooseCamera() {
+        if (cameraFront) {
+            int cameraId = findBackFacingCamera();
+            if (cameraId >= 0) {
+
+                mCamera = Camera.open(cameraId);
+                mPreview.refreshCamera(mCamera);
+            }
+        } else {
+            int cameraId = findFrontFacingCamera();
+            if (cameraId >= 0) {
+
+                mCamera = Camera.open(cameraId);
+                mPreview.refreshCamera(mCamera);
             }
         }
     }
@@ -358,8 +387,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
         }
     }
 
-    public int exifOrientationToDegrees(int exifOrientation)
-    {
+    public int exifOrientationToDegrees(int exifOrientation) {
         if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
             return 90;
         } else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
@@ -390,7 +418,6 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             Matrix m = new Matrix();
             m.setRotate(degrees, (float) bitmap.getWidth() / 2,
                     (float) bitmap.getHeight() / 2);
-
             try {
                 Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0,
                         bitmap.getWidth(), bitmap.getHeight(), m, true);
@@ -515,6 +542,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             ivTakenPhoto.setVisibility(View.VISIBLE);
         }
     }
+
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             return true;
@@ -523,28 +551,7 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             return false;
         }
     }
-    public Camera getCameraInstance(int id) {
-        Camera c = null;
-        try {
-            releaseCameraAndPreview();
-            c = Camera.open(id);
-            Log.i(TAG,"><>< Camera resource opened successfully ><><");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return c;
-    }
-    private void releaseCameraAndPreview() {
-        if(mPreview != null){
-            Log.i(TAG,"preview camera released");
-            mPreview = null;
-        }
-        if (mCamera != null) {
-            Log.i(TAG,"Safely releasing camera!!");
-            mCamera.release();
-            mCamera = null;
-        }
-    }
+
     class ImageSaveTask extends AsyncTask<byte[], Void, Boolean> {
         
         @Override
@@ -556,8 +563,33 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             }
 
             try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data[0], 0, data[0].length, options);
+
+                Matrix m = new Matrix();
+                m.setRotate(90, (float) bitmap.getWidth() / 2,
+                        (float) bitmap.getHeight() / 2);
+                if (cameraFront) {
+                    m.postScale(1, -1);
+                }
+                Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0,
+                    bitmap.getWidth(), bitmap.getHeight(), m, true);
+                try {
+                    if(bitmap != converted) {
+                        bitmap.recycle();
+                        clsBitmap = converted;
+                    }
+                } catch(OutOfMemoryError ex) {
+
+                }
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                clsBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+                byte[] byteArray = stream.toByteArray();
+
                 FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data[0]);
+                fos.write(byteArray);
                 fos.close();
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 
@@ -566,20 +598,6 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
                 mContext.sendBroadcast(mediaScanIntent);
 
                 photoPath = pictureFile;
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-
-                Bitmap bitmap = BitmapFactory.decodeByteArray(data[0], 0, data[0].length, options);
-                clsBitmap = bitmap;
-
-                ExifInterface exif = new ExifInterface(savedPath);
-                int exifOrientation = exif.getAttributeInt(
-                        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                int exifDegree = exifOrientationToDegrees(exifOrientation);
-                clsBitmap = rotate(clsBitmap, exifDegree);
-
-                Log.d(TAG, "picture loading path : " + pictureFile.getPath()+"/Miris/");
-
             } catch (IOException e) {
                 return false;
             }
@@ -603,29 +621,25 @@ public class TakePhotoActivity extends BaseActivity implements RevealBackgroundV
             
             if (!mediaStorageDir.exists()) {
                 if (!mediaStorageDir.mkdirs()) {
-                    Log.d(TAG, "failed to create directory");
                     return null;
                 }
             }
-
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
                     .format(new Date());
             File mediaFile;
             
             savedPath = mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg";
             mediaFile = new File(savedPath);
-            Log.i(TAG,"Saved at"+ Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
             return mediaFile;
         }
     }
+    
     @Override
     public void onDestroy() {
         if(mPreview != null){
-            Log.i(TAG,"preview camera released");
             mPreview = null;
         }
         if (mCamera != null) {
-            Log.i(TAG,"Safely releasing camera!!");
             mCamera.release();
             mCamera = null;
         }

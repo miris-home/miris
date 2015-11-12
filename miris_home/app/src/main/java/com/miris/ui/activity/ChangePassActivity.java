@@ -70,7 +70,7 @@ public class ChangePassActivity extends BaseActivity {
                                     if (e == null) {
                                         Toast.makeText(getApplication(), getString(R.string.changePass_pass), Toast.LENGTH_SHORT).show();
                                         memberData.get(0).setuser_password(et1.getText().toString());
-                                        session.setUser_passwd(bt1.getText().toString()); //변경된 비밀번호 저장
+                                        session.setUser_passwd(et1.getText().toString()); //변경된 비밀번호 저장
                                         finish();
                                     } else {
                                         Toast.makeText(getApplication(), getString(R.string.changePass_fail), Toast.LENGTH_SHORT).show();
@@ -81,7 +81,6 @@ public class ChangePassActivity extends BaseActivity {
                         }
                     }
                 });
-
             }
         });
 

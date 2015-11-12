@@ -1,32 +1,28 @@
 package com.miris.ui.view;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.os.Build;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-    String TAG = "CameraPreview";
     private SurfaceHolder mHolder;
     private Camera mCamera;
 
-    public CameraPreview(Context context) {
+    public CameraPreview(Context context, Camera camera) {
         super(context);
-        Log.i(TAG, "Preview class created");
-
+        mCamera = camera;
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
-        Log.i(TAG, "surfaceCreated!");
         try {
 			Camera.Parameters parameters = mCamera.getParameters();
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH){
@@ -34,42 +30,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             } else {
                 parameters.setFocusMode(parameters.FOCUS_MODE_AUTO);
             }
-			if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
-				parameters.set("orientation", "portrait");
-				mCamera.setDisplayOrientation(90);
-                parameters.setRotation(90);
-			} else {
-				parameters.set("orientation", "landscape");
-				mCamera.setDisplayOrientation(0);
-				parameters.setRotation(0);
-			}
-			Log.e(null,"focus mode : "+parameters.getFocusMode());
+            setDispaly(parameters, mCamera);
 			mCamera.setParameters(parameters);
 
-            mCamera.setPreviewDisplay(holder);
+            mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
         } catch (IOException e) {
-            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.i(TAG, "Surface Destroyed");
-        if (mCamera != null) {
-            Log.i(TAG,"Preview stopped");
-        }
     }
 
     public void setCamera(Camera camera) {
-        if((mCamera != null)&&(camera == null)){
-            mCamera.stopPreview();
-        }
         mCamera = camera;
-
     }
 
-    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        Log.i(TAG,"Surface Changed");
+    public void refreshCamera(Camera camera) {
         if (mHolder.getSurface() == null){
             return;
         }
@@ -77,8 +54,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.stopPreview();
         } catch (Exception e){
         }
-
+        setCamera(camera);
         Camera.Parameters parameters = mCamera.getParameters();
+        if (parameters.getFocusMode().equals("auto")) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+                parameters.setFocusMode(parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            }
+        }
 
         List<Camera.Size> cameraSize = parameters.getSupportedPreviewSizes();
         Camera.Size mPreviewSize = cameraSize.get(0);
@@ -89,15 +71,39 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
         }
         parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
+
+        setDispaly(parameters, mCamera);
         mCamera.setParameters(parameters);
-        requestLayout();
 
         try {
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
 
         } catch (Exception e){
-            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+        }
+    }
+
+    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+        refreshCamera(mCamera);
+    }
+
+    private void setDispaly(Camera.Parameters parameters, Camera camera) {
+        if (Build.VERSION.SDK_INT >= 8) {
+            setDisplayOrientation(camera, 90);
+        } else {
+            parameters.setRotation(90);
+        }
+    }
+
+    private void setDisplayOrientation(Camera camera, int i) {
+        Method downPolymorphic;
+        try {
+            downPolymorphic = camera.getClass().getMethod("setDisplayOrientation",
+                    new Class[]{int.class});
+            if (downPolymorphic != null) {
+                downPolymorphic.invoke(camera, new Object[]{i});
+            }
+        } catch (Exception e) {
         }
     }
 }

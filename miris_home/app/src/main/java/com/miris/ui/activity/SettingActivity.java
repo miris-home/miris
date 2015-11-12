@@ -58,13 +58,16 @@ public class SettingActivity extends BaseActivity {
     @OnCheckedChanged(R.id.logswitch)
     public void onlogswitchCheckedChanged(boolean checked) {
         if (checked) {
+            session.setUser_id(memberData.get(0).getuserId()); //아이디 담기
+            session.setUser_passwd(memberData.get(0).getuser_password()); //패스워드 담기
             session.setAutoLogin(true);
             Toast.makeText(getApplication(), getString(R.string.autoLogin_on), Toast.LENGTH_SHORT).show();
 
         } else {
             session.setAutoLogin(false);
+            session.setUser_id(""); //아이디 담기
+            session.setUser_passwd(""); //패스워드 담기
             Toast.makeText(getApplication(), getString(R.string.autoLogin_off), Toast.LENGTH_SHORT).show();
-
         }
     }
 
