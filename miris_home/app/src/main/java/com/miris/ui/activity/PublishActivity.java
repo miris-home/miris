@@ -199,14 +199,12 @@ public class PublishActivity extends BaseActivity {
         protected Void doInBackground(Void... arg0) {
             ParseFile file = null;
             ParseObject testObject = new ParseObject("miris_notice");
-            if (photoUri == null) {
-            } else {
+            if (photoUri != null) {
                 try {
                     file = new ParseFile("user_img.png", readBytes(photoUri));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                file.saveInBackground();
                 testObject.put("user_img", file);
             }
             testObject.put("user_id", memberData.get(0).getuserId());
@@ -297,8 +295,7 @@ public class PublishActivity extends BaseActivity {
         return data;
     }
 
-    public int exifOrientationToDegrees(int exifOrientation)
-    {
+    public int exifOrientationToDegrees(int exifOrientation) {
         if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
             return 90;
         } else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {

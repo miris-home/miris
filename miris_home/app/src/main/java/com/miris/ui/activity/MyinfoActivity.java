@@ -1,26 +1,44 @@
 package com.miris.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.miris.R;
+import com.miris.net.MemberListData;
 import com.miris.net.SessionPreferences;
 import com.miris.ui.utils.CircleTransformation;
 import com.miris.ui.view.FloatLabeledEditText;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -62,7 +80,9 @@ public class MyinfoActivity extends BaseActivity {
     @InjectView(R.id.user_rank_hint)
     FloatLabeledEditText user_rank_hint;
 
-    Bitmap clsBitmap;
+    private Uri photoUri = null;
+    ProgressDialog myLoadingDialog;
+    List<ParseObject> ob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +98,11 @@ public class MyinfoActivity extends BaseActivity {
             }
         });
 
-        intView();
+        try {
+            intView();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         ivUserProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,20 +113,58 @@ public class MyinfoActivity extends BaseActivity {
                 startActivityForResult(clsIntent, 100);
             }
         });
-
-
     }
 
-    private void intView(){
-        Picasso.with(getApplicationContext())
-                .load(memberData.get(0).getuserImgurl())
-                .placeholder(R.drawable.img_circle_placeholder)
-                .resize(getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size),
-                        getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size))
-                .centerCrop()
-                .transform(new CircleTransformation())
-                .into(ivUserProfilePhoto);
-        user_id_hint.setHint("아이디 : " + memberData.get(0).getuserId() +" (*수정불가)");
+    private void intView() throws FileNotFoundException {
+        if (memberData.get(0).getuserImgurl() == null) {
+            Picasso.with(getApplicationContext())
+                    .load(memberData.get(0).getinforimgfile())
+                    .placeholder(R.drawable.img_circle_placeholder)
+                    .resize(getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size),
+                            getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size))
+                    .centerCrop()
+                    .transform(new CircleTransformation())
+                    .into(ivUserProfilePhoto, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            ivUserProfilePhoto.animate()
+                                    .scaleX(1.f).scaleY(1.f)
+                                    .setInterpolator(new OvershootInterpolator())
+                                    .setDuration(400)
+                                    .setStartDelay(200)
+                                    .start();
+                        }
+
+                        @Override
+                        public void onError() {
+                        }
+                    });
+        } else {
+            Picasso.with(getApplicationContext())
+                    .load(memberData.get(0).getuserImgurl())
+                    .placeholder(R.drawable.img_circle_placeholder)
+                    .resize(getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size),
+                            getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size))
+                    .centerCrop()
+                    .transform(new CircleTransformation())
+                    .into(ivUserProfilePhoto, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            ivUserProfilePhoto.animate()
+                                    .scaleX(1.f).scaleY(1.f)
+                                    .setInterpolator(new OvershootInterpolator())
+                                    .setDuration(400)
+                                    .setStartDelay(200)
+                                    .start();
+                        }
+
+                        @Override
+                        public void onError() {
+                        }
+                    });
+        }
+
+        user_id_hint.setHint("아이디 : " + memberData.get(0).getuserId() + " (*수정불가)");
         user_id.setFocusable(false);
         user_name_hint.setHint("이름 : " + memberData.get(0).getuser_name());
         user_email_hint.setHint("이메일 : " + memberData.get(0).getuser_email());
@@ -117,6 +179,7 @@ public class MyinfoActivity extends BaseActivity {
         if(resultCode == RESULT_OK) {
             if(requestCode == 100) {
                 Uri uri = data.getData();
+                photoUri = uri;
                 Picasso.with(getApplicationContext())
                         .load(uri)
                         .placeholder(R.drawable.img_circle_placeholder)
@@ -124,7 +187,21 @@ public class MyinfoActivity extends BaseActivity {
                                 getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size))
                         .centerCrop()
                         .transform(new CircleTransformation())
-                        .into(ivUserProfilePhoto);
+                        .into(ivUserProfilePhoto, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                ivUserProfilePhoto.animate()
+                                        .scaleX(1.f).scaleY(1.f)
+                                        .setInterpolator(new OvershootInterpolator())
+                                        .setDuration(400)
+                                        .setStartDelay(200)
+                                        .start();
+                            }
+
+                            @Override
+                            public void onError() {
+                            }
+                });
             }  else {
                 super.onActivityResult(requestCode, resultCode, data);
             }
@@ -138,64 +215,208 @@ public class MyinfoActivity extends BaseActivity {
         overridePendingTransition(0, 0);
     }
 
+    private void showDialog() {
+        myLoadingDialog = new ProgressDialog(MyinfoActivity.this);
+        myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
+        myLoadingDialog.setIndeterminate(false);
+        myLoadingDialog.setCancelable(false);
+        myLoadingDialog.show();
+    }
+
     @Optional
     @OnClick(R.id.btn_ok)
     public void onibtn_okClick(final View v) {
+        showDialog();
+        new modifyTask().execute();
+    }
 
-        ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_member");
-        offerQuery.whereEqualTo("user_id",          memberData.get(0).getuserId());
-        offerQuery.whereEqualTo("user_password",    memberData.get(0).getuser_password());
-        offerQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    String input_user_name = user_name.getText().toString();
-                    if (input_user_name == null || "".equals(input_user_name)) {
-                        input_user_name = memberData.get(0).getuser_name();
-                    }
-                    String input_user_email = user_email.getText().toString();
-                    if (input_user_email == null || "".equals(input_user_email)) {
-                        input_user_email = memberData.get(0).getuser_email();
-                    }
-                    String input_user_number = user_number.getText().toString();
-                    if (input_user_number == null || "".equals(input_user_number)) {
-                        input_user_number = memberData.get(0).getuser_phonenumber();
-                    }
-                    String input_user_age = user_age.getText().toString();
-                    if (input_user_age == null || "".equals(input_user_age)) {
-                        input_user_age = memberData.get(0).getuser_age();
-                    }
-                    String input_user_rank = user_rank.getText().toString();
-                    if (input_user_rank == null || "".equals(input_user_rank)) {
-                        input_user_rank = memberData.get(0).getuser_rank();
-                    }
-                    parseObject.put("user_name",        input_user_name);
-                    parseObject.put("user_email",       input_user_email);
-                    parseObject.put("user_phonenumber", input_user_number);
-                    parseObject.put("user_age",         input_user_age);
-                    parseObject.put("user_rank",        input_user_rank);
-                    parseObject.saveInBackground();
-                    parseObject.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                Toast.makeText(getApplication(), getString(R.string.changeMyinfo_pass), Toast.LENGTH_SHORT).show();
-                                finish();
-                            } else {
-                                Toast.makeText(getApplication(), getString(R.string.changeMyinfo_fail), Toast.LENGTH_SHORT).show();
-                                Log.d("내정보수정 오류", "[" + e.toString() + "]");
+    class modifyTask extends AsyncTask<Void, Void, Void> {
+
+        final String[] input_user_name = {""};
+        final String[] input_user_email = {""};
+        final String[] input_user_number = {""};
+        final String[] input_user_age = {""};
+        final String[] input_user_rank = {""};
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_member");
+            offerQuery.whereEqualTo("user_id", memberData.get(0).getuserId());
+            offerQuery.whereEqualTo("user_password", memberData.get(0).getuser_password());
+            offerQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        if (photoUri != null) {
+                            ParseFile file = null;
+                            try {
+                                file = new ParseFile("user_img.png", readBytes(photoUri));
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
                             }
+                            parseObject.put("user_img", file);
                         }
-                    });
+                        input_user_name[0] = user_name.getText().toString();
+                        if (input_user_name[0] == null || "".equals(input_user_name[0])) {
+                            input_user_name[0] = memberData.get(0).getuser_name();
+                        }
+                        input_user_email[0] = user_email.getText().toString();
+                        if (input_user_email[0] == null || "".equals(input_user_email[0])) {
+                            input_user_email[0] = memberData.get(0).getuser_email();
+                        }
+                        input_user_number[0] = user_number.getText().toString();
+                        if (input_user_number[0] == null || "".equals(input_user_number[0])) {
+                            input_user_number[0] = memberData.get(0).getuser_phonenumber();
+                        }
+                        input_user_age[0] = user_age.getText().toString();
+                        if (input_user_age[0] == null || "".equals(input_user_age[0])) {
+                            input_user_age[0] = memberData.get(0).getuser_age();
+                        }
+                        input_user_rank[0] = user_rank.getText().toString();
+                        if (input_user_rank[0] == null || "".equals(input_user_rank[0])) {
+                            input_user_rank[0] = memberData.get(0).getuser_rank();
+                        }
+                        parseObject.put("user_name", input_user_name[0]);
+                        parseObject.put("user_email", input_user_email[0]);
+                        parseObject.put("user_phonenumber", input_user_number[0]);
+                        parseObject.put("user_age", input_user_age[0]);
+                        parseObject.put("user_rank", input_user_rank[0]);
+                        parseObject.saveInBackground();
+                        parseObject.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    ParseQuery<ParseObject> loginQuery = ParseQuery.getQuery("miris_member");
+                                    loginQuery.whereEqualTo("user_id", memberData.get(0).getuserId());
+                                    loginQuery.whereEqualTo("user_password", memberData.get(0).getuser_password());
+                                    loginQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                        @Override
+                                        public void done(final ParseObject mamberparseObject, ParseException e) {
+                                            memberData.clear();
+                                            memberData = null;
+                                            memberData = new ArrayList<MemberListData>();
+
+                                            final ParseFile userFile = (ParseFile) mamberparseObject.get("user_img");
+                                            userFile.getDataInBackground(new GetDataCallback() {
+                                                public void done(byte[] data, ParseException e) {
+                                                    if (e == null) {
+                                                        memberData.add(new MemberListData(
+                                                                mamberparseObject.get("user_id").toString(),
+                                                                mamberparseObject.get("user_password").toString(),
+                                                                mamberparseObject.get("user_name").toString(),
+                                                                mamberparseObject.get("user_age").toString(),
+                                                                BitmapFactory.decodeByteArray(data, 0, data.length),
+                                                                userFile.getUrl(),
+                                                                mamberparseObject.getInt("user_totallike"),
+                                                                mamberparseObject.getInt("user_totalcommit"),
+                                                                mamberparseObject.getInt("user_registernumber"),
+                                                                mamberparseObject.get("user_rank").toString(),
+                                                                mamberparseObject.get("user_email").toString(),
+                                                                mamberparseObject.get("user_phonenumber").toString()));
+
+                                                        try {
+                                                            if (userFile.getUrl() == null) {
+                                                                memberData.get(0).setinforimgfile(userFile.getFile());
+                                                            }
+                                                        } catch (ParseException e1) {
+                                                            e1.printStackTrace();
+                                                        }
+
+                                                        if (myLoadingDialog != null) {
+                                                            myLoadingDialog.dismiss();
+                                                        }
+                                                        Toast.makeText(getApplication(), getString(R.string.changeMyinfo_pass), Toast.LENGTH_SHORT).show();
+                                                        finish();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getApplication(), getString(R.string.changeMyinfo_fail), Toast.LENGTH_SHORT).show();
+                                    Log.d("내정보수정 오류", "[" + e.toString() + "]");
+                                }
+                            }
+                        });
+                    }
                 }
+            });
+            return null ;
+        }
+    }
+
+    public byte[] readBytes(Uri uri) throws IOException {
+        byte[] data = null;
+        Bitmap bitmap;
+        try {
+            bitmap = imgUriPath(uri);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+            data = baos.toByteArray();
+            bitmap.recycle();
+            System.gc();
+            Runtime.getRuntime().gc();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    public Bitmap imgUriPath(Uri uri) throws IOException {
+        Bitmap bitmap;
+        AssetFileDescriptor afd = getContentResolver().openAssetFileDescriptor(uri, "r");
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(uri.getPath(), opt);
+
+        if (opt.outHeight  > 2000 || opt.outWidth > 2000)  {
+            opt.inJustDecodeBounds = false;
+            opt.inSampleSize = 4;
+            bitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+        } else if (opt.outHeight  > 1000 || opt.outWidth > 1000) {
+            opt.inJustDecodeBounds = false;
+            opt.inSampleSize = 2;
+            bitmap = BitmapFactory.decodeFileDescriptor(afd.getFileDescriptor(), null, opt);
+        } else {
+            bitmap 	= MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+        }
+        ExifInterface exif = new ExifInterface(uri.getPath());
+        int exifOrientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int exifDegree = exifOrientationToDegrees(exifOrientation);
+        bitmap = rotate(bitmap, exifDegree);
+
+        return bitmap;
+    }
+
+    public int exifOrientationToDegrees(int exifOrientation) {
+        if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if(exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    public Bitmap rotate(Bitmap bitmap, int degrees) {
+        if(degrees != 0 && bitmap != null) {
+            Matrix m = new Matrix();
+            m.setRotate(degrees, (float) bitmap.getWidth() / 2,
+                    (float) bitmap.getHeight() / 2);
+            try {
+                Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0,
+                        bitmap.getWidth(), bitmap.getHeight(), m, true);
+                if(bitmap != converted) {
+                    bitmap.recycle();
+                    bitmap = converted;
+                }
+            } catch(OutOfMemoryError ex) {
             }
-        });
-        /*
-        Intent intent = new Intent(this, SettingActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
-        */
+        }
+        return bitmap;
     }
 }

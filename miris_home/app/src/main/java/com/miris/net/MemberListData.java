@@ -2,6 +2,8 @@ package com.miris.net;
 
 import android.graphics.Bitmap;
 
+import java.io.File;
+
 /**
  * Created by fantastic on 2015-09-22.
  */
@@ -19,6 +21,7 @@ public class MemberListData {
     String user_rank;
     String user_email;
     String user_phonenumber;
+    File inforimgfile;
 
     public MemberListData(String userId, String user_password, String user_name, String user_age,
                           Bitmap user_img, String userImgurl, int user_TotalLike,
@@ -37,6 +40,10 @@ public class MemberListData {
         this.user_rank = user_rank;
         this.user_email = user_email;
         this.user_phonenumber = user_phonenumber;
+    }
+
+    public MemberListData(File inforimgfile) {
+        this.inforimgfile = inforimgfile;
     }
 
     public void setuserId(String userId) {
@@ -87,6 +94,10 @@ public class MemberListData {
         this.user_phonenumber = user_phonenumber;
     }
 
+    public void setinforimgfile(File inforimgfile) {
+        this.inforimgfile = inforimgfile;
+    }
+
     public String getuserId() {
         return userId;
     }
@@ -133,6 +144,10 @@ public class MemberListData {
 
     public String getuser_phonenumber() {
         return user_phonenumber;
+    }
+
+    public File getinforimgfile() {
+        return inforimgfile;
     }
 
 }
