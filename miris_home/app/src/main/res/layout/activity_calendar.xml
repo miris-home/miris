@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_below="@id/toolbar"
-        android:background="@color/indego">
+        android:background="?attr/colorPrimary">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             android:layout_marginTop="3dp"
             android:layout_marginBottom="5dp"
             android:layout_gravity="center"
-            android:background="@color/rippelColor" />
+            android:background="?attr/colorPrimary"/>
 
         <com.miris.ui.view.CompactCalendarView
             android:layout_below="@+id/prev_button"
@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="270dp"
             app:compactCalendarTextSize="22sp"
-            app:compactCalendarBackgroundColor="@color/indego"
+            app:compactCalendarBackgroundColor="?attr/colorPrimary"
             app:compactCalendarTextColor="#fff"
             app:compactCalendarCurrentSelectedDayBackgroundColor="@color/md_material_blue_600"
             app:compactCalendarCurrentDayBackgroundColor="@color/grean"
@@ -74,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
-            android:background="@android:color/white" />
+            android:background="?attr/colorPrimary" />
 
 
     <android.support.design.widget.FloatingActionButton

@@ -91,10 +91,10 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 .transform(new CircleTransformation())
                 .into(holder.ivUserProfile);
 
-        holder.ivUserName.setText(addressData.get(position).getuser_name()
+        holder.ivUserName.setText("이름 : "+addressData.get(position).getuser_name()
                 +" ("+addressData.get(position).getuser_rank() +")");
-        holder.ivUserNumber.setText(addressData.get(position).getuser_phonenumber());
-        holder.ivUserEmail.setText(addressData.get(position).getuser_email());
+        holder.ivUserNumber.setText("연락처 : "+addressData.get(position).getuser_phonenumber());
+        holder.ivUserEmail.setText("이메일 : "+addressData.get(position).getuser_email());
 
         holder.ivUserProfile.setTag(position);
         holder.ivUserName.setTag(position);

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="?attr/colorPrimary"
     tools:context="AddressActivity">
 
     <include
@@ -22,11 +22,10 @@
             android:layout_gravity="center"
             android:scaleType="fitCenter"
             android:layout_marginTop="5dp"
-            android:src="@drawable/ic_global_menu_search"/>
+            android:src="@drawable/ic_search_white_24dp"/>
         <com.miris.ui.view.FloatLabeledEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:layout_marginRight="12dp"
             android:layout_marginLeft="12dp" >
 
@@ -35,6 +34,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/search_edittext"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
                 android:inputType="textVisiblePassword"/>
         </com.miris.ui.view.FloatLabeledEditText>
     </LinearLayout>
@@ -44,6 +45,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
-        android:background="@android:color/white" />
+        android:background="?attr/colorPrimary" />
 
 </LinearLayout>

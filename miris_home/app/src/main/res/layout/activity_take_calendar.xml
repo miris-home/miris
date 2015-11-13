@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_below="@id/toolbar"
-        android:background="@color/sian">
+        android:background="?attr/colorPrimary">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="16dp"
                 android:layout_weight="1"
-                android:background="@drawable/switch_publish_followers"
+                android:background="@drawable/switch_publish_followers_calendar"
                 android:checked="true"
                 android:textColor="#ffffff"
                 android:textOff="@string/btn_open_total"
@@ -38,7 +38,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="24dp"
                 android:layout_weight="1"
-                android:background="@drawable/switch_publish_direct"
+                android:background="@drawable/switch_publish_direct_calendar"
                 android:textColor="#ffffff"
                 android:textOff="@string/btn_nondisclosure"
                 android:textOn="@string/btn_nondisclosure" />

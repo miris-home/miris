@@ -83,9 +83,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final CellFeedViewHolder holder = (CellFeedViewHolder) viewHolder;
         String strDate = df.format(calendarData.get(position).getuser_calendar());
 
-        holder.ivUserName.setText(calendarData.get(position).getuser_name());
+        holder.ivUserName.setText("이름 : "+calendarData.get(position).getuser_name());
         holder.ivUserDate.setText(strDate);
-        holder.ivUserMessage.setText(calendarData.get(position).getuser_text());
+        holder.ivUserMessage.setText("내용 : "+calendarData.get(position).getuser_text());
 
         holder.ivUserName.setTag(position);
         holder.ivUserDate.setTag(position);
