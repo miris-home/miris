@@ -1,87 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-android:paddingRight="@dimen/activity_horizontal_margin"
-android:paddingTop="@dimen/activity_vertical_margin"
-android:paddingBottom="@dimen/activity_vertical_margin"
-tools:context="SignInActivity">
-<LinearLayout
-    android:orientation="horizontal"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/linearLayout_id"
-    android:layout_alignParentTop="true"
-    android:layout_centerHorizontal="true"
-    android:gravity="center"
-    android:layout_marginTop="118dp">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="아 이 디  *"
-        android:id="@+id/textView_id" />
+    android:layout_height="match_parent"
 
-    <EditText
-        android:id="@+id/btn_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_centerInParent="true"
-        android:hint="   아이디를 입력하세요."
-        />
-</LinearLayout>
+    tools:context="SignInActivity">
 
-<LinearLayout
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/linearLayout_pw"
-    android:layout_below="@+id/linearLayout_id"
-    android:gravity="center"
-    android:layout_centerHorizontal="true">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="비밀번호 *"
-        android:id="@+id/textView_pw" />
-
-    <EditText
-        android:id="@+id/btn_pass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_centerInParent="true"
-        android:hint="  비밀번호를 입력하세요."
-        />
-</LinearLayout>
-
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:weightSum="1"
-    android:id="@+id/linearLayout_signup"
-    android:layout_below="@+id/btn_main"
-    android:layout_centerHorizontal="true">
-    <Button
-        android:id="@+id/login_signupbtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:text="회원가입"
-        android:layout_marginTop="57dp" />
-</LinearLayout>
-
-    <Button
-        android:id="@+id/btn_main"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:text="로그인"
-        android:background="#FF0000"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:paddingTop="56dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
 
-</RelativeLayout>
+        <ImageView android:src="@drawable/login_main_img"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal" />
 
+        <!--  Email Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText
+                android:id="@+id/btn_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="아이디" />
+        </android.support.design.widget.TextInputLayout>
 
+        <!--  Password Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+            <EditText android:id="@+id/btn_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="비밀번호"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_main"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:padding="12dp"
+            android:text="로그인"/>
+
+        <TextView android:id="@+id/login_signupbtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Miris 가입"
+            android:gravity="center"
+            android:textSize="16dip"/>
+
+        <TextView android:id="@+id/login_passout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="비밀번호를 잊으셨나요??"
+            android:gravity="center"
+            android:textSize="16dip"/>
+
+    </LinearLayout>
+</ScrollView>

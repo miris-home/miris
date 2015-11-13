@@ -44,7 +44,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.activity.SignInActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -98,7 +99,7 @@
         <activity
             android:name=".ui.activity.SignupActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".ui.activity.TakeCalendarActivity"
             android:screenOrientation="portrait"

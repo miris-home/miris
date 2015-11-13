@@ -1,6 +1,9 @@
 package com.miris.ui.activity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miris.R;
@@ -28,15 +32,17 @@ import java.util.List;
 public class SignInActivity extends BaseActivity {
 
     boolean showIntro = false;
-    Button btn_main, login_signupbtn;
-    EditText btn_id;
-    EditText btn_pass;
+    Button btn_main;
+    TextView login_signupbtn, login_passout;
+    EditText btn_id, btn_pass;
     List<ParseObject> ob;
     ProgressDialog myLoadingDialog;
+    Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity = this;
         setContentView(R.layout.activity_intro);
         mirisBadge();
         session = new SessionPreferences(getApplicationContext());
@@ -88,9 +94,11 @@ public class SignInActivity extends BaseActivity {
         btn_main = (Button) findViewById(R.id.btn_main);
         btn_id = (EditText) findViewById(R.id.btn_id);
         btn_pass = (EditText) findViewById(R.id.btn_pass);
-        login_signupbtn = (Button) findViewById(R.id.login_signupbtn);
+        login_signupbtn = (TextView) findViewById(R.id.login_signupbtn);
+        login_passout = (TextView) findViewById(R.id.login_passout);
         btn_main.setOnClickListener(listener);
         login_signupbtn.setOnClickListener(listener);
+        login_passout.setOnClickListener(listener);
     }
 
     View.OnClickListener listener = new View.OnClickListener() {
@@ -114,6 +122,17 @@ public class SignInActivity extends BaseActivity {
                     Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                     overridePendingTransition(0, 0);
                     startActivity(intent);
+                    break;
+                case R.id.login_passout:
+                    new AlertDialog.Builder(mActivity)
+                        .setMessage(getString(R.string.password_message))
+                        .setPositiveButton(getString(R.string.btn_confirm), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.dismiss();
+                            }
+                        })
+                            .show();
+                    break;
             }
         }
     };
