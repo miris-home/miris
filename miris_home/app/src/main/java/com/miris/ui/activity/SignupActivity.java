@@ -40,17 +40,6 @@ public class SignupActivity extends BaseActivity {
             main_edtxphnum, main_edtage, main_edtxpst;
     private Button main_singupbtn, main_canclebtn;
     ProgressDialog myLoadingDialog;
-    /*각 필드 유효성 검사 부탁드리며
-      저장 DB는 https://www.parse.com/apps/--691/collections#class/miris_member 파서 디비에 있는
-      각 필드 name 값 참조 부탁드립니다.
-      ParseObject testObject = new ParseObject("miris_member");
-        testObject.put("user_id", 저장할 아이디값);
-        testObject.put("user_pass", 저장할 비밀번호값);
-        testObject.put("user_name", 저장할 이름);
-
-        등등등...
-        testObject.saveInBackground();
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
