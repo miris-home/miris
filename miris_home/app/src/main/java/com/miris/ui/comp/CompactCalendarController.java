@@ -455,6 +455,11 @@ public class CompactCalendarController {
                     dayColumn++;
                 }
             }
+            if (dayColumn == 6) {
+                dayPaint.setColor(R.color.color_141414);
+            } else {
+                dayPaint.setColor(calenderTextColor);
+            }
             if (dayColumn == dayColumnNames.length) {
                 break;
             }

@@ -129,15 +129,16 @@ public class CalendarActivity extends BaseActivity {
         }
         @Override
         protected void onPostExecute(Void result) {
-            calendarAdapter = new CalendarAdapter(CalendarActivity.this, calendarData);
-            rvCalendar.setAdapter(calendarAdapter);
-
             final CompactCalendarView compactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
             compactCalendarView.drawSmallIndicatorForEvents(true);
             addEvents(compactCalendarView);
             compactCalendarView.invalidate();
             final Button showPreviousMonthBut = (Button) findViewById(R.id.prev_button);
             final Button showNextMonthBut = (Button) findViewById(R.id.next_button);
+
+            calendarAdapter = new CalendarAdapter(CalendarActivity.this, calendarData);
+            rvCalendar.setAdapter(calendarAdapter);
+
 
             toDate.setText(dateFormatForMonth.format(compactCalendarView.getFirstDayOfCurrentMonth()));
             compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
