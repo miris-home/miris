@@ -226,8 +226,11 @@ public class MyinfoActivity extends BaseActivity {
     @Optional
     @OnClick(R.id.btn_ok)
     public void onibtn_okClick(final View v) {
-        showDialog();
-        new modifyTask().execute();
+        boolean checkVal = checkFeild();
+        if (checkVal) {
+            showDialog();
+            new modifyTask().execute();
+        }
     }
 
     class modifyTask extends AsyncTask<Void, Void, Void> {
@@ -276,6 +279,7 @@ public class MyinfoActivity extends BaseActivity {
                         if (input_user_rank[0] == null || "".equals(input_user_rank[0])) {
                             input_user_rank[0] = memberData.get(0).getuser_rank();
                         }
+
                         parseObject.put("user_name", input_user_name[0]);
                         parseObject.put("user_email", input_user_email[0]);
                         parseObject.put("user_phonenumber", input_user_number[0]);
@@ -418,5 +422,51 @@ public class MyinfoActivity extends BaseActivity {
             }
         }
         return bitmap;
+    }
+
+
+    public boolean checkFeild() {
+        boolean returnVal = true;
+        int ckcnt = 0;
+        String input_user_name = user_name.getText().toString();
+        String input_user_email = user_email.getText().toString();
+        String input_user_number = user_number.getText().toString();
+        String input_user_age = user_age.getText().toString();
+        String input_user_rank = user_rank.getText().toString();
+
+        if (input_user_name == null || "".equals(input_user_name)) {
+            ckcnt ++ ;
+        }
+        if (input_user_email == null || "".equals(input_user_email)) {
+            input_user_email = memberData.get(0).getuser_email();
+            ckcnt ++ ;
+        }if (input_user_number == null || "".equals(input_user_number)) {
+            input_user_number = memberData.get(0).getuser_phonenumber();
+            ckcnt ++ ;
+        }
+        if (input_user_age == null || "".equals(input_user_age)) {
+            ckcnt ++ ;
+        }
+        if (input_user_rank == null || "".equals(input_user_rank)) {
+            ckcnt ++ ;
+        }
+
+        if (ckcnt == 5) {
+            returnVal = false;
+            Toast.makeText(getApplication(), getString(R.string.nonChange), Toast.LENGTH_SHORT).show();
+        }
+        if (input_user_email.contains("@") == false) { //이메일 형식 체크
+            returnVal = false;
+            Toast.makeText(getApplication(), getString(R.string.checkEmail), Toast.LENGTH_SHORT).show();
+        }
+        if (isCellPhone(input_user_number) == false) { //폰번호 형식 체크
+            returnVal = false;
+            Toast.makeText(getApplication(), getString(R.string.checkPhone), Toast.LENGTH_SHORT).show();
+        }
+        return returnVal;
+    }
+
+    public boolean isCellPhone(String input_phone) {
+        return (input_phone.replace("-", "")).matches("(01[016789])(\\d{3,4})(\\d{4})");
     }
 }
