@@ -1,6 +1,7 @@
 package com.miris.ui.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +42,7 @@ public class SignupActivity extends BaseActivity {
             main_edtxphnum, main_edtage, main_edtxpst;
     private Button main_singupbtn, main_canclebtn;
     ProgressDialog myLoadingDialog;
+    String PhoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +115,15 @@ public class SignupActivity extends BaseActivity {
         main_edtxps=(EditText)findViewById(R.id.main_edtxps);
         main_edtxpsc=(EditText)findViewById(R.id.main_edtxpsc);
         main_edtxphnum=(EditText)findViewById(R.id.main_edtxphnum);
+
+        TelephonyManager systemService = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        PhoneNumber = systemService.getLine1Number();
+        if(PhoneNumber!=null && !PhoneNumber.equals("")){
+            PhoneNumber = PhoneNumber.substring(PhoneNumber.length()-10,PhoneNumber.length());
+            PhoneNumber = "0"+PhoneNumber;
+            main_edtxphnum.setText(PhoneNumber.toString());
+        }
+
         main_edtage=(EditText)findViewById(R.id.main_edtage);
         main_edtxpst=(EditText)findViewById(R.id.main_edtxpst);
 
@@ -121,13 +133,11 @@ public class SignupActivity extends BaseActivity {
 
     public boolean signUpCheck(){
         if (photoUri == null) {
-            Log.e("PHJ", "photoUri");
             Toast.makeText(getApplicationContext(), "사진을 첨부해주세요.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (main_edtxid.getText().toString() == null || main_edtxid.getText().toString().equals("")) {
-            Log.e("PHJ", "main_edtxid");
             Toast.makeText(getApplicationContext(), "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
             return false;
         }

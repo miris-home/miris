@@ -17,6 +17,7 @@ public class NoticeListData {
     Bitmap userimgBitmap;
     String imgPath;
     String user_public;
+    int totalcount;
 
     public NoticeListData(String objId, String userid, String username, Bitmap userimgBitmap,
                           Bitmap imgBitmap, String editText, int DoLike, String date,
@@ -101,6 +102,10 @@ public class NoticeListData {
         this.user_public = user_public;
     }
 
+    public void settotalcount(int totalcount) {
+        this.totalcount = totalcount;
+    }
+
     public String getobjId() {
         return objId;
     }
@@ -139,5 +144,9 @@ public class NoticeListData {
 
     public String getuser_public() {
         return user_public;
+    }
+
+    public int gettotalcount() {
+        return totalcount;
     }
 }

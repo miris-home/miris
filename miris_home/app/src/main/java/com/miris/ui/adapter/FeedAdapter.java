@@ -167,6 +167,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             holder.ivFeedBottom.setText(noticeData.get(position).geteditText());
             holder.ivUserDate.setText(noticeData.get(position).getdate());
             holder.ivUserProfile.setImageBitmap(noticeData.get(position).getuserimgBitmap());
+            holder.totalComments.setText("(+"+String.valueOf(noticeData.get(position).gettotalcount()+")"));
         }
         try {
             currentLikesCount = noticeData.get(holder.getPosition()).getDoLike();
@@ -449,7 +450,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         ImageView ivUserSecret;
         @InjectView(R.id.ivUserDelete)
         ImageButton ivUserDelete;
-
+        @InjectView(R.id.totalComments)
+        TextView totalComments;
 
         SendingProgressView vSendingProgress;
         View vProgressBg;

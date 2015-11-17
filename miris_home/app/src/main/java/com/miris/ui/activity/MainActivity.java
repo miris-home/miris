@@ -69,6 +69,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
     private boolean pendingIntroAnimation;
     List<ParseObject> ob;
     List<ParseObject> img_List;
+    List<ParseObject> totalcount;
     private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
     ProgressDialog myLoadingDialog;
     int maxSize = 0;
@@ -361,6 +362,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         country.getInt("user_like"),
                         country.get("creatdate").toString(),
                         country.get("user_public").toString()));
+                new totalcommitTask().execute(country);
                 new loadImgTask().execute(country);
                 setSkip++;
             }
@@ -489,6 +491,30 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         @Override
         protected void onCancelled() {
             super.onCancelled();
+        }
+    }
+
+    class totalcommitTask extends AsyncTask<ParseObject, Void, Void> {
+
+        @Override
+        protected Void doInBackground(ParseObject... country) {
+            int totalCount = 0;
+            if (isCancelled()) {
+                return null;
+            }
+            ParseQuery<ParseObject> countQuery = ParseQuery.getQuery("miris_commit");
+            countQuery.whereEqualTo("user_defult_id", country[0].getObjectId());
+            countQuery.orderByDescending("createdAt");
+            try {
+                totalcount = countQuery.find();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (totalcount.size() > 0) {
+                totalCount = totalcount.size();
+            }
+            noticeData.get(maxSize).settotalcount(totalCount);
+            return null ;
         }
     }
 
