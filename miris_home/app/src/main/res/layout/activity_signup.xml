@@ -122,20 +122,19 @@
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:weightSum="1">
-
-            <Button
-                android:id="@+id/main_singupbtn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="회원가입"
-                />
             <Button
                 android:id="@+id/main_cancleupbtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:text="나가기" />
+
+            <Button
+                android:id="@+id/main_singupbtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="회원가입" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

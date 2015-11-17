@@ -7,6 +7,11 @@
         <item name="colorPrimaryDark">@color/style_color_primary_dark</item>
         <item name="colorAccent">@color/style_color_accent</item>
         <item name="colorControlHighlight">@color/fab_color_pressed</item>
+
+        <item name="colorControlNormal">@color/style_color_primary</item>
+        <item name="colorControlActivated">@color/color_ffffff</item>
+
+        <item name="colorButtonNormal">@color/fab_color_pressed</item>
     </style>
 
     <style name="AppTheme.TransparentActivity">

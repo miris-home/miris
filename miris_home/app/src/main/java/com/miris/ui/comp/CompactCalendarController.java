@@ -456,7 +456,7 @@ public class CompactCalendarController {
                 }
             }
             if (dayColumn == 6) {
-                dayPaint.setColor(R.color.color_141414);
+                dayPaint.setColor(Color.argb(255, 233, 84, 81));
             } else {
                 dayPaint.setColor(calenderTextColor);
             }

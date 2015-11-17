@@ -51,6 +51,7 @@ public class SignInActivity extends BaseActivity {
         if(isRunIntro) {
             if (!session.getIntro()) {
                 showIntro = true;
+                session.setPushAlert(true);
             }
             beforeIntro(showIntro);
         } else {

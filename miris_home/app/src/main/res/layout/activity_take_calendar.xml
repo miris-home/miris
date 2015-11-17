@@ -114,21 +114,21 @@
                 android:layout_marginTop="8dp"
                 android:gravity="center">
                 <Button
-                    android:id="@+id/setsend"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="18dp"
-                    android:background="@drawable/btn_feed_action"
-                    android:text="저장"/>
-                <Button
                     android:id="@+id/setcancel"
-                    android:layout_width="150dp"
+                    android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="18dp"
                     android:background="@drawable/btn_feed_action"
                     android:text="취소"/>
+                <Button
+                    android:id="@+id/setsend"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="18dp"
+                    android:background="@drawable/btn_feed_action"
+                    android:text="저장"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

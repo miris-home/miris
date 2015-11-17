@@ -40,22 +40,19 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="20dp">
                 <Button
-                    android:text="확인"
-                    android:textColor="#000000"
-                    android:textSize="10pt"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#8C8C8C"
-                    android:id="@+id/bt_confirm" />
-
-                <Button
                     android:text="취소"
-                    android:textColor="#000000"
+                    android:textColor="@color/white"
                     android:textSize="10pt"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:background="#8C8C8C"
                     android:id="@+id/bt_cancel" />
+                <Button
+                    android:text="확인"
+                    android:textColor="@color/white"
+                    android:textSize="10pt"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bt_confirm" />
             </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
