@@ -59,6 +59,7 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final CellFeedViewHolder cellFeedViewHolder = new CellFeedViewHolder(view);
         cellFeedViewHolder.sendIvUserMessage.setOnClickListener(this);
         cellFeedViewHolder.sendIvUserCall.setOnClickListener(this);
+        cellFeedViewHolder.ivUserProfile.setOnClickListener(this);
         return cellFeedViewHolder;
     }
 
@@ -101,6 +102,7 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.ivUserNumber.setTag(position);
         holder.sendIvUserMessage.setTag(position);
         holder.sendIvUserCall.setTag(position);
+        holder.ivUserProfile.setTag(position);
     }
 
     @Override
@@ -157,12 +159,15 @@ public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (onFeedItemClickListener != null) {
                 onFeedItemClickListener.onSendCall(view, (Integer) view.getTag());
             }
+        } else if (viewId == R.id.ivUserProfile) {
+            onFeedItemClickListener.onSendUserProfile(view, (Integer) view.getTag());
         }
     }
 
     public interface OnFeedItemClickListener {
         public void onSendMessage(View v, int position);
         public void onSendCall(View v, int position);
+        public void onSendUserProfile(View v, int position);
     }
 
     public void getFilter(String charText) {

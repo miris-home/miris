@@ -98,6 +98,16 @@ public class AddressActivity extends BaseActivity
         overridePendingTransition(0, 0);
     }
 
+    @Override
+    public void onSendUserProfile(View v, int position) {
+        int[] startingLocation = new int[2];
+        v.getLocationOnScreen(startingLocation);
+        startingLocation[0] += v.getWidth() / 2;
+        com.miris.ui.activity.UserProfileActivity.startUserProfileFromLocation
+                (startingLocation, this, addressData.get(position).getuserId());
+        overridePendingTransition(0, 0);
+    }
+
     private void showDialog() {
         myLoadingDialog = new ProgressDialog(AddressActivity.this);
         myLoadingDialog.setMessage(getString(R.string.show_lodingbar));
