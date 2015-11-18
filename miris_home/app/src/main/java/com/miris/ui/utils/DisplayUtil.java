@@ -70,4 +70,8 @@ public class DisplayUtil {
         }
         return null;
     }
+
+    public static boolean isCellPhone(String input_phone) {
+        return (input_phone.replace("-", "")).matches("(01[016789])(\\d{3,4})(\\d{4})");
+    }
 }

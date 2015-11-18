@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.miris.R;
 import com.miris.ui.utils.CircleTransformation;
+import com.miris.ui.utils.DisplayUtil;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
@@ -152,6 +153,11 @@ public class SignupActivity extends BaseActivity {
             return false;
         }
 
+        if (main_email.getText().toString().contains("@") == false) {
+            Toast.makeText(getApplicationContext(), getString(R.string.checkEmail), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         if (main_edtxps.getText().toString() == null || main_edtxps.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
             return false;
@@ -169,6 +175,11 @@ public class SignupActivity extends BaseActivity {
 
         if (main_edtxphnum.getText().toString() == null || main_edtxphnum.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), "연락처를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (DisplayUtil.isCellPhone(main_edtxphnum.getText().toString()) == false) {
+            Toast.makeText(getApplication(), getString(R.string.checkPhone), Toast.LENGTH_SHORT).show();
             return false;
         }
 

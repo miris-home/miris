@@ -23,6 +23,7 @@ import com.miris.R;
 import com.miris.net.MemberListData;
 import com.miris.net.SessionPreferences;
 import com.miris.ui.utils.CircleTransformation;
+import com.miris.ui.utils.DisplayUtil;
 import com.miris.ui.view.FloatLabeledEditText;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
@@ -459,14 +460,10 @@ public class MyinfoActivity extends BaseActivity {
             returnVal = false;
             Toast.makeText(getApplication(), getString(R.string.checkEmail), Toast.LENGTH_SHORT).show();
         }
-        if (isCellPhone(input_user_number) == false) { //폰번호 형식 체크
+        if (DisplayUtil.isCellPhone(input_user_number) == false) { //폰번호 형식 체크
             returnVal = false;
             Toast.makeText(getApplication(), getString(R.string.checkPhone), Toast.LENGTH_SHORT).show();
         }
         return returnVal;
-    }
-
-    public boolean isCellPhone(String input_phone) {
-        return (input_phone.replace("-", "")).matches("(01[016789])(\\d{3,4})(\\d{4})");
     }
 }
