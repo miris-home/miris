@@ -106,7 +106,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                new loadDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new loadDataTask().execute();
             }
         }, 1000);
     }
@@ -327,6 +327,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
             if (!updateNoticeData) {
                 if (noticeData != null) {
                     noticeData.clear();
+                    noticeData = null;
                 }
                 noticeData = new ArrayList<NoticeListData>();
                 maxSize = 0;
@@ -362,7 +363,6 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                         country.getInt("user_like"),
                         country.get("creatdate").toString(),
                         country.get("user_public").toString()));
-                new totalcommitTask().execute(country);
                 new loadImgTask().execute(country);
                 setSkip++;
             }
@@ -431,18 +431,32 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
         }
     }
 
-    class loadImgTask extends AsyncTask<ParseObject, Void, Void> {
+    class loadImgTask extends AsyncTask<ParseObject, Void, Integer> {
 
         @Override
-        protected Void doInBackground(ParseObject... country) {
+        protected Integer doInBackground(ParseObject... country) {
+            int totalCount = 0;
+            int updateMaxSize = 0;
             if (isCancelled()) {
-                return null;
+                return -1;
             }
+
             Bitmap bMap = null;
             Bitmap userBmap = null;
             String bMapPath = null;
             ParseFile userImgfile = null;
 
+            ParseQuery<ParseObject> countQuery = ParseQuery.getQuery("miris_commit");
+            countQuery.whereEqualTo("user_defult_id", country[0].getObjectId());
+            countQuery.orderByDescending("createdAt");
+            try {
+                totalcount = countQuery.find();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (totalcount.size() > 0) {
+                totalCount = totalcount.size();
+            }
             ParseFile userFile = (ParseFile) country[0].get("user_img");
 
             if (userFile != null) {
@@ -477,44 +491,26 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                     e2.printStackTrace();
                 }
             }
-            noticeData.get(maxSize).setimgPath(bMapPath);
-            noticeData.get(maxSize).setuserimgBitmap(userBmap);
-            noticeData.get(maxSize).setimgBitmap(bMap);
-            return null ;
+            try {
+                noticeData.get(maxSize).setimgPath(bMapPath);
+                noticeData.get(maxSize).setuserimgBitmap(userBmap);
+                noticeData.get(maxSize).setimgBitmap(bMap);
+                noticeData.get(maxSize).settotalcount(totalCount);
+            } catch (IndexOutOfBoundsException e2) {
+                e2.printStackTrace();
+            }
+            updateMaxSize = maxSize;
+            maxSize++;
+            return updateMaxSize;
         }
         @Override
-        protected void onPostExecute(Void result) {
-            feedAdapter.notifyItemChanged(maxSize);
-            maxSize++;
+        protected void onPostExecute(Integer result) {
+            feedAdapter.notifyItemChanged(result);
         }
 
         @Override
         protected void onCancelled() {
             super.onCancelled();
-        }
-    }
-
-    class totalcommitTask extends AsyncTask<ParseObject, Void, Void> {
-
-        @Override
-        protected Void doInBackground(ParseObject... country) {
-            int totalCount = 0;
-            if (isCancelled()) {
-                return null;
-            }
-            ParseQuery<ParseObject> countQuery = ParseQuery.getQuery("miris_commit");
-            countQuery.whereEqualTo("user_defult_id", country[0].getObjectId());
-            countQuery.orderByDescending("createdAt");
-            try {
-                totalcount = countQuery.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if (totalcount.size() > 0) {
-                totalCount = totalcount.size();
-            }
-            noticeData.get(maxSize).settotalcount(totalCount);
-            return null ;
         }
     }
 
