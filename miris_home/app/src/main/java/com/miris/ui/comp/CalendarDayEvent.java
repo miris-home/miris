@@ -4,14 +4,20 @@ public class CalendarDayEvent {
 
     private final long timeInMillis;
     private final int color;
+    private boolean holiday;
 
-    public CalendarDayEvent(final long timeInMillis, final int color) {
+    public CalendarDayEvent(final long timeInMillis, final int color, boolean holiday) {
         this.timeInMillis = timeInMillis;
         this.color = color;
+        this.holiday = holiday;
     }
 
     public long getTimeInMillis() {
         return timeInMillis;
+    }
+
+    public boolean getholiday() {
+        return holiday;
     }
 
     public int getColor() {

@@ -149,6 +149,7 @@ public class TakeCalendarActivity extends BaseActivity{
             calendarObject.put("user_text", edt_message.getText().toString());
             calendarObject.put("user_calendar", today);
             calendarObject.put("user_public", newWritingPublic);
+            calendarObject.put("user_holiday", "N");
 
             calendarObject.saveInBackground();
             calendarObject.saveInBackground(new SaveCallback() {

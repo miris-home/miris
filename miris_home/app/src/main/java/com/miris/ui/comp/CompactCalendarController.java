@@ -428,8 +428,12 @@ public class CompactCalendarController {
                 boolean isSameDayAsCurrentDay = (todayDayOfMonth == dayOfMonth && shouldDrawCurrentDayCircle);
                 if (!isSameDayAsCurrentDay) {
                     if (showSmallIndicator) {
-                        //draw small indicators below the day in the calendar
-                        drawSmallIndicatorCircle(canvas, xPosition, yPosition + 15, event.getColor());
+                        if (event.getholiday()) {
+                            drawSmallIndicatorCircle(canvas, xPosition - 13, yPosition + 17, event.getColor());
+                            drawSmallIndicatorCircle(canvas, xPosition + 13, yPosition + 17, Color.argb(255, 102, 0, 153));
+                        } else {
+                            drawSmallIndicatorCircle(canvas, xPosition, yPosition + 17, event.getColor());
+                        }
                     } else {
                         drawCircle(canvas, xPosition, yPosition, event.getColor());
                     }

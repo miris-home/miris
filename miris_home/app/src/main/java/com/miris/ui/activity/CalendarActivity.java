@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -101,6 +100,7 @@ public class CalendarActivity extends BaseActivity {
             calendarData = new ArrayList<CalendarListData>();
 
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_schedule");
+            offerQuery.orderByDescending("user_holiday");
             offerQuery.orderByDescending("createdAt");
 
             try {
@@ -123,7 +123,8 @@ public class CalendarActivity extends BaseActivity {
                         country.get("user_name").toString(),
                         country.getDate("user_calendar"),
                         country.get("user_text").toString(),
-                        country.get("user_public").toString()));
+                        country.get("user_public").toString(),
+                        country.get("user_holiday").toString()));
             }
             return null ;
         }
@@ -173,40 +174,13 @@ public class CalendarActivity extends BaseActivity {
 
     private void addEvents(CompactCalendarView compactCalendarView) {
         for(int i = 0; i < calendarData.size(); i++){
-            compactCalendarView.addEvent(new CalendarDayEvent( calendarData.get(i).getuser_calendar().getTime(), Color.argb(255, 239, 68, 65)), false);
-        }
-        cal = new GregorianCalendar();
-        int[][] holidays = {
-                {cal.get(Calendar.YEAR), 0, 1},
-                {cal.get(Calendar.YEAR), 2, 1},
-                {cal.get(Calendar.YEAR), 4, 5},
-                {cal.get(Calendar.YEAR), 5, 6},
-                {cal.get(Calendar.YEAR), 7, 15},
-                {cal.get(Calendar.YEAR), 9, 3},
-                {cal.get(Calendar.YEAR), 9, 9},
-                {cal.get(Calendar.YEAR), 11, 25},
-        };
-
-        String[] holidaysName = {
-                "신정",
-                "삼일절",
-                "어린이날",
-                "현충일",
-                "광복절",
-                "개천절",
-                "한글날",
-                "성탄절",
-        };
-        for(int i = 0; i < holidays.length; i++){
-            cal = new GregorianCalendar(holidays[i][0],holidays[i][1],holidays[i][2]);
-            today = cal.getTime();
-            calendarData.add(new CalendarListData(
-                    "Defult",
-                    "공휴일",
-                    today,
-                    holidaysName[i],
-                    "Y"));
-            compactCalendarView.addEvent(new CalendarDayEvent(today.getTime(), Color.argb(255, 239, 68, 65)), false);
+            boolean user_holiday;
+            if (calendarData.get(i).getuser_holiday().equals("Y")) {
+                user_holiday = true;
+            } else {
+                user_holiday = false;
+            }
+            compactCalendarView.addEvent(new CalendarDayEvent(calendarData.get(i).getuser_calendar().getTime(), Color.argb(255, 239, 68, 65), user_holiday), true);
         }
     }
 
