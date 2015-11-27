@@ -129,8 +129,6 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
-                <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/>
                 <category android:name="com.miris" />
             </intent-filter>
         </receiver>

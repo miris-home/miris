@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="TypographyDashes">
+    <string name="app_name">미르이즈</string>
     <string name="defult_user_message">미르이즈 회식</string>
     <string name="save_toast">저장되었습니다.!</string>
     <string name="contact">주소록</string>
