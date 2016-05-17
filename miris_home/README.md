@@ -1,5 +1,6 @@
 Miris
 =============
 
-½ÃÁğ3 ½ÃÀÛ!!
+Mobile project Season 3.
+
 
