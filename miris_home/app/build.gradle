@@ -1,0 +1,40 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.jakewharton.hugo'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
+
+    defaultConfig {
+        applicationId "com.miris"
+        minSdkVersion 16
+        targetSdkVersion 22
+        versionCode 2
+        versionName "1.0.1"
+    }
+    productFlavors {
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile files('libs/Parse-1.10.3.jar')
+    compile files('libs/bolts-android-1.2.1.jar')
+    compile 'com.android.support:appcompat-v7:22.+'
+    compile 'com.android.support:support-v13:22.+'
+    compile 'com.android.support:support-v4:22.+'
+    compile 'com.android.support:palette-v7:22.+'
+    compile 'com.android.support:recyclerview-v7:22.+'
+    compile 'com.android.support:cardview-v7:22.+'
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.jakewharton.timber:timber:2.5.1'
+    compile 'com.facebook.rebound:rebound:0.3.6'
+    compile 'com.squareup.picasso:picasso:2.5.0'
+    compile 'com.commonsware.cwac:camera:0.6.12'
+    compile 'com.nineoldandroids:library:2.4.0'
+}

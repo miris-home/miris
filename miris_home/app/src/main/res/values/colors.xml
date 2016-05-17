@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--colors.xml-->
+<resources>
+    <color name="style_color_primary">#2d5d82</color>
+    <color name="style_color_primary_dark">#21425d</color>
+    <color name="style_color_accent">#01bcd5</color>
+
+    <color name="fab_color_pressed">#007787</color>
+    <color name="fab_color_shadow">#44000000</color>
+
+    <color name="btn_default_light_normal">#00000000</color>
+    <color name="btn_default_light_pressed">#40ffffff</color>
+    <color name="btn_send_normal">#02c754</color>
+    <color name="btn_send_pressed">#006633</color>
+    <color name="btn_default_shadow">#99000000</color>
+    <color name="btn_context_menu_normal">#ffffff</color>
+    <color name="btn_context_menu_pressed">#40000000</color>
+    <color name="btn_context_menu_text_red">#ffff0000</color>
+
+    <color name="text_like_counter">#2b5a83</color>
+
+    <color name="bg_comments">#ffffff</color>
+    <color name="light_green">#3eb74e</color>
+    <color name="light_purple">#8c61b3</color>
+    <color name="light_orange">#ffb500</color>
+    <color name="light_cyan">#00BCD4</color>
+
+    <color name="primary">#E43F3F</color>
+    <color name="primary_dark">#E12929</color>
+    <color name="primary_darker">#CC1D1D</color>
+    <color name="accent">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="jet">#222222</color>
+    <color name="oil">#333333</color>
+    <color name="monsoon">#777777</color>
+    <color name="jumbo">#888888</color>
+    <color name="aluminum">#999999</color>
+    <color name="base">#AAAAAA</color>
+    <color name="iron">#CCCCCC</color>
+
+
+    <color name="color_ffffff">#FFFFFF</color>
+    <color name="color_474747">#474747</color>
+    <color name="color_707070">#707070</color>
+    <color name="color_ababab">#ababab</color>
+    <color name="color_4862a6">#4862a6</color>
+    <color name="color_d2055c">#d2055c</color>
+    <color name="color_f0720d">#f0720d</color>
+    <color name="color_db578f">#db578f</color>
+    <color name="color_000000">#000000</color>
+    <color name="color_c4c4c4">#c4c4c4</color>
+    <color name="color_e6e6e6">#e6e6e6</color>
+    <color name="color_888888">#888888</color>
+    <color name="color_f3f3f3">#f3f3f3</color>
+    <color name="color_b0b0b0">#b0b0b0</color>
+    <color name="color_35b5e5">#35b5e5</color>
+    <color name="color_d41262">#d41262</color>
+    <color name="color_282828">#282828</color>
+    <color name="color_757575">#757575</color>
+    <color name="color_959595">#959595</color>
+    <color name="color_FB378A">#FB378A</color>
+    <color name="color_c1c1c1">#c1c1c1</color>
+    <color name="color_c6c6c6c6">#c6c6c6c6</color>
+    <color name="color_2c2c2c">#2c2c2c</color>
+    <color name="color_545454">#545454</color>
+    <color name="color_1d1d1d">#1d1d1d</color>
+    <color name="color_dcdcdc">#dcdcdc</color>
+    <color name="color_af2660">#af2660</color>
+    <color name="color_c0c0c0">#c0c0c0</color>
+    <color name="color_141414">#141414</color>
+    <color name="color_1f1f1f">#1f1f1f</color>
+    <color name="color_3b3b3b">#3b3b3b</color>
+    <color name="color_181818">#181818</color>
+    <color name="color_222222">#222222</color>
+    <color name="color_dddddd">#dddddd</color>
+    <color name="color_b2b2b2">#b2b2b2</color>
+    <color name="detail_scroll">#e6e6e6</color>
+    <color name="color_0000ff">#0000FF</color>
+
+
+
+    <color name="help_button_view">#ffcccccc</color> <!-- help button view background color -->
+    <color name="help_view">#ff404040</color> <!-- background color for entire help view -->
+    <color name="result_minor_text">#ffc0c0c0</color> <!-- source language text/label text color. For example, "OCR English" -->
+    <color name="result_text">#ffffffff</color> <!-- OCR result text color -->
+    <color name="result_view">#b0000000</color> <!-- result view background color -->
+    <color name="status_text">#ffffffff</color> <!-- status_view_top/status_view_bottom text color -->
+    <color name="status_top_text_background">#ffffffff</color> <!-- status_view_top text background color -->
+    <color name="translation_text">#00ccff</color> <!-- translation text color -->
+    <color name="viewfinder_corners">#ffffffff</color> <!-- four corner elements for viewfinder -->
+    <color name="viewfinder_frame">#ffd6d6d6</color> <!-- viewfinder rectangle -->
+    <color name="viewfinder_mask">#60000000</color>  <!-- viewfinder exterior darkened area -->
+
+    <color name="circle_background">#fff2f2f2</color>
+    <color name="white">#ffffffff</color>
+    <color name="line_background">#ffcccccc</color>
+    <color name="done_text_color_normal">#ff333333</color>
+    <color name="done_text_color_disabled">#ffcccccc</color>
+    <color name="blue">#ff33b5e5</color>
+    <color name="darker_blue">#ff0099cc</color>
+    <color name="date_picker_text_normal">#ff999999</color>
+    <color name="calendar_header">#ff999999</color>
+    <color name="date_picker_view_animator">#fff2f2f2</color>
+
+    <color name="ampm_text_color">#8c8c8c</color>
+    <color name="numbers_text_color">#8c8c8c</color>
+
+    <color name="transparent_black">#7F000000</color>
+
+    <color name="md_btn_selected">#33969696</color>
+    <color name="md_btn_selected_dark">#40CBCBCB</color>
+
+    <color name="md_divider_black">#10000000</color>
+    <color name="md_divider_white">#10FFFFFF</color>
+
+    <color name="md_material_blue_600">#1E88E5</color>
+    <color name="md_material_blue_800">#1565C0</color>
+    <color name="md_material_blue_900">#64b5f6</color>
+
+    <color name="md_edittext_error">#DD2C00</color>
+
+    <color name="rippelColor">#FFFFFF</color>
+
+
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="background">#e5e5e5</color>
+    <color name="half_black">#808080</color>
+    <color name="white_white">#fafafa</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="pink">#e91e63</color>
+    <color name="pink_pressed">#f06292</color>
+    <color name="blue_semi_transparent">#805677fc</color>
+    <color name="blue_semi_transparent_pressed">#80738ffe</color>
+    <color name="grean">#2e7d32</color>
+    <color name="grean_pressed">#43a047</color>
+    <color name="orange">#ef6c00</color>ripple
+    <color name="orange_pressed">#fb8c00</color>
+    <color name="ripple_pressed">#64b5f6</color>
+
+    <color name="purple">#6a1b9a</color>
+    <color name="purple_pressed">#8e24aa</color>
+    <color name="gray">#9e9e9e</color>
+    <color name="gray_pressed">#E0E0E0</color>
+    <color name="sian">#0097a7</color>
+    <color name="sian_pressed">#00bcd4</color>
+    <color name="indego">#283593</color>
+    <color name="indego_pressed">#3f51b5</color>
+
+    <color name="backgroundColor">#E8E8E0</color>
+    <color name="backgroundColorPress">#DBDBD3</color>
+    <color name="red">#FF3B00</color>
+    <color name="red_press">#990000</color>
+    <color name="dark_gray">#4C535B</color>
+    <color name="dark_gray_press">#ff7e8a97</color>
+</resources>

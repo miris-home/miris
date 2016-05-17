@@ -1,0 +1,107 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CalendarActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_feed_toolbar_sc"
+        app:layout_collapseMode="pin"/>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/content"
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center">
+                    <Button
+                        android:id="@+id/prev_button"
+                        android:background="@drawable/ic_arrow_back_white_24dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"/>
+                    <TextView
+                        android:id="@+id/toDate"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="24dp"
+                        android:textColor="@color/white"/>
+
+                    <Button
+                        android:gravity="right"
+                        android:layout_gravity="right"
+                        android:id="@+id/next_button"
+                        android:background="@drawable/ic_arrow_forward_white_24dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="350dp"
+                    android:layout_height="0.1dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_gravity="center"
+                    android:background="?attr/colorPrimary"/>
+
+                <com.miris.ui.view.CompactCalendarView
+                    android:id="@+id/compactcalendar_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="270dp"
+                    app:compactCalendarTextSize="22sp"
+                    app:compactCalendarBackgroundColor="?attr/colorPrimary"
+                    app:compactCalendarTextColor="#fff"
+                    app:compactCalendarCurrentSelectedDayBackgroundColor="@color/md_material_blue_600"
+                    app:compactCalendarCurrentDayBackgroundColor="@color/grean" />
+
+            </LinearLayout>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:background="@android:color/white"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="@dimen/btn_fab_margins"
+            android:layout_marginRight="@dimen/btn_fab_margins"
+            android:src="@drawable/ic_query_builder_white_36dp"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp" />
+    </android.support.design.widget.CoordinatorLayout>
+
+</RelativeLayout>
+
+
