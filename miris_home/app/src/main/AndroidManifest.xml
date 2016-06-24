@@ -111,6 +111,15 @@
         <activity
             android:name=".ui.activity.IntroActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity" />
+        <activity
+            android:name=".ui.activity.ITnewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity" />
+
+        <activity
+            android:name=".ui.activity.ITnewDetail"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.TransparentActivity" >
 
         </activity>

@@ -3,7 +3,7 @@
         <item
             android:id="@+id/menu_feed"
             android:icon="@drawable/ic_global_menu_feed"
-            android:title="고민 중.." />
+            android:title="IT 뉴스" />
         <item
             android:id="@+id/menu_direct"
             android:icon="@drawable/ic_global_menu_direct"

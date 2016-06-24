@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    android:layout_marginRight="12dp"
+    android:layout_marginLeft="12dp"
+    card_view:cardCornerRadius="4dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/ivNewsLinearLayout"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/ivNewsImg"
+                android:layout_margin="10dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_launcher" />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                >
+                <TextView
+                    android:id="@+id/ivNewsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16dp"
+                    android:text="제목"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:id="@+id/ivNewsName"
+                    android:text="이름"
+                    android:gravity="right"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="13dp" />
+            </LinearLayout>
+        </LinearLayout>
+</android.support.v7.widget.CardView>

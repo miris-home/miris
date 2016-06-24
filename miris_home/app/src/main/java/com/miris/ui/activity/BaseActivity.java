@@ -14,6 +14,7 @@ import com.miris.R;
 import com.miris.net.AddressListData;
 import com.miris.net.CalendarListData;
 import com.miris.net.CommitListData;
+import com.miris.net.ItnewsListData;
 import com.miris.net.MemberListData;
 import com.miris.net.NoticeListData;
 import com.miris.net.SessionPreferences;
@@ -56,6 +57,7 @@ public class BaseActivity extends AppCompatActivity{
     public static ArrayList<UserProImgData> userProImgData;
     public static ArrayList<AddressListData> addressData;
     public static ArrayList<CalendarListData> calendarData;
+    public static ArrayList<ItnewsListData> itnewsListDatas;
 
     SessionPreferences session;
     public static int badge_count = 0;

@@ -486,7 +486,7 @@ public class MainActivity extends BaseDrawerActivity implements FeedAdapter.OnFe
                 try {
                     byte[] data2 = userImgfile.getData();
                     userBmap = BitmapFactory.decodeByteArray(data2, 0, data2.length);
-                    userBmap = userBmap.createScaledBitmap(userBmap, 120, 120, true);
+                    userBmap = userBmap.createScaledBitmap(userBmap, 120, 120, false);
                 } catch (ParseException e2) {
                     e2.printStackTrace();
                 }
