@@ -132,10 +132,7 @@ public class BaseDrawerActivity extends BaseActivity {
                         }
                     }, 300);
                     break;
-<<<<<<< HEAD
 
-=======
->>>>>>> c6ef70079d064afbaa1da9f03cc7081bdae096f6
                 case R.id.menu_feed:
                     intent = new Intent(getApplication(), ITnewActivity.class);
                     startActivity(intent);
