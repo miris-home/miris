@@ -37,7 +37,11 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, null);
 
+<<<<<<< HEAD
         final WebView webView = (WebView) view.findViewById(R.id.webView);
+=======
+        WebView webView = (WebView) view.findViewById(R.id.webView);
+>>>>>>> c6ef70079d064afbaa1da9f03cc7081bdae096f6
         final ProgressBar home_progressbar = (ProgressBar) view.findViewById(R.id.home_progressbar);
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
