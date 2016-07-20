@@ -6,13 +6,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.miris.R;
+import com.miris.net.ItnewsBanner;
 import com.miris.net.ItnewsListData;
 import com.miris.ui.adapter.ITnewAdapter;
-import com.parse.ParseObject;
+import com.miris.ui.view.BannerLayout;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,7 +43,6 @@ public class ITnewActivity extends BaseActivity
     LinearLayoutManager linearLayoutManager;
     private ITnewAdapter iTnewAdapter;
     ProgressDialog myLoadingDialog;
-    List<ParseObject> ob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,24 +116,11 @@ public class ITnewActivity extends BaseActivity
 
 
     class loadDataTask extends AsyncTask<Void, Void, Void> {
-        StringBuffer buffer=new StringBuffer();
-/*
-        String str= "안드로이드"; //EditText에 작성된 Text얻어오기
-        String location = URLEncoder.encode(str); //한글의 경우 인식이 안되기에 utf-8 방식으로 encoding..
 
-        String webItpage="http://openapi.naver.com/search"   //요청 URL
-                +"?key=c1b406b32dbbbbeee5f2a36ddc14067f"     //key 값
-                +"&target=news"                     //검색서비스 api명세
-                +"&query="+location                 //지역검색 요청값
-                +"&display=10"                      //검색 출력 건수  10~1007
-]                +"&start=1"                         //검색 시작 위치  1~1000
-                +"&sort=sim";                         //검색 시작 위치  1~1000
-*/
-        //String webItpage = "http://newssearch.naver.com/search.naver?where=rss&query=IT&field=0";
-        //String webItpage = "http://www.inews24.com/rss/news_it.xml";
+        //다음 IT뉴스 리스트
         String webItpage = "http://media.daum.net/syndication/digital.rss";
-
-
+        //노컷뉴스 속보 배너
+        String webItpage_banner = "http://rss.nocutnews.co.kr/nocutnews.xml";
 
         @Override
         protected void onPreExecute() {
@@ -143,10 +129,43 @@ public class ITnewActivity extends BaseActivity
         @Override
         protected Void doInBackground(Void... arg0) {
             itnewsListDatas = new ArrayList<ItnewsListData>();
-
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            itnewsBanners = new ArrayList<ItnewsBanner>();
 
             try {
+                DocumentBuilderFactory builderFactory1 = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder1 = builderFactory1.newDocumentBuilder();
+                URL url1 = new URL(webItpage_banner);
+
+                HttpURLConnection conn1 = (HttpURLConnection) url1.openConnection();
+
+                InputStream instream1 = conn1.getInputStream();
+
+                Document document1 = builder1.parse(instream1);
+
+                Element docEle1 = document1.getDocumentElement();
+                NodeList nodelist1 = docEle1.getElementsByTagName("item");
+                if ((nodelist1 != null) && (nodelist1.getLength() > 0)) {
+                    for (int i = 0; i < nodelist1.getLength(); i++) {
+
+                        Element entry1 = (Element)nodelist1.item(i);
+                        String title1 = entry1.getElementsByTagName("title").item(0).getTextContent();
+                        String description1 = entry1.getElementsByTagName("description").item(0).getTextContent();
+                        String img1 = entry1.getElementsByTagName("image").item(0).getTextContent();
+                        String link1 = entry1.getElementsByTagName("link").item(0).getTextContent();
+
+                        if (img1.equals("")){
+                            continue;
+                        }
+
+                        itnewsBanners.add(new ItnewsBanner(
+                                img1,
+                                title1,
+                                description1,
+                                link1));
+                    }
+                }
+
+                DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = builderFactory.newDocumentBuilder();
 
                 URL url = new URL(webItpage);
@@ -155,8 +174,6 @@ public class ITnewActivity extends BaseActivity
                 conn.setRequestMethod("POST");
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
-
-                int resCode = conn.getResponseCode();
 
                 InputStream instream = conn.getInputStream();
 
@@ -180,13 +197,6 @@ public class ITnewActivity extends BaseActivity
                         String dueDate = entry.getElementsByTagName("pubDate").item(0).getTextContent();
                         String author = entry.getElementsByTagName("dc:creator").item(0).getTextContent();
 
-                        Log.e("PHJ", "img===" + img);
-                        Log.e("PHJ", "title===" + title);
-                        Log.e("PHJ", "description===" + description);
-                        Log.e("PHJ", "link===" + link);
-                        Log.e("PHJ", "dueDate===" + dueDate);
-                        Log.e("PHJ", "author===" + author);
-
                         itnewsListDatas.add(new ItnewsListData(
                                 img,
                                 title,
@@ -196,6 +206,7 @@ public class ITnewActivity extends BaseActivity
                                 author));
                     }
                 }
+
             } catch (ParserConfigurationException e) {
                 e.printStackTrace();
             }
@@ -216,6 +227,28 @@ public class ITnewActivity extends BaseActivity
             iTnewAdapter = new ITnewAdapter(ITnewActivity.this, itnewsListDatas);
             rvAddress.setAdapter(iTnewAdapter);
             iTnewAdapter.setOnNewsItemClickListener(ITnewActivity.this);
+
+            BannerLayout bannerLayout = (BannerLayout) findViewById(R.id.banner);
+
+            final List<String> urls = new ArrayList<>();
+            final List<String> urlstext = new ArrayList<>();
+            for (int i= 0; i < 5; i++) {
+                urls.add(itnewsBanners.get(i).getImg());
+                urlstext.add(itnewsBanners.get(i).getTitle());
+            }
+            bannerLayout.setViewUrls(urls, urlstext);
+
+            bannerLayout.setOnBannerItemClickListener(new BannerLayout.OnBannerItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+
+                    Intent intent = new Intent(getApplication(),ITnewDetail.class);
+                    intent.putExtra("url", itnewsBanners.get(position).getlink());
+                    intent.putExtra("title", itnewsBanners.get(position).getTitle());
+                    intent.putExtra("img", itnewsBanners.get(position).getImg());
+                    startActivity(intent);
+                }
+            });
 
             rvAddress.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
