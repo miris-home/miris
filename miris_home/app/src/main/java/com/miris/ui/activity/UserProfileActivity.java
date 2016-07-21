@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.miris.R;
 import com.miris.net.UserProImgData;
 import com.miris.net.UserProfileListData;
+import com.miris.ui.adapter.BlurBehind;
+import com.miris.ui.adapter.OnBlurCompleteListener;
 import com.miris.ui.adapter.UserProfileAdapter;
 import com.miris.ui.utils.CircleTransformation;
 import com.miris.ui.view.RevealBackgroundView;
@@ -245,6 +247,24 @@ public class UserProfileActivity extends BaseDrawerActivity implements RevealBac
                         .transform(new CircleTransformation())
                         .into(ivUserProfilePhoto);
 
+                ivUserProfilePhoto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getWindow().getDecorView().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                BlurBehind.getInstance().execute(mActivity, new OnBlurCompleteListener() {
+                                    @Override
+                                    public void onBlurComplete() {
+                                        Intent intent = new Intent(getApplicationContext(), PinchZoomActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }
+                        }, 1);
+                    }
+                });
                 vUserName.setText(userProfileListData.get(0).getuser_name());
                 vUserNickname.setText(userProfileListData.get(0).getuser_rank());
 

@@ -215,7 +215,7 @@ public class CommentsActivity extends BaseDrawerActivity implements SendCommentB
             commitData = new ArrayList<CommitListData>();
             ParseQuery<ParseObject> offerQuery = ParseQuery.getQuery("miris_commit");
             offerQuery.whereEqualTo("user_defult_id", objectID);
-            offerQuery.orderByDescending("createdAt");
+            offerQuery.orderByAscending("createdAt");
             try {
                 ob = offerQuery.find();
             } catch (ParseException e) {

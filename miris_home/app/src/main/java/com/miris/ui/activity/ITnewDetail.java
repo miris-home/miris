@@ -30,6 +30,7 @@ public class ITnewDetail extends BaseDrawerActivity {
     String urlName;
     String urlTitle;
     String urlTimg;
+    private int bannerImgColor = 0x88000000;
 
     @InjectView(R.id.btnCreate)
     FloatingActionButton fabCreate;
@@ -59,7 +60,7 @@ public class ITnewDetail extends BaseDrawerActivity {
                     .load(urlTimg)
                     .into(ivImage);
         }
-        ivImage.setColorFilter(R.color.color_88000000);
+        ivImage.setColorFilter(bannerImgColor);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(mViewPager);
     }
