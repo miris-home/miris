@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.miris.ui.activity.MessageActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_feed_toolbar_sc" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/dark_gray">
+        <Button
+            android:id="@+id/msgBox"
+            android:layout_width="95dp"
+            android:layout_height="40dp"
+            android:text="받은쪽지함"
+            android:textSize="13dp"
+            android:textColor="@color/white"
+            android:layout_gravity="center"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="15dp"
+            android:textColor="@color/white"
+            android:text="받은쪽지함"
+            android:textStyle="bold"
+            android:gravity="center_vertical|center"
+            android:layout_weight="0.01"
+            android:id="@+id/tileBox"/>
+        <Button
+            android:id="@+id/sendViewButton"
+            android:layout_width="95dp"
+            android:layout_height="40dp"
+            android:text="쪽지쓰기"
+            android:textSize="13dp"
+            android:textColor="@color/white"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <view
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="android.support.v7.widget.RecyclerView"
+        android:id="@+id/msg_view"
+        android:layout_gravity="bottom"
+        android:background="@color/white" />
+
+</LinearLayout>
