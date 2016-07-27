@@ -21,6 +21,7 @@ import com.miris.net.NoticeListData;
 import com.miris.net.SessionPreferences;
 import com.miris.net.UserProImgData;
 import com.miris.net.UserProfileListData;
+import com.miris.net.MessageListData;
 
 import java.util.ArrayList;
 
@@ -60,6 +61,7 @@ public class BaseActivity extends AppCompatActivity{
     public static ArrayList<CalendarListData> calendarData;
     public static ArrayList<ItnewsListData> itnewsListDatas;
     public static ArrayList<ItnewsBanner> itnewsBanners;
+    public static ArrayList<MessageListData> messageData;
 
     SessionPreferences session;
     public static int badge_count = 0;
