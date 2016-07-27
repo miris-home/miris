@@ -124,6 +124,23 @@
 
         </activity>
 
+		 <activity
+            android:name=".ui.activity.MessageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"  />
+        <activity
+            android:name=".ui.activity.MessageActivity2"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"  />
+        <activity
+            android:name=".ui.activity.MessageDetail"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"  />
+        <activity
+            android:name=".ui.activity.MessageSendActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"  />
+
         <service android:name="com.parse.PushService" />
         <receiver android:name=".MirisPushReceiver"
             android:exported="false">
