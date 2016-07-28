@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.miris.ui.activity.MessageSendActivity">
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_feed_toolbar_sc" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/dark_gray">
+
+            <Button
+                android:id="@+id/searchId"
+                android:layout_width="95dp"
+                android:layout_height="40dp"
+                android:text="받는사람"
+                android:textColor="@color/white"
+                android:layout_gravity="center"/>
+            <TextView
+                android:layout_width="170dp"
+                android:layout_height="match_parent"
+                android:text="쪽지쓰기"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:gravity="center_vertical|center"/>
+            <Button
+                android:id="@+id/sendButton"
+                android:layout_width="95dp"
+                android:layout_height="40dp"
+                android:textColor="@color/white"
+                android:text="보내기" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal">
+            <TextView
+                android:layout_width="85dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:text="받는사람"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/receiptId"
+                android:layout_width="104dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:gravity="center_vertical|right"/>
+            <TextView
+                android:id="@+id/receiptName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0dp"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/black_semi_transparent"
+            >
+        </LinearLayout>
+
+            <EditText
+                android:id="@+id/editContent"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="0dp"
+                android:textSize="15dp"
+                android:hint="내용을 입력해 주세요"
+                android:background="@android:color/transparent"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/black_semi_transparent"
+            >
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+</LinearLayout>
