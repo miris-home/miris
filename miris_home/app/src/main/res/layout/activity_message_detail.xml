@@ -25,18 +25,29 @@
             android:background="@color/dark_gray">
 
             <Button
+                android:id="@+id/deleteButton"
                 android:layout_width="79dp"
                 android:layout_height="40dp"
                 android:text="삭제"
                 android:textColor="@color/white"
-                android:id="@+id/deleteButton"
                 android:layout_gravity="center"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="15dp"
+                android:textColor="@color/white"
+                android:text="받은쪽지함"
+                android:textStyle="bold"
+                android:gravity="center_vertical|center"
+                android:layout_weight="0.01"
+                android:id="@+id/tileBox"/>
             <Button
+                android:id="@+id/returnButton"
                 android:layout_width="79dp"
                 android:layout_height="40dp"
                 android:textColor="@color/white"
                 android:text="답장"
-                android:id="@+id/returnButton"
                 android:layout_gravity="center"/>
         </LinearLayout>
 
