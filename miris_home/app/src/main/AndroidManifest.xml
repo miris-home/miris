@@ -140,6 +140,10 @@
             android:name=".ui.activity.MessageSendActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.TransparentActivity"  />
+        <activity
+            android:name=".ui.activity.MessageReplyActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity"  />
 
         <service android:name="com.parse.PushService" />
         <receiver android:name=".MirisPushReceiver"
