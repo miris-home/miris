@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miris.R;
+import com.miris.ui.adapter.MessageAdapter;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -66,12 +68,16 @@ public class MessageDetail extends BaseActivity{
             }
         });
 
+        /* 답장 화면으로 이동 */
         Button rButton = (Button)findViewById(R.id.returnButton);
         rButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "준비중입니다.", Toast.LENGTH_SHORT).show();
-            }
+                //Toast.makeText(getApplicationContext(), "준비중입니다.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplication(), MessageReplyActivity.class);
+                intent.putExtra("msgSendId",msgSendId);
+                startActivity(intent);
+            };
         });
     }
 
@@ -98,6 +104,8 @@ public class MessageDetail extends BaseActivity{
 
                 Intent intent = new Intent(getApplication(), MessageActivity.class);
                 startActivity(intent);
+
+                //new deleteTask().execute();
             }
         });
 
@@ -133,6 +141,34 @@ public class MessageDetail extends BaseActivity{
                 }
             });
             return null;
+        }
+
+    }
+
+    class deleteTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            /* MIRIS_MESSAGE to_delete_yn를 Y로 업데이트 */
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("miris_message");
+            query.getInBackground(objectId, new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, com.parse.ParseException e) {
+                    if(e == null){
+                        parseObject.put("to_delete_yn","Y");
+                        parseObject.saveInBackground();
+                    }
+                }
+            });
+            return null;
+        }
+
+        /* onPostExecute() : 백그라운드 실행 완료 즉 스레드 작업이 끝났을때의 동작 구현(doInBackground의 결과값 사용) */
+        @Override
+        protected void onPostExecute(Void result) {
+            Log.i("delete_onPostExecute","start");
+            Intent intent = new Intent(getApplication(), MessageActivity.class);
+            startActivity(intent);
         }
 
     }
