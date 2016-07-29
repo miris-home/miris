@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.miris.R;
 import com.parse.GetCallback;
@@ -62,6 +63,14 @@ public class MessageDetail extends BaseActivity{
             public void onClick(View v) {
                 showDialog(1);
 
+            }
+        });
+
+        Button rButton = (Button)findViewById(R.id.returnButton);
+        rButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "준비중입니다.", Toast.LENGTH_SHORT).show();
             }
         });
     }
